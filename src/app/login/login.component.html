@@ -1,3 +1,16 @@
-<p>
-  login works!
-</p>
+<div class="login">
+  <div class="top">
+
+  </div>
+  <div class="bottom">
+    <div class="login-box">
+      <div class="input-box">
+        <input type="text" #username>
+      </div>
+      <div class="input-box">
+        <input type="password" #password>
+      </div>
+    </div>
+    <button (click)="login(username.value, password.value)">Login</button>
+  </div>
+</div>
