@@ -1,16 +1,29 @@
-<div class="login">
-  <div class="top">
-
-  </div>
-  <div class="bottom">
-    <div class="login-box">
-      <div class="input-box">
-        <input type="text" #username>
+<div class="ui middle aligned center aligned grid">
+  <div class="column">
+    <h2 class="ui teal image header">
+      <img src="./assets/images/logo.png" class="image">
+      <div class="content">
+        co-translation
       </div>
-      <div class="input-box">
-        <input type="password" #password>
+    </h2>
+    <form #f="ngForm" (ngSubmit)="onSubmit(f.value)" class="ui large form">
+      <div class="field">
+        <div class="ui left icon input">
+          <i class="user icon"></i>
+          <input type="text" name="username" placeholder="用户" ngModel>
+        </div>
       </div>
+      <div class="field">
+        <div class="ui left icon input">
+          <i class="lock icon"></i>
+          <input type="password" name="password" placeholder="密码" ngModel>
+        </div>
+      </div>
+      <button type="submit" class="ui fluid large teal submit button">登录</button>
+      <div class="ui error message"></div>
+    </form>
+    <div class="ui container">
+      <a href="#">忘记密码</a> | <a href="#">注册</a>
     </div>
-    <button (click)="login(username.value, password.value)">Login</button>
   </div>
 </div>
