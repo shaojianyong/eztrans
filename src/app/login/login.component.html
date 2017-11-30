@@ -40,21 +40,21 @@
       <div class="field">
         <div class="ui left icon input">
           <i class="user icon"></i>
-          <input type="text" placeholder="用户" [formControl]="username">
+          <input type="text" placeholder="用户" [formControl]="myForm.controls['username']">
         </div>
       </div>
       <div class="field">
         <div class="ui left icon input">
           <i class="lock icon"></i>
-          <input type="password" placeholder="密码" [formControl]="password">
+          <input type="password" placeholder="密码" [formControl]="myForm.controls['password']">
         </div>
       </div>
       <button type="submit" class="ui fluid large teal submit button">登录</button>
       <!--div class="ui error message">Hello</div-->
-      <div *ngIf="errorMsg!=''" class="ui error message">Hello</div>
     </form>
     <div class="ui container">
       <a href="#">忘记密码</a> | <a href="#">注册</a>
     </div>
+    <div *ngIf="errMsg" class="ui error message">{{errMsg}}</div>
   </div>
 </div>

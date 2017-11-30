@@ -6,27 +6,7 @@ import {
   AbstractControl,
   FormControl
 } from '@angular/forms';
-
-
-/**
- * Our custom validator
- *
- * A validator:
- * - Takes a `Control` as it's input and
- * - Returns a `StringMap<string, boolean>` where the key is "error code" and
- *   the value is `true` if it fails
- */
-function usernameValidator(control: FormControl): { [s: string]: boolean } {
-  if (!control.value.match(/^123/)) {
-    return { invalidUsername: true };
-  }
-}
-
-function passwordValidator(control: FormControl): { [s: string]: boolean } {
-  if (!control.value.match(/^123/)) {
-    return { invalidPassword: true };
-  }
-}
+import { Router } from '@angular/router'
 
 @Component({
   selector: 'app-login',
@@ -35,20 +15,13 @@ function passwordValidator(control: FormControl): { [s: string]: boolean } {
 })
 export class LoginComponent implements OnInit {
   myForm: FormGroup;
-  username: AbstractControl;
-  password: AbstractControl;
-  errorMsg: string;
+  errMsg: string;
 
-  constructor(fb: FormBuilder) {
+  constructor(fb: FormBuilder, private router: Router) {
     this.myForm = fb.group({
-      'username': ['', Validators.compose([Validators.required])],
-      'password': ['', Validators.compose([Validators.required])],
-      'errorMsg': [''],
+      'username': ['', Validators.required],
+      'password': ['', Validators.required],
     });
-
-    this.username = this.myForm.controls['username'];
-    this.password = this.myForm.controls['password'];
-    this.errorMsg = 'Hello';
   }
 
   ngOnInit() {
@@ -56,6 +29,15 @@ export class LoginComponent implements OnInit {
 
   onSubmit(form: any): void {
     console.log('You submitted value: ', form);
-    this.errorMsg = 'hello world!';
+    this.errMsg = '';
+    if (this.myForm.hasError('required', ['username'])
+      || this.myForm.hasError('required', ['password'])) {
+      this.errMsg = '需要输入用户和密码！';
+      return;
+    }
+
+    // TODO: 调用electron主进程，验证密码
+
+    this.router.navigate(['/main']);
   }
 }
