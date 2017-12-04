@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import languages from './languages';
+import {Component, OnInit} from '@angular/core';
+import { ExLinksModule } from '../../assets/ex-links';
 
 @Component({
   selector: 'app-main',
@@ -8,11 +8,11 @@ import languages from './languages';
 })
 export class MainComponent implements OnInit {
 
-  langs = languages;
-
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit() {
+    ExLinksModule.applyExLinks();
   }
 
 }
