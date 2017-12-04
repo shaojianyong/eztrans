@@ -11,25 +11,38 @@ import { ExLinksModule } from '../../assets/ex-links';
 })
 export class MainComponent implements OnInit {
 
-  sentences: Array<Object>;
-  /*
+  // sentences: Array<Object>;
+
+  // bad method
+  static appendRow(source: string, target: string): void {
+    const tab = (<any>document).getElementById('trans_table');
+    const row = tab.insertRow(-1);
+    const col1 = row.insertCell(0);
+    const col2 = row.insertCell(1);
+    col1.innerHTML = source;
+    col2.innerHTML = target;
+  }
+
   static onFileRead(event, err, data): void {
-    MainComponent.sentences = new Array<Object>();
+    const tab = (<any>document).getElementById('trans_table');
+    tab
+    // MainComponent.sentences = new Array<Object>();
     const lines = data.split(/\n|\r\n/g);
-    let index = 0;
+    // let index = 0;
     for (let line of lines) {
       line = line.trim();
       if (line) {
-        MainComponent.sentences[index] = { source: line, target: '' };
-        index++;
+        // MainComponent.sentences[index] = { source: line, target: '' };
+        // index++;
+        MainComponent.appendRow(line, '');
       }
     }
   }
-*/
+
   constructor() {
-    this.sentences = new Array<Object>();
-    this.sentences[0] = { source: 'hello', target: 'world!' };
-    this.sentences[1] = { source: 'hello1', target: 'world!1' };
+    // this.sentences = new Array<Object>();
+    // this.sentences[0] = { source: 'hello', target: 'world!' };
+    // this.sentences[1] = { source: 'hello1', target: 'world!1' };
   }
 
   openFile(): void {
@@ -39,7 +52,7 @@ export class MainComponent implements OnInit {
   }
 
   ngOnInit() {
-    //ipc.on('file-read', MainComponent.onFileRead);
+    ipc.on('file-read', MainComponent.onFileRead);
 
     ExLinksModule.applyExLinks();
   }
