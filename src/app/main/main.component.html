@@ -52,86 +52,10 @@
       </tr>
       </thead>
       <tbody>
-      <tr>
-        <td>约翰</td>
-        <td>没反应</td>
-      </tr>
-      <tr class="warning">
-        <td>约翰</td>
-        <td>没反应</td>
-      </tr>
-      <tr>
-        <td class="positive">已审核</td>
-        <td class="warning">必须回答</td>
-      </tr>
-      <tr>
-        <td>吉尔</td>
-        <td class="negative">Denied</td>
-      </tr>
 
-      <tr>
-        <td>约翰</td>
-        <td>没反应</td>
-      </tr>
-      <tr>
-        <td>约翰</td>
-        <td>没反应</td>
-      </tr>
-      <tr>
-        <td>约翰</td>
-        <td>没反应</td>
-      </tr>
-      <tr>
-        <td>约翰</td>
-        <td>没反应</td>
-      </tr>
-      <tr>
-        <td>约翰</td>
-        <td>没反应</td>
-      </tr>
-      <tr>
-        <td>约翰</td>
-        <td>没反应</td>
-      </tr>
-      <tr>
-        <td>约翰</td>
-        <td>没反应</td>
-      </tr>
-      <tr>
-        <td>约翰</td>
-        <td>没反应</td>
-      </tr>
-      <tr>
-        <td>约翰</td>
-        <td>没反应</td>
-      </tr>
-      <tr>
-        <td>约翰</td>
-        <td>没反应</td>
-      </tr>
-      <tr>
-        <td>约翰</td>
-        <td>没反应</td>
-      </tr>
-      <tr>
-        <td>约翰</td>
-        <td>没反应</td>
-      </tr>
-      <tr>
-        <td>约翰</td>
-        <td>没反应</td>
-      </tr>
-      <tr>
-        <td>约翰</td>
-        <td>没反应</td>
-      </tr>
-      <tr>
-        <td>约翰</td>
-        <td>没反应</td>
-      </tr>
-      <tr>
-        <td>约翰</td>
-        <td>没反应</td>
+      <tr *ngFor="let sentence of sentences">
+        <td>{{sentence.source}}</td>
+        <td>{{sentence.target}}</td>
       </tr>
 
       </tbody>

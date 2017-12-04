@@ -1,5 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-const { ipcRenderer } = (<any>window).require('electron');
+const electron = (<any>window).require('electron');
+const ipc = electron.ipcRenderer;
+const dialog = electron.remote.dialog;
 import { ExLinksModule } from '../../assets/ex-links';
 
 @Component({
@@ -9,27 +11,36 @@ import { ExLinksModule } from '../../assets/ex-links';
 })
 export class MainComponent implements OnInit {
 
+  sentences: Array<Object>;
+  /*
+  static onFileRead(event, err, data): void {
+    MainComponent.sentences = new Array<Object>();
+    const lines = data.split(/\n|\r\n/g);
+    let index = 0;
+    for (let line of lines) {
+      line = line.trim();
+      if (line) {
+        MainComponent.sentences[index] = { source: line, target: '' };
+        index++;
+      }
+    }
+  }
+*/
   constructor() {
+    this.sentences = new Array<Object>();
+    this.sentences[0] = { source: 'hello', target: 'world!' };
+    this.sentences[1] = { source: 'hello1', target: 'world!1' };
   }
 
   openFile(): void {
-    console.log('Open File ...');
-    ipcRenderer.send('read-file');
-
-    /*
-    const selectDirBtn = document.getElementById('select-directory');
-
-    selectDirBtn.addEventListener('click', function (event) {
-      ipc.send('open-file-dialog');
+    dialog.showOpenDialog((files) => {
+      ipc.send('read-file', files);
     });
-
-    ipc.on('selected-directory', function (event, path) {
-      document.getElementById('selected-file').innerHTML = `You selected: ${path}`;
-    });
-    */
   }
 
   ngOnInit() {
+    //ipc.on('file-read', MainComponent.onFileRead);
+
     ExLinksModule.applyExLinks();
   }
 

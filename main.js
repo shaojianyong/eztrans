@@ -3,9 +3,9 @@ const electron = require('electron');
 const app = electron.app;
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
-
-const path = require('path');
+const fs = require('fs');
 const url = require('url');
+const path = require('path');
 
 const ipc = require('electron').ipcMain;
 const dialog = require('electron').dialog;
@@ -63,32 +63,21 @@ app.on('activate', function () {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
-function readFile (event) {
+function readFile (event, files) {
   if (files) {
-    // We can only load one file in the app, so we select the first
     const filePath = files[0];
-    fs.readFile(filePath, 'utf8', (err, data) => {
-      event.sender.send('fileRead', err, data);
-  });
+    fs.readFile(filePath, 'utf8', function(err, data) {
+      event.sender.send('file-read', err, data);
+    });
   }
 };
 
 function saveFile (event, currentFile, content) {
-  fs.writeFile(currentFile, content, (err) => {
-    event.sender.send('fileSaved', err);
-});
+  fs.writeFile(currentFile, content, function(err) {
+    event.sender.send('file-saved', err);
+  });
 }
 
 // Handles reading the contents of a file
-ipc.on('read-file', dialog.showOpenDialog({
-  properties: ['openFile'] );
+ipc.on('read-file', readFile);
 ipc.on('save-file', saveFile);
-
-
-ipc.on('open-file-dialog', function (event) {
-  dialog.showOpenDialog({
-    properties: ['openFile']
-  }, function (files) {
-    if (files) event.sender.send('selected-directory', files)
-  })
-});
