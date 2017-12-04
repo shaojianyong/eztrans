@@ -1,4 +1,4 @@
-const {shell} = (<any>window).require('electron');
+const { shell } = (<any>window).require('electron');
 
 export class ExLinksModule {
 
@@ -9,7 +9,6 @@ export class ExLinksModule {
       const url = link.getAttribute('href');
       if (url.indexOf('http') === 0) {
         link.addEventListener('click', e => {
-          console.log(url);
           e.preventDefault();
           shell.openExternal(url);
         });
