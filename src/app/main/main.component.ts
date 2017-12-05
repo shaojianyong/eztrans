@@ -1,4 +1,5 @@
-import {Component, OnInit, ReflectiveInjector } from '@angular/core';
+import {Component, OnInit, Inject, AfterViewInit, ChangeDetectorRef} from '@angular/core';
+import {FormBuilder, FormGroup} from '@angular/forms';
 
 const electron = (<any>window).require('electron');
 const ipc = electron.ipcRenderer;
@@ -14,6 +15,7 @@ import { ExLinksModule } from '../../assets/ex-links';
 })
 export class MainComponent implements OnInit {
   sentences = new Array<Object>();
+  cdr: ChangeDetectorRef;
 
   static onFileRead(event, err, data, userData): void {
     /*userData.sentences = [];
@@ -27,10 +29,16 @@ export class MainComponent implements OnInit {
     }*/
   }
 
-  constructor() {
+  constructor(@Inject(ChangeDetectorRef) cdr) {
+    this.cdr = cdr;
   }
 
+/*  ngAfterViewInit() {
+    this.cdr.detectChanges();
+  }*/
+
   openFile(): void {
+    const self = this;
     dialog.showOpenDialog((files) => {
       const data = ipc.sendSync('read-file', files);
       const lines = data.split(/\n|\r\n/g);
@@ -38,9 +46,12 @@ export class MainComponent implements OnInit {
         line = line.trim();
         if (line) {
           console.log(`${this.sentences.length}: ${line}`);
-          this.sentences[this.sentences.length] = { source: line, target: '' };
+          self.sentences[this.sentences.length] = { source: line, target: '' };
         }
       }
+      // TODO: 设置更新标记
+      self.cdr.markForCheck();
+      self.cdr.detectChanges();
     });
   }
 
@@ -48,7 +59,7 @@ export class MainComponent implements OnInit {
   }
 
   ngOnInit() {
-    ipc.on('file-read', MainComponent.onFileRead);
+    // ipc.on('file-read', MainComponent.onFileRead);
 
     ExLinksModule.applyExLinks();
   }
