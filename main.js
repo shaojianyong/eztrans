@@ -77,7 +77,7 @@ function readFile (event, files, userData) {
   if (files) {
     const filePath = files[0];
     fs.readFile(filePath, 'utf8', function(err, data) {
-      return data;
+      event.returnValue = data;
     });
   }
 }

@@ -34,7 +34,7 @@
       }
     }
   }
-  #trans_results {
+  #trans-results {
     position: absolute;
     top: 200px;
     left: 0;
@@ -43,10 +43,10 @@
     width: 100%;
     height: auto;
     overflow-y: auto;
-    #trans_table {
+    #trans-table {
       width: 100%;
-      #trans_th1,
-      #trans_th2 {
+      #trans-th1,
+      #trans-th2 {
         width: 50%;
       }
     }

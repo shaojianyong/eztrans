@@ -16,12 +16,8 @@ export class MainComponent implements OnInit {
   sentences = new Array<Object>();
 
   static onFileRead(event, err, data, userData): void {
-
-
-    console.log(userData);
-    console.log(`2 ==> ${userData instanceof MainComponent}`);
-    // userData.sentences = [];
-    /*const lines = data.split(/\n|\r\n/g);
+    /*userData.sentences = [];
+    const lines = data.split(/\n|\r\n/g);
     for (let line of lines) {
       line = line.trim();
       if (line) {
@@ -29,8 +25,6 @@ export class MainComponent implements OnInit {
         mc.sentences[mc.sentences.length] = { source: line, target: '' };
       }
     }*/
-    // userData.cdr.markForCheck();
-    // userData.myTest();
   }
 
   constructor() {
@@ -38,7 +32,6 @@ export class MainComponent implements OnInit {
 
   openFile(): void {
     dialog.showOpenDialog((files) => {
-      console.log(`1 ==> ${this instanceof MainComponent}`);
       const data = ipc.sendSync('read-file', files);
       const lines = data.split(/\n|\r\n/g);
       for (let line of lines) {
@@ -52,9 +45,6 @@ export class MainComponent implements OnInit {
   }
 
   myTest(): void {
-    this.sentences[this.sentences.length] = { source: 'No.' + this.sentences.length,
-      target: 'No:' + this.sentences.length };
-
   }
 
   ngOnInit() {
