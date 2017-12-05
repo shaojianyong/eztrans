@@ -44,6 +44,7 @@
 
   <!-- Input/Output -->
   <div id="trans_results" class="ui container">
+    <input id="source_text" hidden="hidden" [formControl]="myForm.get('source_text')" [(ngModel)]="source_text">
     <table id="trans_table" class="ui selectable table">
       <thead>
       <tr>
