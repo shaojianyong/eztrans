@@ -1,4 +1,4 @@
-<form id="main-form" class="ui large form">
+<div id="main-form" class="ui large form">
 
   <!-- Toobar -->
   <div id="toolbar" class="ui attached stackable menu">
@@ -6,7 +6,7 @@
       <i class="folder open icon"></i> Open
     </a>
 
-    <a class="item">
+    <a class="item" (click)="myTest()">
       <i class="save icon"></i> Save
     </a>
 
@@ -53,10 +53,10 @@
       </thead>
       <tbody>
 
-      <!--tr *ngFor="let sentence of sentences">
+      <tr *ngFor="let sentence of sentences">
         <td>{{sentence.source}}</td>
         <td>{{sentence.target}}</td>
-      </tr-->
+      </tr>
 
       </tbody>
     </table>
@@ -98,6 +98,6 @@
     </a>
 
   </div>
-</form>
+</div>
 
 

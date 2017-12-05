@@ -1,7 +1,9 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit } from '@angular/core';
+
 const electron = (<any>window).require('electron');
 const ipc = electron.ipcRenderer;
 const dialog = electron.remote.dialog;
+
 import { ExLinksModule } from '../../assets/ex-links';
 
 @Component({
@@ -11,44 +13,36 @@ import { ExLinksModule } from '../../assets/ex-links';
 })
 export class MainComponent implements OnInit {
 
-  // sentences: Array<Object>;
+  sentences = new Array<Object>();
 
-  // bad method
-  static appendRow(source: string, target: string): void {
-    const tab = (<any>document).getElementById('trans_table');
-    const row = tab.insertRow(-1);
-    const col1 = row.insertCell(0);
-    const col2 = row.insertCell(1);
-    col1.innerHTML = source;
-    col2.innerHTML = target;
-  }
-
-  static onFileRead(event, err, data): void {
-    const tab = (<any>document).getElementById('trans_table');
-    tab
-    // MainComponent.sentences = new Array<Object>();
+  static onFileRead(event, err, data, userData): void {
+    // userData.sentences = [];
     const lines = data.split(/\n|\r\n/g);
-    // let index = 0;
     for (let line of lines) {
       line = line.trim();
       if (line) {
-        // MainComponent.sentences[index] = { source: line, target: '' };
-        // index++;
-        MainComponent.appendRow(line, '');
+        console.log(`${userData.sentences.length}: ${line}`);
+        userData.sentences[userData.sentences.length] = { source: line, target: '' };
       }
     }
+    // userData.cdr.markForCheck();
+    // userData.myTest();
   }
 
   constructor() {
-    // this.sentences = new Array<Object>();
-    // this.sentences[0] = { source: 'hello', target: 'world!' };
-    // this.sentences[1] = { source: 'hello1', target: 'world!1' };
+
   }
 
   openFile(): void {
     dialog.showOpenDialog((files) => {
-      ipc.send('read-file', files);
+      ipc.send('read-file', files, this);
     });
+  }
+
+  myTest(): void {
+    this.sentences[this.sentences.length] = { source: 'No.' + this.sentences.length,
+      target: 'No:' + this.sentences.length };
+
   }
 
   ngOnInit() {
