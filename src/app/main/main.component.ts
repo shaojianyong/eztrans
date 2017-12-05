@@ -33,13 +33,13 @@ export class MainComponent implements OnInit {
     this.cdr = cdr;
   }
 
-/*  ngAfterViewInit() {
-    this.cdr.detectChanges();
-  }*/
-
   openFile(): void {
     const self = this;
     dialog.showOpenDialog((files) => {
+      if (!files) {
+        return;
+      }
+      // 同步通信，如果ipcMain没有返回，界面会僵住
       const data = ipc.sendSync('read-file', files);
       const lines = data.split(/\n|\r\n/g);
       for (let line of lines) {
@@ -49,7 +49,6 @@ export class MainComponent implements OnInit {
           self.sentences[this.sentences.length] = { source: line, target: '' };
         }
       }
-      // TODO: 设置更新标记
       self.cdr.markForCheck();
       self.cdr.detectChanges();
     });

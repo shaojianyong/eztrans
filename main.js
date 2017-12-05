@@ -73,17 +73,24 @@ function readFile (event, files, userData) {
   }
 }
 */
+
+// 同步通信，如果不设置event.returnValue，界面会僵住
 function readFile (event, files, userData) {
   if (files) {
     const filePath = files[0];
-    fs.readFile(filePath, 'utf8', function(err, data) {
-      event.returnValue = data;
+    fs.readFile(filePath, 'utf8', (err, data) => {
+      if (err) {
+        event.returnValue = err.message;
+      }
+      else {
+        event.returnValue = data;
+      }
     });
   }
 }
 
 function saveFile (event, currentFile, content) {
-  fs.writeFile(currentFile, content, function(err) {
+  fs.writeFile(currentFile, content, (err) => {
     event.sender.send('file-saved', err);
   });
 }
