@@ -13,15 +13,13 @@ import { ExLinksModule } from '../../assets/ex-links';
   styleUrls: ['./main.component.scss']
 })
 export class MainComponent implements OnInit {
-
-  source_text = 'Hello World!';
   sentences = new Array<Object>();
 
   static onFileRead(event, err, data, userData): void {
 
 
     console.log(userData);
-    console.log(`2 ==> ${mc instanceof MainComponent}`);
+    console.log(`2 ==> ${userData instanceof MainComponent}`);
     // userData.sentences = [];
     /*const lines = data.split(/\n|\r\n/g);
     for (let line of lines) {
@@ -41,7 +39,15 @@ export class MainComponent implements OnInit {
   openFile(): void {
     dialog.showOpenDialog((files) => {
       console.log(`1 ==> ${this instanceof MainComponent}`);
-      ipc.send('read-file', files, 0);
+      const data = ipc.sendSync('read-file', files);
+      const lines = data.split(/\n|\r\n/g);
+      for (let line of lines) {
+        line = line.trim();
+        if (line) {
+          console.log(`${this.sentences.length}: ${line}`);
+          this.sentences[this.sentences.length] = { source: line, target: '' };
+        }
+      }
     });
   }
 
