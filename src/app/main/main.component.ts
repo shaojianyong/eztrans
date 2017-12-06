@@ -36,7 +36,15 @@ export class MainComponent implements OnInit {
   // ipcRenderer与ipcMain同步通信
   openFile(): void {
     const self = this;
-    dialog.showOpenDialog((files) => {
+
+    const options = {
+      title: 'Open a Text File',
+      filters: [
+        { name: 'Text Files', extensions: ['txt'] }
+      ]
+    }
+
+    dialog.showOpenDialog(options, (files) => {
       if (files) {
         self.sentences = [];
       } else {
