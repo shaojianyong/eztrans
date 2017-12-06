@@ -43,23 +43,17 @@
 
 
   <!-- Input/Output -->
-  <div id="trans-results" class="ui container">
-    <table id="trans-table" class="ui selectable table">
-      <thead>
-      <tr>
-        <th id="trans-th1">Source</th>
-        <th id="trans-th2">Target</th>
-      </tr>
-      </thead>
-      <tbody>
 
-      <tr *ngFor="let sentence of sentences">
-        <td>{{sentence.source}}</td>
-        <td>{{sentence.target}}</td>
-      </tr>
+  <div id="trans-results" class="ui relaxed divided list">
 
-      </tbody>
-    </table>
+    <div *ngFor="let sentence of sentences" class="item">
+      <i class="large edit middle aligned icon"></i>
+      <div class="content">
+        <div class="description">{{sentence.source}}</div>
+        <div class="description">{{sentence.target}}</div>
+      </div>
+    </div>
+
   </div>
 
   <!-- Status bar -->
