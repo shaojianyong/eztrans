@@ -42,7 +42,7 @@ export class MainComponent implements OnInit {
       filters: [
         { name: 'Text Files', extensions: ['txt'] }
       ]
-    }
+    };
 
     dialog.showOpenDialog(options, (files) => {
       if (files) {
@@ -50,7 +50,7 @@ export class MainComponent implements OnInit {
       } else {
         return;
       }
-      ipc.send('read-file', files, files[0]);  // ('read-file', files, self);  进程之间不能传递对象
+      ipc.send('read-file', files);  // ('read-file', files, self);  进程之间不能传递对象
     });
   }
 
@@ -90,7 +90,7 @@ export class MainComponent implements OnInit {
 
     const self = this;
 
-    ipc.on('file-read', (event, err, data, userData) => {
+    ipc.on('file-read', (event, err, data, filePath) => {
       this.sentences = [];
       const lines = data.split(/\n|\r\n/g);
       for (let line of lines) {
@@ -100,7 +100,7 @@ export class MainComponent implements OnInit {
           this.sentences[self.sentences.length] = { source: line, target: '' };
         }
       }
-      self.title.setTitle(`Eztrans - ${userData}`);
+      self.title.setTitle(`Eztrans - ${filePath}`);
       self.cdr.markForCheck();
       self.cdr.detectChanges();
     });

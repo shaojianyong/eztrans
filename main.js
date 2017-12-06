@@ -63,17 +63,17 @@ app.on('activate', function () {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
-function readFile (event, files, userData) {
+function readFile (event, files) {
   if (files) {
     const filePath = files[0];
     fs.readFile(filePath, 'utf8', function(err, data) {
-      event.sender.send('file-read', err, data, userData);
+      event.sender.send('file-read', err, data, filePath);
     });
   }
 }
 
 // 同步通信，如果不设置event.returnValue，界面会僵住
-function readFileSync (event, files, userData) {
+function readFileSync (event, files) {
   if (files) {
     const filePath = files[0];
     fs.readFile(filePath, 'utf8', function(err, data) {
