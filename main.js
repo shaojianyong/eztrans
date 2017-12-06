@@ -63,7 +63,6 @@ app.on('activate', function () {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
-/*
 function readFile (event, files, userData) {
   if (files) {
     const filePath = files[0];
@@ -72,17 +71,15 @@ function readFile (event, files, userData) {
     });
   }
 }
-*/
 
 // 同步通信，如果不设置event.returnValue，界面会僵住
-function readFile (event, files, userData) {
+function readFileSync (event, files, userData) {
   if (files) {
     const filePath = files[0];
-    fs.readFile(filePath, 'utf8', (err, data) => {
+    fs.readFile(filePath, 'utf8', function(err, data) {
       if (err) {
         event.returnValue = err.message;
-      }
-      else {
+      } else {
         event.returnValue = data;
       }
     });
@@ -90,11 +87,12 @@ function readFile (event, files, userData) {
 }
 
 function saveFile (event, currentFile, content) {
-  fs.writeFile(currentFile, content, (err) => {
+  fs.writeFile(currentFile, content, function(err) {
     event.sender.send('file-saved', err);
   });
 }
 
 // Handles reading the contents of a file
 ipc.on('read-file', readFile);
+ipc.on('read-file-sync', readFileSync);
 ipc.on('save-file', saveFile);
