@@ -6,20 +6,23 @@ const ipc = electron.ipcRenderer;
 const dialog = electron.remote.dialog;
 const BrowserWindow = electron.remote.BrowserWindow;
 
+import { GoogleTranslateService } from '../services/google/google-translate.service';
 import { ExLinksModule } from '../../assets/ex-links';
 
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
-  styleUrls: ['./main.component.scss']
+  styleUrls: ['./main.component.scss'],
+  providers: [GoogleTranslateService]
 })
 export class MainComponent implements OnInit {
   sentences = new Array<Object>();
+  cur_index = 0;
 
   /*
   一段无解的代码，在ipcRenderer和ipcMain之间传递的userData不能承载this对象
   static onFileRead(event, err, data, userData): void {
-    userData.sentences = [];  // userData不可以是this
+    userData.reset();  // userData不可以是this
     const lines = data.split(/\n|\r\n/g);
     for (let line of lines) {
       line = line.trim();
@@ -30,7 +33,14 @@ export class MainComponent implements OnInit {
     }
   }*/
 
-  constructor(private cdr: ChangeDetectorRef, private title: Title) {
+  constructor(private cdr: ChangeDetectorRef,
+              private title: Title,
+              private googleTranslate: GoogleTranslateService) {
+  }
+
+  reset(): void {
+    this.cur_index = 0;
+    this.sentences = [];
   }
 
   // ipcRenderer与ipcMain同步通信
@@ -46,7 +56,7 @@ export class MainComponent implements OnInit {
 
     dialog.showOpenDialog(options, (files) => {
       if (files) {
-        self.sentences = [];
+        self.reset();
       } else {
         return;
       }
@@ -59,7 +69,7 @@ export class MainComponent implements OnInit {
     const self = this;
     dialog.showOpenDialog((files) => {
       if (files) {
-        self.sentences = [];
+        self.reset();
       } else {
         return;
       }
@@ -69,7 +79,6 @@ export class MainComponent implements OnInit {
       for (let line of lines) {
         line = line.trim();
         if (line) {
-          console.log(`${this.sentences.length}: ${line}`);
           self.sentences[this.sentences.length] = { source: line, target: '' };
         }
       }
@@ -82,6 +91,32 @@ export class MainComponent implements OnInit {
   myTest(): void {
   }
 
+  nextTranslate(): void {
+    if (this.cur_index === this.sentences.length) {
+      return;
+    }
+
+    const sentence = this.sentences[this.cur_index];
+    this.googleTranslate.translate((<any>sentence).source, (result) => {
+      (<any>sentence).target = result;
+      this.cdr.markForCheck();
+      this.cdr.detectChanges();
+    });
+
+    this.cur_index++;
+  }
+
+  autoTranslate(): void {
+    for (this.cur_index; this.cur_index < this.sentences.length; this.cur_index++) {
+      const sentence = this.sentences[this.cur_index];
+      this.googleTranslate.translate((<any>sentence).source, (result) => {
+        (<any>sentence).target = result;
+        this.cdr.markForCheck();
+        this.cdr.detectChanges();
+      });
+    }
+  }
+
   ngOnInit() {
     // ipcMain异步读取文件，返回文件数据
 
@@ -91,13 +126,12 @@ export class MainComponent implements OnInit {
     const self = this;
 
     ipc.on('file-read', (event, err, data, filePath) => {
-      this.sentences = [];
+      self.reset();
       const lines = data.split(/\n|\r\n/g);
       for (let line of lines) {
         line = line.trim();
         if (line) {
-          console.log(`${self.sentences.length}: ${line}`);
-          this.sentences[self.sentences.length] = { source: line, target: '' };
+          self.sentences[self.sentences.length] = { source: line, target: '' };
         }
       }
       self.title.setTitle(`Eztrans - ${filePath}`);
