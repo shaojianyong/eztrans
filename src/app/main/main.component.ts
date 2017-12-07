@@ -4,6 +4,8 @@ import { Title } from '@angular/platform-browser';
 const electron = (<any>window).require('electron');
 const ipc = electron.ipcRenderer;
 const dialog = electron.remote.dialog;
+const Menu = electron.Menu
+const MenuItem = electron.MenuItem
 const BrowserWindow = electron.remote.BrowserWindow;
 
 import { GoogleTranslateService } from '../services/google/google-translate.service';
