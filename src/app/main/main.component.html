@@ -44,10 +44,11 @@
 
   <!-- Input/Output -->
 
-  <div id="trans-results" class="ui relaxed divided list">
+  <div id="trans-results" class="ui relaxed divided selection list">
 
-    <div *ngFor="let sentence of sentences" class="item">
-      <i class="large edit middle aligned icon"></i>
+    <div *ngFor="let sentence of sentences; let idx = index" (click)="onItemSelected(idx, sentence)"
+         (dblclick)="onItemTranslate(idx, sentence)" id="item-{{idx}}" class="item">
+      <i class="large angle right middle aligned icon"></i>
       <div class="content">
         <div class="source">{{sentence.source}}</div>
         <div class="target">{{sentence.target}}</div>

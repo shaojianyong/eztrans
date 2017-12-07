@@ -88,33 +88,37 @@ export class MainComponent implements OnInit {
     });
   }
 
-  myTest(): void {
+  onItemSelected(index, sentence): void {
+    const obj = document.getElementById(`item-${index}`);
+    console.log(obj);
+    // console.log(`Call myTest... ${index}: ${sentence.source}`);
+  }
+
+  onItemTranslate(index, sentence): void {
+    this.translate(index);
   }
 
   nextTranslate(): void {
     if (this.cur_index === this.sentences.length) {
       return;
     }
-
-    const sentence = this.sentences[this.cur_index];
-    this.googleTranslate.translate((<any>sentence).source, (result) => {
-      (<any>sentence).target = result;
-      this.cdr.markForCheck();
-      this.cdr.detectChanges();
-    });
-
+    this.translate(this.cur_index);
     this.cur_index++;
   }
 
   autoTranslate(): void {
     for (this.cur_index; this.cur_index < this.sentences.length; this.cur_index++) {
-      const sentence = this.sentences[this.cur_index];
-      this.googleTranslate.translate((<any>sentence).source, (result) => {
-        (<any>sentence).target = result;
-        this.cdr.markForCheck();
-        this.cdr.detectChanges();
-      });
+      this.translate(this.cur_index);
     }
+  }
+
+  translate(index: number): void {
+    const sentence = this.sentences[index];
+    this.googleTranslate.translate((<any>sentence).source, (result) => {
+      (<any>sentence).target = result;
+      this.cdr.markForCheck();
+      this.cdr.detectChanges();
+    });
   }
 
   ngOnInit() {
