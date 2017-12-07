@@ -46,13 +46,31 @@
     margin-bottom: 2px;
     overflow-x: hidden;
     overflow-y: auto;
-    .source {
-      font-size: small;
-      color: green;
+
+    div.normal-state {
+      color: inherit;
+      background-color: inherit;
+      div.source {
+        font-size: small;
+        color: #383838;
+      }
+      div.target {
+        font-size: small;
+        color: #3c64c3;
+      }
     }
-    .target {
-      font-size: small;
-      color: blue;
+
+    div.selected-state {
+      color: white;
+      background-color: royalblue;
+      div.source {
+        font-size: small;
+        color: lightgray;
+      }
+      div.target {
+        font-size: small;
+        color: lightblue;
+      }
     }
   }
   #status-bar {

@@ -17,7 +17,7 @@ import { ExLinksModule } from '../../assets/ex-links';
 })
 export class MainComponent implements OnInit {
   sentences = new Array<Object>();
-  cur_index = 0;
+  cur_index = -1;
 
   /*
   一段无解的代码，在ipcRenderer和ipcMain之间传递的userData不能承载this对象
@@ -39,7 +39,7 @@ export class MainComponent implements OnInit {
   }
 
   reset(): void {
-    this.cur_index = 0;
+    this.cur_index = -1;
     this.sentences = [];
   }
 
@@ -89,31 +89,38 @@ export class MainComponent implements OnInit {
   }
 
   onItemSelected(index, sentence): void {
-    const obj = document.getElementById(`item-${index}`);
-    console.log(obj);
-    // console.log(`Call myTest... ${index}: ${sentence.source}`);
+    if (index === this.cur_index) {
+      return;
+    }
+
+    if (this.cur_index !== -1) {
+      const item1 = document.getElementById(`item-${this.cur_index}`);
+      item1.classList.remove('selected-state');
+      item1.classList.add('normal-state');
+    }
+
+    const item2 = document.getElementById(`item-${index}`);
+    item2.classList.remove('normal-state');
+    item2.classList.add('selected-state');
+
+    this.cur_index = index;
   }
 
   onItemTranslate(index, sentence): void {
-    this.translate(index);
+
+    this.translate(sentence);
   }
 
   nextTranslate(): void {
-    if (this.cur_index === this.sentences.length) {
-      return;
-    }
-    this.translate(this.cur_index);
-    this.cur_index++;
   }
 
   autoTranslate(): void {
-    for (this.cur_index; this.cur_index < this.sentences.length; this.cur_index++) {
-      this.translate(this.cur_index);
+    for (const sentence of this.sentences) {
+      this.translate(sentence);
     }
   }
 
-  translate(index: number): void {
-    const sentence = this.sentences[index];
+  translate(sentence): void {
     this.googleTranslate.translate((<any>sentence).source, (result) => {
       (<any>sentence).target = result;
       this.cdr.markForCheck();

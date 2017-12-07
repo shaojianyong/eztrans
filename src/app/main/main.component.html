@@ -47,7 +47,7 @@
   <div id="trans-results" class="ui relaxed divided selection list">
 
     <div *ngFor="let sentence of sentences; let idx = index" (click)="onItemSelected(idx, sentence)"
-         (dblclick)="onItemTranslate(idx, sentence)" id="item-{{idx}}" class="item">
+         (dblclick)="onItemTranslate(idx, sentence)" id="item-{{idx}}" class="normal-state item">
       <i class="large angle right middle aligned icon"></i>
       <div class="content">
         <div class="source">{{sentence.source}}</div>
