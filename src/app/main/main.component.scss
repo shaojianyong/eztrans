@@ -5,9 +5,9 @@
   min-height: 300px;
   #toolbar {
     width: 100%;
-    height: 50px;
+    height: auto; //50px;
   }
-  #trans-segments {
+  /*#trans-segments {
     width: 100%;
     height: 150px;
     margin: 0;
@@ -33,17 +33,16 @@
         overflow-y: hidden;
       }
     }
-  }
+  }*/
   #trans-results {
     position: absolute;
-    top: 200px;
+    top: 50px;
     left: 0;
     right: 0;
     bottom: 50px;
     width: 100%;
     height: auto;
-    margin-top: 2px;
-    margin-bottom: 2px;
+    margin: 0;
     overflow-x: hidden;
     overflow-y: auto;
 
