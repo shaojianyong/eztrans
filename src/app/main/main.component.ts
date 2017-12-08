@@ -4,8 +4,8 @@ import { Title } from '@angular/platform-browser';
 const electron = (<any>window).require('electron');
 const ipc = electron.ipcRenderer;
 const dialog = electron.remote.dialog;
-const Menu = electron.Menu
-const MenuItem = electron.MenuItem
+const Menu = electron.Menu;
+const MenuItem = electron.MenuItem;
 const BrowserWindow = electron.remote.BrowserWindow;
 
 import { GoogleTranslateService } from '../services/google/google-translate.service';
@@ -90,7 +90,7 @@ export class MainComponent implements OnInit {
     });
   }
 
-  onItemSelected(index, sentence): void {
+  onItemClick(index, sentence): void {
     if (index === this.cur_index) {
       return;
     }
@@ -108,12 +108,13 @@ export class MainComponent implements OnInit {
     this.cur_index = index;
   }
 
-  onItemTranslate(index, sentence): void {
-
+  onItemDblclick(index, sentence): void {
     this.translate(sentence);
   }
 
-  nextTranslate(): void {
+  onItemContextMenu(index, sentence): void {
+    this.onItemClick(index, sentence);
+    ipc.send('show-item-context-menu');
   }
 
   autoTranslate(): void {
@@ -150,6 +151,10 @@ export class MainComponent implements OnInit {
       self.title.setTitle(`Eztrans - ${filePath}`);
       self.cdr.markForCheck();
       self.cdr.detectChanges();
+    });
+
+    ipc.on('translate', (event) => {
+      self.translate(self.sentences[self.cur_index]);
     });
 
     // 安装外部链接

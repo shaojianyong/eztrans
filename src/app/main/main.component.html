@@ -10,14 +10,6 @@
       <i class="save icon"></i> Save
     </a>
 
-    <a class="item">
-      <i class="arrow left icon"></i>
-    </a>
-
-    <a class="item" (click)="nextTranslate()">
-      <i class="arrow right icon"></i> Next
-    </a>
-
     <a class="item" (click)="autoTranslate()">
       <i class="rocket icon"></i> Auto
     </a>
@@ -45,8 +37,11 @@
 
   <div id="trans-results" class="ui relaxed divided selection list">
 
-    <div *ngFor="let sentence of sentences; let idx = index" (click)="onItemSelected(idx, sentence)"
-         (dblclick)="onItemTranslate(idx, sentence)" id="item-{{idx}}" class="normal-state item">
+    <div *ngFor="let sentence of sentences; let idx = index"
+         (click)="onItemClick(idx, sentence)"
+         (dblclick)="onItemDblclick(idx, sentence)"
+         (contextmenu)="onItemContextMenu(idx, sentence)"
+         id="item-{{idx}}" class="normal-state item">
       <i class="large angle right middle aligned icon"></i>
       <div class="content">
         <div class="source">{{sentence.source}}</div>
@@ -92,4 +87,5 @@
     </a>
 
   </div>
+
 </div>

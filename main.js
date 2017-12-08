@@ -7,8 +7,10 @@ const fs = require('fs');
 const url = require('url');
 const path = require('path');
 
-const ipc = require('electron').ipcMain;
-const dialog = require('electron').dialog;
+const ipc = electron.ipcMain;
+const dialog = electron.dialog;
+const Menu = electron.Menu;
+const MenuItem = electron.MenuItem;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -92,7 +94,25 @@ function saveFile (event, currentFile, content) {
   });
 }
 
+const contextMenu = new Menu();
+contextMenu.append(new MenuItem({ label: 'Translate', click: translate }));
+contextMenu.append(new MenuItem({ type: 'separator' }));
+contextMenu.append(new MenuItem({ label: 'Edit Source Text', role: 'editsource' }));  // 拆分，合并，删除，修改
+contextMenu.append(new MenuItem({ label: 'Edit Target Text', role: 'edittarget' }));  // 手动修改，选取更好的翻译结果（展示不同翻译引擎的结果）
+contextMenu.append(new MenuItem({ type: 'separator' }));
+contextMenu.append(new MenuItem({ label: 'Set Mark', role: 'setmark' }));  // 标星，加备注
+
+function translate(menuItem, browserWindow) {
+  browserWindow.send('translate');
+}
+
+function showItemContextMenu(event) {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  contextMenu.popup(win);
+}
+
 // Handles reading the contents of a file
 ipc.on('read-file', readFile);
 ipc.on('read-file-sync', readFileSync);
 ipc.on('save-file', saveFile);
+ipc.on('show-item-context-menu', showItemContextMenu);
