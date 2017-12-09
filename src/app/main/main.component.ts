@@ -1,3 +1,7 @@
+/**
+ * angular 不鼓励直接操作DOM，暂时不需要引入jQuery，虽然它很好用
+ */
+
 import {Component, OnInit, ChangeDetectorRef} from '@angular/core';
 import { Title } from '@angular/platform-browser';
 
