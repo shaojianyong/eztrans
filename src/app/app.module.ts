@@ -7,14 +7,12 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { MainComponent } from './main/main.component';
-import { SidebarComponent } from './sidebar/sidebar.component';
 
 
 const routes: Routes = [
-  { path: '', redirectTo: 'sidebar', pathMatch: 'full' },
+  { path: '', redirectTo: 'main', pathMatch: 'full' },
   { path: 'login', component: LoginComponent, pathMatch: 'full' },
-  { path: 'main', component: MainComponent, pathMatch: 'full' },
-  { path: 'sidebar', component: SidebarComponent, pathMatch: 'full' },
+  { path: 'main', component: MainComponent, pathMatch: 'full' }
 ];
 
 
@@ -22,8 +20,7 @@ const routes: Routes = [
   declarations: [
     AppComponent,
     LoginComponent,
-    MainComponent,
-    SidebarComponent
+    MainComponent
   ],
   imports: [
     BrowserModule,
