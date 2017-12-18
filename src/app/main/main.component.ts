@@ -1,7 +1,3 @@
-/**
- * angular 不鼓励直接操作DOM，暂时不需要引入jQuery，虽然它很好用
- */
-
 import {Component, OnInit, ChangeDetectorRef} from '@angular/core';
 import { Title } from '@angular/platform-browser';
 
@@ -13,13 +9,14 @@ const MenuItem = electron.MenuItem;
 const BrowserWindow = electron.remote.BrowserWindow;
 
 import { GoogleTranslateService } from '../services/google/google-translate.service';
+import {BaiduFanyiService} from '../services/baidu/baidu-fanyi.service';
 import { ExLinksModule } from '../../assets/ex-links';
 
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss'],
-  providers: [GoogleTranslateService]
+  providers: [GoogleTranslateService, BaiduFanyiService]
 })
 export class MainComponent implements OnInit {
   sentences = new Array<Object>();
@@ -41,7 +38,8 @@ export class MainComponent implements OnInit {
 
   constructor(private cdr: ChangeDetectorRef,
               private title: Title,
-              private googleTranslate: GoogleTranslateService) {
+              private googleTranslate: GoogleTranslateService,
+              private baiduFanyi: BaiduFanyiService) {
   }
 
   reset(): void {
@@ -128,7 +126,7 @@ export class MainComponent implements OnInit {
   }
 
   translate(sentence): void {
-    this.googleTranslate.translate((<any>sentence).source, (result) => {
+    this.baiduFanyi.translate((<any>sentence).source, (result) => {
       (<any>sentence).target = result;
       this.cdr.markForCheck();
       this.cdr.detectChanges();

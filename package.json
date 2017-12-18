@@ -27,6 +27,7 @@
     "jquery": "^3.2.1",
     "rxjs": "^5.5.2",
     "zone.js": "^0.8.14",
+    "sqlite3": "^3.1.13",
     "node-google-translate-skidz": "^1.1.1"
   },
   "devDependencies": {

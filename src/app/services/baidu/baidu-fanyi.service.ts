@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 
 const querystring = (<any>window).require('querystring');
 
@@ -8,7 +8,8 @@ export class BaiduFanyiService {
   source_lang = 'en';
   target_lang = 'zh';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+  }
 
   setSourceLanguage(language: string) {
     this.source_lang = language;
@@ -26,6 +27,22 @@ export class BaiduFanyiService {
     };
 
     const data = querystring.stringify(params);
-    this.http.post('http://fanyi.baidu.com/v2transapi', data).subscribe();
+    const head = new HttpHeaders({
+      'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+      'Content-Length': data.length
+    });
+    this.http.post('http://fanyi.baidu.com/v2transapi', data, {headers: head}).subscribe(res => {
+        if (res['trans_result']['status'] === 0) {
+          callback(res['trans_result']['data'][0]['dst']);
+        } else {
+          callback(res['trans_result']);
+        }
+      },
+      err => {
+        callback(err);
+      },
+      () => {
+        // console.log('The POST observable is now completed');
+      });
   }
 }
