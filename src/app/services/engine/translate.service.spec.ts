@@ -1,6 +1,6 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { GoogleTranslateService } from './translate-engine.service';
+import { GoogleTranslateService } from './translate.service';
 
 describe('GoogleTranslateService', () => {
   beforeEach(() => {

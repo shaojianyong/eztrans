@@ -126,7 +126,7 @@ export class MainComponent implements OnInit {
   }
 
   translate(sentence): void {
-    this.baiduFanyi.translate((<any>sentence).source, (result) => {
+    this.googleTranslate.translate((<any>sentence).source, (result) => {
       (<any>sentence).target = result;
       this.cdr.markForCheck();
       this.cdr.detectChanges();

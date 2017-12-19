@@ -20,7 +20,7 @@ export class GoogleTranslateService {
 
   translate(source_text: string, callback: Function): void {
     google_translate({text: source_text, source: this.source_lang, target: this.target_lang}, (result) => {
-      console.log(result);
+      // 中文拼音： result.sentences[result.sentences.length - 1].translit
       callback(result.translation);
     });
   }
