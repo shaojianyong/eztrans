@@ -12,6 +12,16 @@ import { GoogleTranslateService } from '../services/google/google-translate.serv
 import {BaiduFanyiService} from '../services/baidu/baidu-fanyi.service';
 import { ExLinksModule } from '../../assets/ex-links';
 
+import { TranslateModel } from '../services/engine/translate.model';
+
+
+class Sentence {
+  source: string;
+  target: string;
+  refers: Array<TranslateModel>;
+}
+
+
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
@@ -19,7 +29,7 @@ import { ExLinksModule } from '../../assets/ex-links';
   providers: [GoogleTranslateService, BaiduFanyiService]
 })
 export class MainComponent implements OnInit {
-  sentences = new Array<Object>();
+  sentences = new Array<Sentence>();
   cur_index = -1;
 
   /*
@@ -83,7 +93,7 @@ export class MainComponent implements OnInit {
       for (let line of lines) {
         line = line.trim();
         if (line) {
-          self.sentences[this.sentences.length] = { source: line, target: '' };
+          self.sentences[this.sentences.length] = { source: line, target: '', refers: new Array<TranslateModel>() };
         }
       }
       self.title.setTitle(`Eztrans - ${files[0]}`);
@@ -167,7 +177,7 @@ export class MainComponent implements OnInit {
       for (let line of lines) {
         line = line.trim();
         if (line) {
-          self.sentences[self.sentences.length] = { source: line, target: '' };
+          self.sentences[self.sentences.length] = { source: line, target: '', refers: new Array<TranslateModel>() };
         }
       }
       self.title.setTitle(`Eztrans - ${filePath}`);

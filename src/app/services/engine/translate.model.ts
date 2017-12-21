@@ -1,5 +1,8 @@
+/**
+ * Translate record model
+ */
 
-export class Translate {
+export class TranslateModel {
   source_lang: string;
   target_lang: string;
   source_text: string;

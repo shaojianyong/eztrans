@@ -1,15 +1,15 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { GoogleTranslateService } from './translate.service';
+import { TranslateService } from './translate.service';
 
-describe('GoogleTranslateService', () => {
+describe('TranslateService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [GoogleTranslateService]
+      providers: [TranslateService]
     });
   });
 
-  it('should be created', inject([GoogleTranslateService], (service: GoogleTranslateService) => {
+  it('should be created', inject([TranslateService], (service: TranslateService) => {
     expect(service).toBeTruthy();
   }));
 });
