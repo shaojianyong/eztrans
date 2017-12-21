@@ -1,9 +1,8 @@
-// import { Injectable } from '@angular/core';
 import {Observable} from 'rxjs/Observable';
+import { TranslateModel } from './translate.model';
 
 
-// @Injectable()
-export class TranslateService {
+export abstract class TranslateService {
   source_lang = 'en';
   target_lang = 'zh';
 
@@ -15,5 +14,5 @@ export class TranslateService {
     this.target_lang = language;
   }
 
-  //translate(source_text: string);  // 使用可观察对象
+  abstract translate(source_text: string): Observable<TranslateModel>;
 }
