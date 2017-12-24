@@ -25,7 +25,7 @@ export class PanelComponent implements OnInit {
     shell.openExternal(engines[engine_name].site);
   }
 
-  getnEngineIcon(engine_name: string): string {
+  getEngineIcon(engine_name: string): string {
     return engines[engine_name].icon;
   }
 

@@ -27,14 +27,33 @@
          (click)="onItemClick(idx, sentence)"
          (dblclick)="onItemDblclick(idx, sentence)"
          (contextmenu)="onItemContextMenu(idx, sentence)"
-         id="item-{{idx}}" class="normal-state item">
-      <i class="middle aligned google icon"></i>
-      <div class="content">
-        <div class="source">{{sentence.source}}</div>
-        <div class="target">{{sentence.target}}</div>
-      </div>
+         id="item-{{idx}}" class="item">
+      <table id="table-{{idx}}" class="ui very basic table">
+        <tbody>
+        <tr>
+          <td rowspan="2" class="collapsing">
+            <i class="large edit icon"></i>
+          </td>
+          <td class="source-text">
+            {{sentence.source}}
+          </td>
+          <td class="collapsing">
+            <i class="checkmark icon"></i>
+          </td>
+        </tr>
+        <tr>
+          <td class="target-text">
+            {{sentence.target}}
+          </td>
+          <td class="collapsing">
+            <i class="{{getEngineIcon(sentence)}}"></i>
+          </td>
+        </tr>
+        </tbody>
+      </table>
     </div>
   </div>
+
   <app-panel [sentence]="sentences[cur_index]"
              (selectedChangeEvent)="onSelectedChange()"
              id="trans-side">

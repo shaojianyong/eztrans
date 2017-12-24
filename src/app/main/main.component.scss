@@ -16,30 +16,13 @@
     overflow-x: hidden;
     overflow-y: auto;
 
-    div.normal-state {
-      // color: inherit;
-      // background-color: inherit;
-      div.source {
-        font-size: small;
-        color: #383838;
-      }
-      div.target {
-        font-size: small;
-        color: #3c64c3;
-      }
+    .selected-state {
+      background-color: royalblue;
     }
 
-    div.selected-state {
-      color: white;
-      background-color: royalblue;
-      div.source {
-        font-size: small;
-        color: lightgray;
-      }
-      div.target {
-        font-size: small;
-        color: lightblue;
-      }
+    .source-text,
+    .target-text {
+      padding-left: 4px;
     }
   }
 

@@ -13,6 +13,7 @@ import { ExLinksModule } from '../../assets/ex-links';
 import { SentenceModel } from '../services/model/sentence.model';
 import { TranslateModel } from '../services/model/translate.model';
 import {EngineManagerService} from '../services/engine/engine-manager.service';
+import engines from '../../assets/engines';
 import {AboutComponent} from '../about/about.component';
 
 
@@ -27,7 +28,7 @@ export class MainComponent implements OnInit {
   default_engine = 'Google';
   cur_index = -1;
 
-  @ViewChild(AboutComponent) child_ac: AboutComponent;
+  @ViewChild(AboutComponent) child_about: AboutComponent;
 
   /*
   一段无解的代码，在ipcRenderer和ipcMain之间传递的userData不能承载this对象
@@ -45,7 +46,7 @@ export class MainComponent implements OnInit {
 
   constructor(private cdr: ChangeDetectorRef,
               private title: Title,
-              private engines: EngineManagerService) {
+              private ems: EngineManagerService) {
   }
 
   reset(): void {
@@ -60,7 +61,7 @@ export class MainComponent implements OnInit {
     const options = {
       title: 'Open a Text File',
       filters: [
-        { name: 'Text Files', extensions: ['txt'] }
+        { name: 'Text Files', extensions: ['txt', 'html', 'md'] }
       ]
     };
 
@@ -106,12 +107,14 @@ export class MainComponent implements OnInit {
     if (this.cur_index !== -1) {
       const item1 = document.getElementById(`item-${this.cur_index}`);
       item1.classList.remove('selected-state');
-      item1.classList.add('normal-state');
+      const table1 = document.getElementById(`table-${this.cur_index}`);
+      table1.classList.remove('inverted');
     }
 
     const item2 = document.getElementById(`item-${index}`);
-    item2.classList.remove('normal-state');
     item2.classList.add('selected-state');
+    const table2 = document.getElementById(`table-${index}`);
+    table2.classList.add('inverted');
 
     this.cur_index = index;
 
@@ -154,7 +157,7 @@ export class MainComponent implements OnInit {
       return;
     }
 
-    this.engines.translate(sentence.source).subscribe(
+    this.ems.translate(sentence.source).subscribe(
       res => {
         if (this.default_engine === res.engine_name) {
           sentence.target = res.target_text;
@@ -191,8 +194,22 @@ export class MainComponent implements OnInit {
     }).sidebar('toggle');
   }
 
+  getEngineIcon(sentence: SentenceModel): string {
+    if (sentence.target === '') {
+      return 'translate icon';
+    }
+
+    let icon = 'user icon';
+    for (const refer of sentence.refers) {
+      if (refer.target_text === sentence.target) {
+        icon = engines[refer.engine_name].icon;
+      }
+    }
+    return icon;
+  }
+
   about(): void {
-    this.child_ac.show();
+    this.child_about.show();
   }
 
   ngOnInit() {
