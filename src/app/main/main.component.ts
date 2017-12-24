@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectorRef} from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 
 const electron = (<any>window).require('electron');
@@ -8,29 +8,26 @@ const Menu = electron.Menu;
 const MenuItem = electron.MenuItem;
 const BrowserWindow = electron.remote.BrowserWindow;
 
-import { GoogleTranslateService } from '../services/google/google-translate.service';
-import {BaiduFanyiService} from '../services/baidu/baidu-fanyi.service';
 import { ExLinksModule } from '../../assets/ex-links';
 
-import { TranslateModel } from '../services/engine/translate.model';
-
-
-class Sentence {
-  source: string;
-  target: string;
-  refers: Array<TranslateModel>;
-}
+import { SentenceModel } from '../services/model/sentence.model';
+import { TranslateModel } from '../services/model/translate.model';
+import {EngineManagerService} from '../services/engine/engine-manager.service';
+import {AboutComponent} from '../about/about.component';
 
 
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss'],
-  providers: [GoogleTranslateService, BaiduFanyiService]
+  providers: [EngineManagerService]
 })
 export class MainComponent implements OnInit {
-  sentences = new Array<Sentence>();
+  sentences = new Array<SentenceModel>();
+  default_engine = 'Google';
   cur_index = -1;
+
+  @ViewChild(AboutComponent) child_ac: AboutComponent;
 
   /*
   一段无解的代码，在ipcRenderer和ipcMain之间传递的userData不能承载this对象
@@ -48,8 +45,7 @@ export class MainComponent implements OnInit {
 
   constructor(private cdr: ChangeDetectorRef,
               private title: Title,
-              private googleTranslate: GoogleTranslateService,
-              private baiduFanyi: BaiduFanyiService) {
+              private engines: EngineManagerService) {
   }
 
   reset(): void {
@@ -118,6 +114,9 @@ export class MainComponent implements OnInit {
     item2.classList.add('selected-state');
 
     this.cur_index = index;
+
+    this.cdr.markForCheck();
+    this.cdr.detectChanges();
   }
 
   onItemDblclick(index, sentence): void {
@@ -135,12 +134,41 @@ export class MainComponent implements OnInit {
     }
   }
 
+  onSelectedChange(): void {
+    this.cdr.markForCheck();
+    this.cdr.detectChanges();
+  }
+
+  /*
   translate(sentence): void {
     this.googleTranslate.translate((<any>sentence).source, (result) => {
       (<any>sentence).target = result;
       this.cdr.markForCheck();
       this.cdr.detectChanges();
     });
+  }
+  */
+
+  translate(sentence: SentenceModel): void {
+    if (sentence.refers.length > 0) {
+      return;
+    }
+
+    this.engines.translate(sentence.source).subscribe(
+      res => {
+        if (this.default_engine === res.engine_name) {
+          sentence.target = res.target_text;
+        }
+        sentence.refers[sentence.refers.length] = res;
+        this.cdr.markForCheck();
+        this.cdr.detectChanges();
+      },
+      err => {
+        sentence.target = err;
+        this.cdr.markForCheck();
+        this.cdr.detectChanges();
+      }
+    );
   }
 
   toggle(): void {
@@ -161,6 +189,10 @@ export class MainComponent implements OnInit {
           $('.ui.sidebar').css("z-index",1);
       }*/
     }).sidebar('toggle');
+  }
+
+  about(): void {
+    this.child_ac.show();
   }
 
   ngOnInit() {

@@ -1,18 +1,14 @@
 import {Observable} from 'rxjs/Observable';
-import { TranslateModel } from './translate.model';
+import { TranslateModel } from '../model/translate.model';
 
 
 export abstract class TranslateService {
-  source_lang = 'en';
-  target_lang = 'zh';
-
-  setSourceLanguage(language: string) {
-    this.source_lang = language;
+  constructor(private engine_name: string) {
   }
 
-  setTargetLanguage(language: string) {
-    this.target_lang = language;
+  getEngineName(): string {
+    return this.engine_name;
   }
 
-  abstract translate(source_text: string): Observable<TranslateModel>;
+  abstract translate(source_text: string, source_lang: string, target_lang: string): Observable<TranslateModel>;
 }

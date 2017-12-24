@@ -11,6 +11,11 @@ import { MainComponent } from './main/main.component';
 import { PanelComponent } from './panel/panel.component';
 
 
+import { GoogleTranslateService } from './services/google/google-translate.service';
+import { BaiduFanyiService } from './services/baidu/baidu-fanyi.service';
+import { AboutComponent } from './about/about.component';
+
+
 const routes: Routes = [
   { path: '', redirectTo: 'main', pathMatch: 'full' },
   { path: 'login', component: LoginComponent, pathMatch: 'full' },
@@ -23,7 +28,8 @@ const routes: Routes = [
     AppComponent,
     LoginComponent,
     MainComponent,
-    PanelComponent
+    PanelComponent,
+    AboutComponent
   ],
   imports: [
     BrowserModule,
@@ -32,7 +38,7 @@ const routes: Routes = [
     HttpClientModule,
     RouterModule.forRoot(routes)
   ],
-  providers: [],
+  providers: [GoogleTranslateService, BaiduFanyiService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

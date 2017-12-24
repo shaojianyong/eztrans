@@ -1,5 +1,5 @@
 <!-- Too bar -->
-<div id="tool-bar" class="ui attached menu">
+<div id="tool-bar" class="ui grey inverted attached menu">
   <a class="item" (click)="openFile()">
     <i class="folder open icon"></i> Open
   </a>
@@ -7,20 +7,20 @@
     <i class="save icon"></i> Save
   </a>
   <a class="item" (click)="autoTranslate()">
-    <i class="rocket icon"></i> Auto
-  </a>
-  <a class="item">
-    <i class="bar chart icon"></i> Statistic
+    <i class="translate icon"></i> Translate
   </a>
   <a class="item">
     <i class="setting icon"></i> Settings
+  </a>
+  <a class="item" (click)="about()">
+    <i class="help icon"></i>
   </a>
   <div class="right item">
     <div class="ui input"><input type="text" placeholder="Search..."></div>
   </div>
 </div>
 
-<!-- translate -->
+<!-- Translate (list & side) -->
 <div id="trans-container">
   <div id="trans-list" class="ui relaxed divided selection list">
     <div *ngFor="let sentence of sentences; let idx = index"
@@ -28,24 +28,26 @@
          (dblclick)="onItemDblclick(idx, sentence)"
          (contextmenu)="onItemContextMenu(idx, sentence)"
          id="item-{{idx}}" class="normal-state item">
-      <i class="large angle right middle aligned icon"></i>
+      <i class="middle aligned google icon"></i>
       <div class="content">
         <div class="source">{{sentence.source}}</div>
         <div class="target">{{sentence.target}}</div>
       </div>
     </div>
   </div>
-
-  <app-panel id="trans-side"></app-panel>
+  <app-panel [sentence]="sentences[cur_index]"
+             (selectedChangeEvent)="onSelectedChange()"
+             id="trans-side">
+  </app-panel>
 </div>
 
-<!-- Status bar -->
-<div id="status-bar" class="ui attached stackable menu">
-  <div class="item">
+<!-- Status Bar -->
+<div id="status-bar" class="ui grey inverted attached stackable menu">
+  <!--div class="item">
     <i class="bar chart icon"></i> 80% (160/200)
-  </div>
+  </div-->
   <a class="item">
-    <i class="translate icon"></i> Google
+    <i class="bar chart icon"></i> 80% (160/200)
   </a>
   <a class="item">
     <i class="world icon"></i> English -> Simplified Chinese
@@ -67,3 +69,6 @@
     <i class="qrcode icon"></i>
   </a>
 </div>
+
+<!-- About Dialog -->
+<app-about></app-about>

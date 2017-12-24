@@ -102,4 +102,5 @@ export default [
   {value: 'xh', name: 'Xhosa'},
   {value: 'yi', name: 'Yiddish'},
   {value: 'yo', name: 'Yoruba'},
-  {value: 'zu', name: 'Zulu'}];
+  {value: 'zu', name: 'Zulu'}
+  ];

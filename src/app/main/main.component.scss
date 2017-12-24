@@ -1,5 +1,5 @@
 #tool-bar {
-  //width: 100%;  不能加这个，否则右边有空隙！！
+  // width: 100%;  不能加这个，否则右边有空隙！！
   height: 48px;
 }
 
@@ -17,8 +17,8 @@
     overflow-y: auto;
 
     div.normal-state {
-      color: inherit;
-      background-color: inherit;
+      // color: inherit;
+      // background-color: inherit;
       div.source {
         font-size: small;
         color: #383838;
