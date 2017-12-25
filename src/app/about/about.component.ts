@@ -10,7 +10,7 @@ export class AboutComponent implements OnInit {
   constructor() { }
 
   show(): void {
-    $('.ui.modal').modal('show');
+    $('#about-dialog').modal('show');
   }
 
   ngOnInit() {

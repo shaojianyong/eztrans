@@ -15,6 +15,7 @@ import { TranslateModel } from '../services/model/translate.model';
 import {EngineManagerService} from '../services/engine/engine-manager.service';
 import engines from '../../assets/engines';
 import {AboutComponent} from '../about/about.component';
+import {SettingsComponent} from '../settings/settings.component';
 
 
 @Component({
@@ -28,6 +29,7 @@ export class MainComponent implements OnInit {
   default_engine = 'Google';
   cur_index = -1;
 
+  @ViewChild(SettingsComponent) child_settings: SettingsComponent;
   @ViewChild(AboutComponent) child_about: AboutComponent;
 
   /*
@@ -208,7 +210,11 @@ export class MainComponent implements OnInit {
     return icon;
   }
 
-  about(): void {
+  showSettings(): void {
+    this.child_settings.show();
+  }
+
+  showAbout(): void {
     this.child_about.show();
   }
 

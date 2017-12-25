@@ -14,6 +14,7 @@ import { PanelComponent } from './panel/panel.component';
 import { GoogleTranslateService } from './services/google/google-translate.service';
 import { BaiduFanyiService } from './services/baidu/baidu-fanyi.service';
 import { AboutComponent } from './about/about.component';
+import { SettingsComponent } from './settings/settings.component';
 
 
 const routes: Routes = [
@@ -29,7 +30,8 @@ const routes: Routes = [
     LoginComponent,
     MainComponent,
     PanelComponent,
-    AboutComponent
+    AboutComponent,
+    SettingsComponent
   ],
   imports: [
     BrowserModule,

@@ -3,24 +3,21 @@
   <a class="item" (click)="openFile()">
     <i class="folder open icon"></i> Open
   </a>
-  <a class="item" (click)="toggle()">
-    <i class="save icon"></i> Save
-  </a>
   <a class="item" (click)="autoTranslate()">
     <i class="translate icon"></i> Translate
+  </a>
+  <a class="item" (click)="toggle()">
+    <i class="save icon"></i> Save
   </a>
   <a class="item">
     <i class="external icon"></i> Export
   </a>
-  <a class="item">
-    <i class="setting icon"></i> Settings
+  <a class="right item" (click)="showSettings()">
+    <i class="setting icon"></i>
   </a>
-  <a class="item" (click)="about()">
-    <i class="help icon"></i>
-  </a>
-  <div class="right item">
+  <!--div class="right item">
     <div class="ui input"><input type="text" placeholder="Search..."></div>
-  </div>
+  </div-->
 </div>
 
 <!-- Translate (list & side) -->
@@ -74,23 +71,15 @@
   <a class="item">
     <i class="world icon"></i> English -> Simplified Chinese
   </a>
-  <a class="right item" data-content="View project on GitHub"
-     href="https://github.com/shaojianyong/eztrans">
-    <i class="github icon"></i>
-  </a>
-  <a class="item" data-content="Submit Bug Report"
-     href="https://github.com/shaojianyong/eztrans/issues/new">
-    <i class="bug icon"></i>
-  </a>
-  <a class="item" data-content="Mail"
-     href="mailto: shaojianyong@hotmail.com">
-    <i class="mail icon"></i>
-  </a>
-  <a class="item" data-content="Wechat"
-     href="mailto: shaojianyong@hotmail.com">
-    <i class="qrcode icon"></i>
+
+
+  <a class="right item" (click)="showAbout()">
+    <i class="help icon"></i>
   </a>
 </div>
+
+<!-- Setting Dialog -->
+<app-settings></app-settings>
 
 <!-- About Dialog -->
 <app-about></app-about>
