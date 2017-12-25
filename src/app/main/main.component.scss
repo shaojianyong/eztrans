@@ -23,6 +23,7 @@
     .source-text,
     .target-text {
       padding-left: 4px;
+      line-height: 1.28571429em;
     }
   }
 
@@ -46,5 +47,4 @@
   bottom: 0;
   // width: 100%;  不能加这个，否则右边有空隙！！
   height: 42px;
-  line-height: 42px;  // 行间距，行高
 }
