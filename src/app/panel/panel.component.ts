@@ -22,21 +22,28 @@ export class PanelComponent implements OnInit {
   }
 
   clone(refer_index: number): void {
-    if (!this.sentence.custom) {
+    const orig = this.sentence.refers[refer_index];
+
+    if (this.sentence.custom) {
+      this.sentence.custom.engine_name = orig.engine_name;
+      this.sentence.custom.source_lang = orig.source_lang;
+      this.sentence.custom.target_lang = orig.target_lang;
+      this.sentence.custom.source_text = orig.source_text;
+      this.sentence.custom.target_text = orig.target_text;
+
+    } else {
       const copy = new TranslateModel();
-      this.sentence.custom = copy;
-
-      const orig = this.sentence.refers[refer_index];
-
       copy.engine_name = orig.engine_name;
       copy.source_lang = orig.source_lang;
       copy.target_lang = orig.target_lang;
       copy.source_text = orig.source_text;
       copy.target_text = orig.target_text;
-
+      this.sentence.custom = copy;
     }
 
     this.selectedChangeEvent.emit();
+    $('#custom-editor').text(this.sentence.custom.target_text);
+    $('#custom-editor').attr('contenteditable', 'true');
     $('#custom-editor').focus();
   }
 
@@ -54,6 +61,27 @@ export class PanelComponent implements OnInit {
       heart = 'heart icon';
     }
     return heart;
+  }
+
+  onEditorBlur(): void {
+    $('#custom-editor').attr('contenteditable', 'false');
+  }
+
+  onEdit(): void {
+    $('#custom-editor').attr('contenteditable', 'true');
+    $('#custom-editor').focus();
+    this.selectedChangeEvent.emit();
+  }
+
+  onSentenceChange(): void {
+    $('#custom-editor').text(this.sentence.custom.target_text);
+  }
+
+  onEditInput(): void {
+    console.log('onEditKeyDown');
+    this.sentence.custom.target_text = $('#custom-editor').text();
+
+    this.selectedChangeEvent.emit();
   }
 
   ngOnInit() {
