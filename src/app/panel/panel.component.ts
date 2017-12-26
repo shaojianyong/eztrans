@@ -78,8 +78,8 @@ export class PanelComponent implements OnInit {
   }
 
   onEditInput(): void {
-    console.log('onEditKeyDown');
-    this.sentence.custom.target_text = $('#custom-editor').text();
+    console.log('onEditInput');
+    // this.sentence.custom.target_text = $('#custom-editor').text();
 
     this.selectedChangeEvent.emit();
   }
