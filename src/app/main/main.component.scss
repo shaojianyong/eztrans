@@ -22,8 +22,8 @@
 
     .source-text,
     .target-text {
-      padding-left: 4px;
-      line-height: 1.28571429em;
+      padding-left: 4px;    // 上下对齐
+      line-height: 1.4285;  // 1.5, 1.28571429em
     }
   }
 

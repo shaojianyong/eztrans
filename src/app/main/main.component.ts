@@ -11,7 +11,7 @@ const BrowserWindow = electron.remote.BrowserWindow;
 import { ExLinksModule } from '../../assets/ex-links';
 
 import { SentenceModel } from '../services/model/sentence.model';
-import { TranslateModel } from '../services/model/translate.model';
+// import { TranslateModel } from '../services/model/translate.model';
 import {EngineManagerService} from '../services/engine/engine-manager.service';
 import engines from '../../assets/engines';
 import {AboutComponent} from '../about/about.component';
@@ -25,7 +25,7 @@ import {SettingsComponent} from '../settings/settings.component';
   providers: [EngineManagerService]
 })
 export class MainComponent implements OnInit {
-  sentences = new Array<SentenceModel>();
+  sentences = [];  // new Array<SentenceModel>();
   default_engine = 'Google';
   cur_index = -1;
 
@@ -92,7 +92,12 @@ export class MainComponent implements OnInit {
       for (let line of lines) {
         line = line.trim();
         if (line) {
-          self.sentences[this.sentences.length] = { source: line, target: '', refers: new Array<TranslateModel>() };
+          self.sentences[this.sentences.length] = {
+            source: line,
+            target: '',
+            custom: null,
+            refers: []  // new Array<TranslateModel>()
+          };
         }
       }
       self.title.setTitle(`Eztrans - ${files[0]}`);
@@ -232,7 +237,12 @@ export class MainComponent implements OnInit {
       for (let line of lines) {
         line = line.trim();
         if (line) {
-          self.sentences[self.sentences.length] = { source: line, target: '', refers: new Array<TranslateModel>() };
+          self.sentences[self.sentences.length] = {
+            source: line,
+            target: '',
+            custom: null,
+            refers: []  //  new Array<TranslateModel>()
+          };
         }
       }
       self.title.setTitle(`Eztrans - ${filePath}`);
