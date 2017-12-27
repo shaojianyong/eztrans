@@ -23,20 +23,22 @@
         text-align: justify;
         text-justify: distribute-all-lines;
         text-align-last: left;
-        padding-left: 6px;
-        padding-right: 6px;
+        margin: 0;
+        padding-left: 12px;
+        padding-right: 12px;
         padding-top: 12px;
-        padding-bottom: 6px;
-        line-height: 1.4285; // 1.5, 1.28571429em
+        padding-bottom: 8px;
+        line-height: 1.4285;  // 1.5, 1.28571429em
       }
       .target-cell {
         text-align: justify;
         text-justify: distribute-all-lines;
         text-align-last: left;
-        padding-left: 6px;
-        padding-right: 6px;
-        padding-top: 6px;
-        padding-bottom: 12px;
+        margin: 0;
+        padding-left: 12px;
+        padding-right: 12px;
+        padding-top: 8px;
+        padding-bottom: 16px;
         line-height: 1.4285; // 1.5, 1.28571429em
       }
     }

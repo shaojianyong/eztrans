@@ -25,15 +25,15 @@
   </div-->
 </div>
 
-<!-- Translate (list & side) -->
+<!-- Translate (list & side) -relaxed -->
 <div id="trans-container">
-  <div id="trans-list" class="ui list">
+  <div id="trans-list" class="ui divided list">
     <div *ngFor="let sentence of sentences; let idx = index" id="item-{{idx}}"
          (click)="onItemClick(idx, sentence)"
          (mouseenter)="onMouseEnter(idx)"
          (mouseleave)="onMouseLeave(idx)"
          class="item">
-      <table id="table-{{idx}}" class="ui celled structured table">
+      <table id="table-{{idx}}" class="ui very basic table">
         <tbody>
         <tr>
           <td rowspan="2" class="collapsing">
