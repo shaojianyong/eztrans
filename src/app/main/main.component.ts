@@ -62,7 +62,7 @@ export class MainComponent implements OnInit {
     const options = {
       title: 'Open a Text File',
       filters: [
-        { name: 'Text Files', extensions: ['txt', 'html', 'md'] }
+        { name: 'Text Files', extensions: ['txt', 'html', 'md', 'po'] }
       ]
     };
 
