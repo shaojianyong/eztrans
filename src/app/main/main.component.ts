@@ -11,7 +11,6 @@ const BrowserWindow = electron.remote.BrowserWindow;
 import { ExLinksModule } from '../../assets/ex-links';
 
 import { SentenceModel } from '../services/model/sentence.model';
-// import { TranslateModel } from '../services/model/translate.model';
 import {EngineManagerService} from '../services/engine/engine-manager.service';
 import engines from '../../assets/engines';
 import {AboutComponent} from '../about/about.component';
@@ -94,7 +93,7 @@ export class MainComponent implements OnInit {
         if (line) {
           self.sentences[this.sentences.length] = {
             source: line,
-            target: '',
+            target: -2,
             custom: null,
             refers: []  // new Array<TranslateModel>()
           };
@@ -167,14 +166,14 @@ export class MainComponent implements OnInit {
     this.ems.translate(sentence.source).subscribe(
       res => {
         if (this.default_engine === res.engine_name) {
-          sentence.target = res.target_text;
+          sentence.target = sentence.refers.length;
         }
         sentence.refers[sentence.refers.length] = res;
         this.cdr.markForCheck();
         this.cdr.detectChanges();
       },
       err => {
-        sentence.target = err;
+        // sentence.target = err;  TODO: 提供错误信息展示方案
         this.cdr.markForCheck();
         this.cdr.detectChanges();
       }
@@ -202,17 +201,27 @@ export class MainComponent implements OnInit {
   }
 
   getEngineIcon(sentence: SentenceModel): string {
-    if (sentence.target === '') {
-      return 'translate icon';
-    }
-
-    let icon = 'user icon';
-    for (const refer of sentence.refers) {
-      if (refer.target_text === sentence.target) {
-        icon = engines[refer.engine_name].icon;
-      }
+    let icon = '';
+    if (sentence.target === -2) {
+      icon = 'translate icon';  // TODO: 手动点击翻译
+    } else if (sentence.target === -1) {
+      icon = 'user icon';
+    } else {
+      icon = engines[sentence.refers[sentence.target].engine_name].icon;
     }
     return icon;
+  }
+
+  getTargetText(sentence: SentenceModel): string {
+    let target_text = '';
+    if (sentence.target === -2) {
+      target_text = 'Click the right button to translate ->';
+    } else if (sentence.target === -1) {
+      target_text = sentence.custom.target_text;
+    } else {
+      target_text = sentence.refers[sentence.target].target_text;
+    }
+    return target_text;
   }
 
   showSettings(): void {
@@ -239,7 +248,7 @@ export class MainComponent implements OnInit {
         if (line) {
           self.sentences[self.sentences.length] = {
             source: line,
-            target: '',
+            target: -2,
             custom: null,
             refers: []  //  new Array<TranslateModel>()
           };

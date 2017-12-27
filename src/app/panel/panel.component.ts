@@ -17,7 +17,7 @@ export class PanelComponent implements OnInit {
   }
 
   select(refer_index: number): void {
-    this.sentence.target = this.sentence.refers[refer_index].target_text;
+    this.sentence.target = refer_index;
     this.selectedChangeEvent.emit();
   }
 
@@ -57,7 +57,7 @@ export class PanelComponent implements OnInit {
 
   getHeartIcon(refer_index: number): string {
     let heart = 'empty heart icon';
-    if (this.sentence.target === this.sentence.refers[refer_index].target_text) {
+    if (this.sentence.target === refer_index) {
       heart = 'heart icon';
     }
     return heart;
