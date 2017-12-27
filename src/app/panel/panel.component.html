@@ -3,15 +3,15 @@
     <p>{{sentence.source}}</p>
   </div>
   <div *ngIf="sentence.custom" class="ui segment">
-    <div id="custom-editor" (blur)="onEditorBlur()" (input)="onEditInput()"></div>
+    <div id="custom-editor" (blur)="onEditorBlur()"></div>
     <div class="ui small icon secondary menu">
-      <a class="item">
-        <i class="heart icon"></i>
+      <a class="item" (click)="select(-1)">
+        <i class="{{getHeartIcon(-1)}}"></i>
       </a>
       <a class="item" (click)="onEdit()">
         <i class="edit icon"></i>
       </a>
-      <a class="right item" (click)="onExLink(refer.engine_name)">
+      <a class="right item">
         <i class="user icon"></i>
       </a>
     </div>
