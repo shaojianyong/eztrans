@@ -41,6 +41,7 @@ export class PanelComponent implements OnInit {
       this.sentence.custom = copy;
     }
 
+    this.sentence.target = -1;  // 默认选中定制翻译
     this.selectedChangeEvent.emit();
     $('#custom-editor').text(this.sentence.custom.target_text);
     $('#custom-editor').attr('contenteditable', 'true');
@@ -63,24 +64,14 @@ export class PanelComponent implements OnInit {
     return heart;
   }
 
-  onEditorBlur(): void {
-    $('#custom-editor').attr('contenteditable', 'false');
-  }
-
-  onEdit(): void {
-    $('#custom-editor').attr('contenteditable', 'true');
-    $('#custom-editor').focus();
+  removeCustom(): void {
+    this.sentence.target = 0;  // 选中第一个，还是默认引擎？
+    this.sentence.custom = null;
     this.selectedChangeEvent.emit();
   }
 
-  onSentenceChange(): void {
-    $('#custom-editor').text(this.sentence.custom.target_text);
-  }
-
   onEditInput(): void {
-    console.log('onEditInput');
-    // this.sentence.custom.target_text = $('#custom-editor').text();
-
+    this.sentence.custom.target_text = $('#custom-editor').text();
     this.selectedChangeEvent.emit();
   }
 
