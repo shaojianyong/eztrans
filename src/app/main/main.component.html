@@ -27,12 +27,12 @@
 
 <!-- Translate (list & side) -->
 <div id="trans-container">
-  <div id="trans-list" class="ui relaxed divided selection list">
-    <div *ngFor="let sentence of sentences; let idx = index"
+  <div id="trans-list" class="ui relaxed divided list">
+    <div *ngFor="let sentence of sentences; let idx = index" id="item-{{idx}}"
          (click)="onItemClick(idx, sentence)"
-         (dblclick)="onItemDblclick(idx, sentence)"
-         (contextmenu)="onItemContextMenu(idx, sentence)"
-         id="item-{{idx}}" class="item">
+         (mouseenter)="onMouseEnter(idx)"
+         (mouseleave)="onMouseLeave(idx)"
+         class="item">
       <table id="table-{{idx}}" class="ui very basic table">
         <tbody>
         <tr>
@@ -47,7 +47,7 @@
           </td>
         </tr>
         <tr>
-          <td class="target-text">
+          <td class="target-text" contenteditable="true">
             {{getTargetText(sentence)}}
           </td>
           <td class="collapsing">

@@ -111,16 +111,16 @@ export class MainComponent implements OnInit {
     }
 
     if (this.cur_index !== -1) {
-      const item1 = document.getElementById(`item-${this.cur_index}`);
-      item1.classList.remove('selected-state');
-      const table1 = document.getElementById(`table-${this.cur_index}`);
-      table1.classList.remove('inverted');
+      // const table1 = document.getElementById(`table-${this.cur_index}`);
+      // table1.classList.remove('inverted');
+      $(`#item-${this.cur_index}`).css('background-color', 'white');
     }
 
-    const item2 = document.getElementById(`item-${index}`);
-    item2.classList.add('selected-state');
-    const table2 = document.getElementById(`table-${index}`);
-    table2.classList.add('inverted');
+    // const table2 = document.getElementById(`table-${index}`);
+    // table2.classList.add('inverted');
+    // lightcyan; palegreen; aliceblue; lightyellow; ghostwhite; azure
+    $(`#item-${index}`).css('background-color', 'cornsilk');  // azure
+    $(`#item-${index}`).attr('normal-background-color', 'cornsilk');
 
     this.cur_index = index;
 
@@ -215,7 +215,7 @@ export class MainComponent implements OnInit {
   getTargetText(sentence: SentenceModel): string {
     let target_text = '';
     if (sentence.target === -2) {
-      target_text = 'Click the right button to translate ->';
+      target_text = '';
     } else if (sentence.target === -1) {
       target_text = sentence.custom.target_text;
     } else {
@@ -230,6 +230,21 @@ export class MainComponent implements OnInit {
 
   showAbout(): void {
     this.child_about.show();
+  }
+
+  onMouseEnter(index: number): void {
+    if (index === this.cur_index) {
+      return;
+    }
+    $(`#item-${index}`).attr('normal-background-color', $(`#item-${index}`).css('background-color'));
+    $(`#item-${index}`).css('background-color', 'ghostwhite');  // ghostwhite, whitesmoke
+  }
+
+  onMouseLeave(index: number): void {
+    if (index === this.cur_index) {
+      return;
+    }
+    $(`#item-${index}`).css('background-color', $(`#item-${index}`).attr('normal-background-color'));
   }
 
   ngOnInit() {
