@@ -4,7 +4,8 @@
   </div>
   <div *ngIf="sentence.custom" class="ui segment">
 
-    <div id="custom-editor" contenteditable="true" [textContent]="sentence.custom.target_text" (input)="onEditInput()"></div>
+    <div id="custom-editor" contenteditable="true" [textContent]="sentence.custom.target_text"
+         (input)="onEditInput()"></div>
     <div class="ui small icon secondary menu">
       <a class="item" (click)="select(-1)">
         <i class="{{getHeartIcon(-1)}}"></i>
@@ -161,11 +162,19 @@
 </div>
 -->
 
-<!--table class="ui very basic table">
+<!--table class="ui very basic table"-->
+<!--table class="ui celled structured table">
   <tbody>
   <tr>
     <td rowspan="2" class="collapsing">Beta Team</td>
-    <td style="padding: 0">52</td>
+    <td style="padding: 0;
+      text-align:justify;
+        text-justify:distribute-all-lines;
+        text-align-last:left">In the real world, it’s all Jeep. The Trackhawk gets a surprising jump on the
+      Challenger
+      thanks to its all-wheel-drive system and launch control. Even though the SUV tips the scales at 5,258 pounds
+      (2,384 kilograms), it looks like on its feet in a straight line against the Challenger.
+    </td>
     <td class="collapsing">
       <i class="large green checkmark icon"></i>
     </td>

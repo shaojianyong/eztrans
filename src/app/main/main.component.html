@@ -1,5 +1,5 @@
 <!-- Too bar -->
-<div id="tool-bar" class="ui grey inverted attached menu">
+<div id="tool-bar" class="ui violet inverted attached menu">
   <a class="item" (click)="openFile()">
     <i class="sign in icon"></i> Import
   </a>
@@ -27,19 +27,19 @@
 
 <!-- Translate (list & side) -->
 <div id="trans-container">
-  <div id="trans-list" class="ui relaxed divided list">
+  <div id="trans-list" class="ui list">
     <div *ngFor="let sentence of sentences; let idx = index" id="item-{{idx}}"
          (click)="onItemClick(idx, sentence)"
          (mouseenter)="onMouseEnter(idx)"
          (mouseleave)="onMouseLeave(idx)"
          class="item">
-      <table id="table-{{idx}}" class="ui very basic table">
+      <table id="table-{{idx}}" class="ui celled structured table">
         <tbody>
         <tr>
           <td rowspan="2" class="collapsing">
-            <i class="large edit icon"></i>
+            <i class="edit icon"></i>
           </td>
-          <td class="source-text">
+          <td class="source-cell">
             {{sentence.source}}
           </td>
           <td class="collapsing">
@@ -47,7 +47,7 @@
           </td>
         </tr>
         <tr>
-          <td class="target-text" contenteditable="true">
+          <td class="target-cell">
             {{getTargetText(sentence)}}
           </td>
           <td class="collapsing">
@@ -66,7 +66,7 @@
 </div>
 
 <!-- Status Bar -->
-<div id="status-bar" class="ui grey inverted attached stackable menu">
+<div id="status-bar" class="ui violet inverted attached stackable menu">
   <!--div class="item">
     <i class="bar chart icon"></i> 80% (160/200)
   </div-->

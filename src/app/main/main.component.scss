@@ -16,10 +16,29 @@
     overflow-x: hidden;
     overflow-y: auto;
 
-    .source-text,
-    .target-text {
-      padding-left: 4px;    // 上下对齐
-      line-height: 1.4285;  // 1.5, 1.28571429em
+    .item {
+      padding-left: 8px;
+      padding-right: 8px;
+      .source-cell {
+        text-align: justify;
+        text-justify: distribute-all-lines;
+        text-align-last: left;
+        padding-left: 6px;
+        padding-right: 6px;
+        padding-top: 12px;
+        padding-bottom: 6px;
+        line-height: 1.4285; // 1.5, 1.28571429em
+      }
+      .target-cell {
+        text-align: justify;
+        text-justify: distribute-all-lines;
+        text-align-last: left;
+        padding-left: 6px;
+        padding-right: 6px;
+        padding-top: 6px;
+        padding-bottom: 12px;
+        line-height: 1.4285; // 1.5, 1.28571429em
+      }
     }
   }
 

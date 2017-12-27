@@ -111,16 +111,14 @@ export class MainComponent implements OnInit {
     }
 
     if (this.cur_index !== -1) {
-      // const table1 = document.getElementById(`table-${this.cur_index}`);
-      // table1.classList.remove('inverted');
+      $(`#table-${this.cur_index}`).toggleClass('inverted');
       $(`#item-${this.cur_index}`).css('background-color', 'white');
     }
 
-    // const table2 = document.getElementById(`table-${index}`);
-    // table2.classList.add('inverted');
-    // lightcyan; palegreen; aliceblue; lightyellow; ghostwhite; azure
-    $(`#item-${index}`).css('background-color', 'cornsilk');  // azure
-    $(`#item-${index}`).attr('normal-background-color', 'cornsilk');
+    // lightcyan; palegreen; aliceblue; lightyellow; ghostwhite; azure, cornsilk
+    $(`#table-${index}`).toggleClass('inverted');
+    $(`#item-${index}`).css('background-color', 'dimgray');
+    $(`#item-${index}`).attr('normal-background-color', 'dimgray');
 
     this.cur_index = index;
 
@@ -237,7 +235,7 @@ export class MainComponent implements OnInit {
       return;
     }
     $(`#item-${index}`).attr('normal-background-color', $(`#item-${index}`).css('background-color'));
-    $(`#item-${index}`).css('background-color', 'ghostwhite');  // ghostwhite, whitesmoke
+    $(`#item-${index}`).css('background-color', 'gainsboro');  // lavender, ghostwhite, whitesmoke
   }
 
   onMouseLeave(index: number): void {
