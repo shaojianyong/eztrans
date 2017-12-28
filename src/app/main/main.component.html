@@ -62,7 +62,7 @@
   </div>
 
   <app-panel [sentence]="sentences[cur_index]"
-             (selectedChangeEvent)="onSelectedChange()"
+             (rerenderEvent)="rerender()"
              id="trans-side">
   </app-panel>
 </div>

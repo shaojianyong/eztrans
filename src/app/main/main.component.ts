@@ -102,8 +102,7 @@ export class MainComponent implements OnInit {
         }
       }
       self.title.setTitle(`Eztrans - ${files[0]}`);
-      self.cdr.markForCheck();
-      self.cdr.detectChanges();
+      self.rerender();
     });
   }
 
@@ -124,8 +123,7 @@ export class MainComponent implements OnInit {
 
     this.cur_index = index;
 
-    this.cdr.markForCheck();
-    this.cdr.detectChanges();
+    this.rerender();
   }
 
   onItemDblclick(index, sentence): void {
@@ -143,7 +141,7 @@ export class MainComponent implements OnInit {
     }
   }
 
-  onSelectedChange(): void {
+  rerender(): void {
     this.cdr.markForCheck();
     this.cdr.detectChanges();
   }
@@ -152,8 +150,7 @@ export class MainComponent implements OnInit {
   translate(sentence): void {
     this.googleTranslate.translate((<any>sentence).source, (result) => {
       (<any>sentence).target = result;
-      this.cdr.markForCheck();
-      this.cdr.detectChanges();
+      this.rerender();
     });
   }
   */
@@ -169,13 +166,11 @@ export class MainComponent implements OnInit {
           sentence.target = sentence.refers.length;
         }
         sentence.refers[sentence.refers.length] = res;
-        this.cdr.markForCheck();
-        this.cdr.detectChanges();
+        this.rerender();
       },
       err => {
         console.log(err);  // TODO: 提供错误信息展示方案
-        this.cdr.markForCheck();
-        this.cdr.detectChanges();
+        this.rerender();
       }
     );
   }
@@ -261,6 +256,7 @@ export class MainComponent implements OnInit {
   getMarkVisibility(index: number): string {
     let vz = 'ez-hide';
     if (this.sentences[index].marked || index === this.cur_index) {
+      $(`#mark-${index}`).removeClass('ez-hide');
       vz = '';
     }
     return vz;
@@ -276,8 +272,7 @@ export class MainComponent implements OnInit {
 
   changeFlagIcon(sentence: SentenceModel): void {
     sentence.marked = !sentence.marked;
-    this.cdr.markForCheck();
-    this.cdr.detectChanges();
+    this.rerender();
   }
 
 
@@ -306,8 +301,7 @@ export class MainComponent implements OnInit {
         }
       }
       self.title.setTitle(`Eztrans - ${filePath}`);
-      self.cdr.markForCheck();
-      self.cdr.detectChanges();
+      self.rerender();
     });
 
     ipc.on('translate', (event) => {

@@ -11,14 +11,14 @@ import engines from '../../assets/engines';
 })
 export class PanelComponent implements OnInit {
   @Input() sentence: SentenceModel;
-  @Output() selectedChangeEvent = new EventEmitter<any>();
+  @Output() rerenderEvent = new EventEmitter<any>();
 
   constructor() {
   }
 
   select(refer_index: number): void {
     this.sentence.target = refer_index;
-    this.selectedChangeEvent.emit();
+    this.rerenderEvent.emit();
   }
 
   clone(refer_index: number): void {
@@ -42,7 +42,7 @@ export class PanelComponent implements OnInit {
     }
 
     this.sentence.target = -1;  // 默认选中定制翻译
-    this.selectedChangeEvent.emit();
+    this.rerenderEvent.emit();
     $('#custom-editor').text(this.sentence.custom.target_text);
     $('#custom-editor').attr('contenteditable', 'true');
     $('#custom-editor').focus();
@@ -67,7 +67,7 @@ export class PanelComponent implements OnInit {
   removeCustom(): void {
     this.sentence.target = 0;  // 选中第一个，还是默认引擎？
     this.sentence.custom = null;
-    this.selectedChangeEvent.emit();
+    this.rerenderEvent.emit();
   }
 
   getFlagIcon(sentence: SentenceModel): string {
@@ -80,12 +80,12 @@ export class PanelComponent implements OnInit {
 
   changeFlagIcon(sentence: SentenceModel): void {
     sentence.marked = !sentence.marked;
-    this.selectedChangeEvent.emit();
+    this.rerenderEvent.emit();
   }
 
   onEditInput(): void {
     this.sentence.custom.target_text = $('#custom-editor').text();
-    this.selectedChangeEvent.emit();
+    this.rerenderEvent.emit();
   }
 
   ngOnInit() {
