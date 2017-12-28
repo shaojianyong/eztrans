@@ -1,6 +1,17 @@
 <div *ngIf="sentence" class="ui container">
   <div class="ui segment">
     <p>{{sentence.source}}</p>
+    <div class="ui small icon secondary menu">
+      <a class="item" (click)="changeFlagIcon(sentence)">
+        <i class="{{getFlagIcon(sentence)}}"></i>
+      </a>
+      <a class="item" (click)="clone(idx)">
+        <i class="clone icon"></i>
+      </a>
+      <a class="right item" (click)="onExLink(refer.engine_name)">
+        <i class="smile icon"></i>
+      </a>
+    </div>
   </div>
   <div *ngIf="sentence.custom" class="ui segment">
 

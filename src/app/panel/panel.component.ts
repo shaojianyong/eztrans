@@ -70,6 +70,19 @@ export class PanelComponent implements OnInit {
     this.selectedChangeEvent.emit();
   }
 
+  getFlagIcon(sentence: SentenceModel): string {
+    let icon = 'flag outline icon';
+    if (sentence.marked) {
+      icon = 'flag icon';
+    }
+    return icon;
+  }
+
+  changeFlagIcon(sentence: SentenceModel): void {
+    sentence.marked = !sentence.marked;
+    this.selectedChangeEvent.emit();
+  }
+
   onEditInput(): void {
     this.sentence.custom.target_text = $('#custom-editor').text();
     this.selectedChangeEvent.emit();

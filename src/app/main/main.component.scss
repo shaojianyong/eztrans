@@ -65,3 +65,15 @@
   // width: 100%;  不能加这个，否则右边有空隙！！
   height: 42px;
 }
+
+.ez-hide {
+  visibility: hidden;  // 方法1：不响应交互
+  // opacity: 0;       // 方法2：透明，仍相应交互
+  // display: none;    // 方法3：不渲染元素，不占空间了
+}
+
+/*
+.ez-show {
+  visibility: visible;
+}
+*/

@@ -94,6 +94,8 @@ export class MainComponent implements OnInit {
           self.sentences[this.sentences.length] = {
             source: line,
             target: -2,
+            status: 0,
+            marked: 0,
             custom: null,
             refers: []  // new Array<TranslateModel>()
           };
@@ -105,20 +107,20 @@ export class MainComponent implements OnInit {
     });
   }
 
-  onItemClick(index, sentence): void {
+  onItemClick(index: number): void {
     if (index === this.cur_index) {
       return;
     }
 
     if (this.cur_index !== -1) {
-      $(`#table-${this.cur_index}`).toggleClass('inverted');
+      // $(`#table-${this.cur_index}`).toggleClass('inverted');
       $(`#item-${this.cur_index}`).css('background-color', 'white');
     }
 
     // lightcyan; palegreen; aliceblue; lightyellow; ghostwhite; azure, cornsilk
-    $(`#table-${index}`).toggleClass('inverted');
-    $(`#item-${index}`).css('background-color', 'dimgray');
-    $(`#item-${index}`).attr('normal-background-color', 'dimgray');
+    // $(`#table-${index}`).toggleClass('inverted');
+    $(`#item-${index}`).css('background-color', 'gainsboro');
+    $(`#item-${index}`).attr('normal-background-color', 'gainsboro');
 
     this.cur_index = index;
 
@@ -130,8 +132,8 @@ export class MainComponent implements OnInit {
     this.translate(sentence);
   }
 
-  onItemContextMenu(index, sentence): void {
-    this.onItemClick(index, sentence);
+  onItemContextMenu(index: number): void {
+    this.onItemClick(index);
     ipc.send('show-item-context-menu');
   }
 
@@ -171,7 +173,7 @@ export class MainComponent implements OnInit {
         this.cdr.detectChanges();
       },
       err => {
-        // sentence.target = err;  TODO: 提供错误信息展示方案
+        console.log(err);  // TODO: 提供错误信息展示方案
         this.cdr.markForCheck();
         this.cdr.detectChanges();
       }
@@ -201,7 +203,7 @@ export class MainComponent implements OnInit {
   getEngineIcon(sentence: SentenceModel): string {
     let icon = '';
     if (sentence.target === -2) {
-      icon = 'translate icon';  // TODO: 手动点击翻译
+      icon = 'icon';  // TODO: 手动点击翻译
     } else if (sentence.target === -1) {
       icon = 'user icon';
     } else {
@@ -231,19 +233,53 @@ export class MainComponent implements OnInit {
   }
 
   onMouseEnter(index: number): void {
-    if (index === this.cur_index) {
-      return;
+    if (index !== this.cur_index) {
+      $(`#item-${index}`).attr('normal-background-color', $(`#item-${index}`).css('background-color'));
+      $(`#item-${index}`).css('background-color', 'whitesmoke');  // lavender, ghostwhite, whitesmoke
     }
-    $(`#item-${index}`).attr('normal-background-color', $(`#item-${index}`).css('background-color'));
-    $(`#item-${index}`).css('background-color', 'gainsboro');  // lavender, ghostwhite, whitesmoke
+
+    $(`#mark-${index}`).removeClass('ez-hide');
   }
 
   onMouseLeave(index: number): void {
-    if (index === this.cur_index) {
-      return;
+    if (index !== this.cur_index) {
+      $(`#item-${index}`).css('background-color', $(`#item-${index}`).attr('normal-background-color'));
     }
-    $(`#item-${index}`).css('background-color', $(`#item-${index}`).attr('normal-background-color'));
+
+    if (!this.sentences[index].marked) {
+      $(`#mark-${index}`).toggleClass('ez-hide');
+    }
+
+    /*
+    if (this.sentences[index].marked || $(`#mark-${index}`).hasClass('ez-hide')) {
+    } else {
+      $(`#mark-${index}`).addClass('ez-hide');
+    }
+    */
   }
+
+  getMarkVisibility(index: number): string {
+    let vz = 'ez-hide';
+    if (this.sentences[index].marked || index === this.cur_index) {
+      vz = '';
+    }
+    return vz;
+  }
+
+  getFlagIcon(sentence: SentenceModel): string {
+    let icon = 'flag outline icon';
+    if (sentence.marked) {
+      icon = 'flag icon';
+    }
+    return icon;
+  }
+
+  changeFlagIcon(sentence: SentenceModel): void {
+    sentence.marked = !sentence.marked;
+    this.cdr.markForCheck();
+    this.cdr.detectChanges();
+  }
+
 
   ngOnInit() {
     // ipcMain异步读取文件，返回文件数据
@@ -262,6 +298,8 @@ export class MainComponent implements OnInit {
           self.sentences[self.sentences.length] = {
             source: line,
             target: -2,
+            status: 0,
+            marked: false,
             custom: null,
             refers: []  //  new Array<TranslateModel>()
           };

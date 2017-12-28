@@ -29,7 +29,7 @@
 <div id="trans-container">
   <div id="trans-list" class="ui divided list">
     <div *ngFor="let sentence of sentences; let idx = index" id="item-{{idx}}"
-         (click)="onItemClick(idx, sentence)"
+         (click)="onItemClick(idx)"
          (mouseenter)="onMouseEnter(idx)"
          (mouseleave)="onMouseLeave(idx)"
          class="item">
@@ -43,7 +43,9 @@
             {{sentence.source}}
           </td>
           <td class="collapsing">
-            <i class="checkmark icon"></i>
+            <a id="mark-{{idx}}" class="{{getMarkVisibility(idx)}}" (click)="changeFlagIcon(sentence)">
+              <i class="{{getFlagIcon(sentence)}}"></i>
+            </a>
           </td>
         </tr>
         <tr>
