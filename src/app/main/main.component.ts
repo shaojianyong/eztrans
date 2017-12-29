@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, ViewChild } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ViewChild, HostListener } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 
 const electron = (<any>window).require('electron');
@@ -278,10 +278,12 @@ export class MainComponent implements OnInit {
     this.rerender();
   }
 
-  onNext(event, param): void {
-    console.log(param);
+  /*
+  @HostListener('window:keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent): void {
+    console.log(event);
   }
-
+  */
 
   ngOnInit() {
     // ipcMain异步读取文件，返回文件数据
