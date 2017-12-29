@@ -242,7 +242,7 @@ export class MainComponent implements OnInit {
       $(`#item-${index}`).css('background-color', $(`#item-${index}`).attr('normal-background-color'));
     }
 
-    if (!this.sentences[index].marked) {
+    if (!this.sentences[index].marked && index !== this.cur_index) {
       $(`#mark-${index}`).toggleClass('ez-hide');
     }
     this.hide(index);
