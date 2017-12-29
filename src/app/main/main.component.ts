@@ -234,6 +234,7 @@ export class MainComponent implements OnInit {
     }
 
     $(`#mark-${index}`).removeClass('ez-hide');
+    this.show(index);
   }
 
   onMouseLeave(index: number): void {
@@ -244,13 +245,15 @@ export class MainComponent implements OnInit {
     if (!this.sentences[index].marked) {
       $(`#mark-${index}`).toggleClass('ez-hide');
     }
+    this.hide(index);
+  }
 
-    /*
-    if (this.sentences[index].marked || $(`#mark-${index}`).hasClass('ez-hide')) {
-    } else {
-      $(`#mark-${index}`).addClass('ez-hide');
-    }
-    */
+  hide(index: number): void {
+    $(`#exec-${index}`).toggleClass('ez-hide');
+  }
+
+  show(index: number): void {
+    $(`#exec-${index}`).removeClass('ez-hide');
   }
 
   getMarkVisibility(index: number): string {
@@ -273,6 +276,10 @@ export class MainComponent implements OnInit {
   changeFlagIcon(sentence: SentenceModel): void {
     sentence.marked = !sentence.marked;
     this.rerender();
+  }
+
+  onNext(event, param): void {
+    console.log(param);
   }
 
 

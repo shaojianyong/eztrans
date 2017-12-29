@@ -37,7 +37,9 @@
         <tbody>
         <tr>
           <td rowspan="2" class="collapsing">
-            <i class="edit icon"></i>
+            <a id="state-{{idx}}" class="ez-hide">
+              <i class="edit icon"></i>
+            </a>
           </td>
           <td class="source-cell">
             {{sentence.source}}
@@ -53,7 +55,7 @@
             {{getTargetText(sentence)}}
           </td>
           <td class="collapsing">
-            <a id="func-{{idx}}" class="{{getFuncVisibility(idx)}}">
+            <a id="exec-{{idx}}" class="ez-hide">
               <i class="{{getEngineIcon(sentence)}}"></i>
             </a>
           </td>

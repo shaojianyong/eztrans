@@ -15,7 +15,7 @@ export class EngineManagerService {
     private google: GoogleTranslateService,
     private baidu: BaiduFanyiService,
     ) {
-    this.engine_list = [google, baidu];
+    this.engine_list = [google];  // baidu
   }
 
   setSourceLanguage(language: string): void {
