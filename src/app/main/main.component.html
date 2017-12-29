@@ -46,7 +46,8 @@
           </td>
           <td class="collapsing">
             <a id="mark-{{idx}}" class="{{getMarkVisibility(idx)}}" (click)="changeFlagIcon(sentence)">
-              <i class="{{getFlagIcon(sentence)}}"></i>
+              <i *ngIf="sentence.marked" class="flag icon"></i>
+              <i *ngIf="!sentence.marked" class="flag outline icon"></i>
             </a>
           </td>
         </tr>

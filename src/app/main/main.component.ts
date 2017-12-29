@@ -234,7 +234,7 @@ export class MainComponent implements OnInit {
     }
 
     $(`#mark-${index}`).removeClass('ez-hide');
-    this.show(index);
+    // this.show(index);
   }
 
   onMouseLeave(index: number): void {
@@ -242,12 +242,14 @@ export class MainComponent implements OnInit {
       $(`#item-${index}`).css('background-color', $(`#item-${index}`).attr('normal-background-color'));
     }
 
-    if (!this.sentences[index].marked && index !== this.cur_index) {
+    if (this.sentences[index].marked || index === this.cur_index) {
+    } else {
       $(`#mark-${index}`).toggleClass('ez-hide');
     }
-    this.hide(index);
+    // this.hide(index);
   }
 
+  /*
   hide(index: number): void {
     $(`#exec-${index}`).toggleClass('ez-hide');
   }
@@ -255,6 +257,7 @@ export class MainComponent implements OnInit {
   show(index: number): void {
     $(`#exec-${index}`).removeClass('ez-hide');
   }
+  */
 
   getMarkVisibility(index: number): string {
     let vz = 'ez-hide';
@@ -263,14 +266,6 @@ export class MainComponent implements OnInit {
       vz = '';
     }
     return vz;
-  }
-
-  getFlagIcon(sentence: SentenceModel): string {
-    let icon = 'flag outline icon';
-    if (sentence.marked) {
-      icon = 'flag icon';
-    }
-    return icon;
   }
 
   changeFlagIcon(sentence: SentenceModel): void {
