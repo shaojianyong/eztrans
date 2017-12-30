@@ -25,10 +25,11 @@
     "@angular/router": "^5.0.0",
     "core-js": "^2.4.1",
     "jquery": "^3.2.1",
+    "md5": "^2.2.1",
+    "node-google-translate-skidz": "^1.1.1",
     "rxjs": "^5.5.2",
-    "zone.js": "^0.8.14",
     "sqlite3": "^3.1.13",
-    "node-google-translate-skidz": "^1.1.1"
+    "zone.js": "^0.8.14"
   },
   "devDependencies": {
     "@angular/cli": "1.5.0",

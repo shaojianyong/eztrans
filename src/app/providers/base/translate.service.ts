@@ -1,5 +1,5 @@
 import {Observable} from 'rxjs/Observable';
-import { TranslateModel } from '../model/translate.model';
+import { TranslateModel } from '../../services/model/translate.model';
 
 
 export abstract class TranslateService {

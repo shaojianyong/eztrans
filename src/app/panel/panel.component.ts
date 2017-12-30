@@ -2,7 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 const { shell } = (<any>window).require('electron');
 import { SentenceModel } from '../services/model/sentence.model';
 import { TranslateModel } from '../services/model/translate.model';
-import engines from '../../assets/engines';
+import engines from '../providers/manager/engines';
 
 @Component({
   selector: 'app-panel',

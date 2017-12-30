@@ -8,11 +8,11 @@ const Menu = electron.Menu;
 const MenuItem = electron.MenuItem;
 const BrowserWindow = electron.remote.BrowserWindow;
 
-import { ExLinksModule } from '../../assets/ex-links';
+import { ExLinksModule } from '../services/utils/ex-links.module';
 
 import { SentenceModel } from '../services/model/sentence.model';
-import {EngineManagerService} from '../services/engine/engine-manager.service';
-import engines from '../../assets/engines';
+import {EngineManagerService} from '../providers/manager/engine-manager.service';
+import engines from '../providers/manager/engines';
 import {AboutComponent} from '../about/about.component';
 import {SettingsComponent} from '../settings/settings.component';
 
@@ -162,9 +162,7 @@ export class MainComponent implements OnInit {
 
     this.ems.translate(sentence.source).subscribe(
       res => {
-        if (this.default_engine === res.engine_name) {
-          sentence.target = sentence.refers.length;
-        }
+        sentence.target = 0;  // 显示最先返回的翻译结果
         sentence.refers[sentence.refers.length] = res;
         this.rerender();
       },

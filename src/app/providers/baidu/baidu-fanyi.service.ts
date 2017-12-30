@@ -1,8 +1,9 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import { TranslateService } from '../engine/translate.service';
-import { TranslateModel } from '../model/translate.model';
+import {TranslateService} from '../base/translate.service';
+import {TranslateModel} from '../../services/model/translate.model';
+
 const querystring = (<any>window).require('querystring');
 
 
@@ -16,13 +17,25 @@ export class BaiduFanyiService extends TranslateService {
     const params = {
       from: source_lang,
       to: target_lang,
-      query: source_text
+      query: source_text,
+      simple_means_flag: 3,
+      sign: '54706.276099',
+      token: '26dbe50b8c71437e9bf5d1c5372dcd59'
     };
 
     const data = querystring.stringify(params);
     const head = new HttpHeaders({
-      'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-      'Content-Length': data.length
+      'Host': 'fanyi.baidu.com',
+      'Connection': 'keep-alive',
+      'Content-Length': data.length,
+      'Accept': '*/*',
+      'Origin': 'http://fanyi.baidu.com',
+      'X-Requested-With': 'XMLHttpRequest',
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.89 Safari/537.36',
+      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+      'Referer': 'http://fanyi.baidu.com/',
+      'Accept-Encoding': 'gzip, deflate',
+      'Accept-Language': 'en-US,en;q=0.9,zh;q=0.8,zh-CN;q=0.7'
     });
 
     return Observable.create(observer => {

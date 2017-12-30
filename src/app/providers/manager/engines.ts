@@ -8,5 +8,10 @@ export default {
     name: '百度翻译',
     site: 'http://fanyi.baidu.com',
     icon: 'paw icon'
+  },
+  BaiduVIP: {
+    name: '百度翻译',
+    site: 'http://api.fanyi.baidu.com/api/trans/vip/translate',
+    icon: 'paw icon'
   }
 };

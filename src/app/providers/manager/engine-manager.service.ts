@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-import { TranslateModel } from '../model/translate.model';
-import { TranslateService } from './translate.service';
+import { TranslateModel } from '../../services/model/translate.model';
+import { TranslateService } from '../base/translate.service';
 import { GoogleTranslateService } from '../google/google-translate.service';
 import { BaiduFanyiService } from '../baidu/baidu-fanyi.service';
+import { BaiduVipfyService} from '../baidu/baidu-vipfy.service';
 
 @Injectable()
 export class EngineManagerService {
@@ -14,8 +15,9 @@ export class EngineManagerService {
   constructor(
     private google: GoogleTranslateService,
     private baidu: BaiduFanyiService,
+    private baiduvip: BaiduVipfyService
     ) {
-    this.engine_list = [google];  // baidu
+    this.engine_list = [baiduvip];  // google, baidu
   }
 
   setSourceLanguage(language: string): void {
