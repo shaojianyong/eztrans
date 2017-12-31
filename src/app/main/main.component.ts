@@ -119,7 +119,6 @@ export class MainComponent implements OnInit {
     // $(`#table-${index}`).toggleClass('inverted');
     const item_element = $(`#item-${index}`);
     item_element.css('background-color', 'gainsboro');
-    item_element.attr('normal-background-color', 'gainsboro');
 
     this.cur_index = index;
     this.rerender();
@@ -257,7 +256,7 @@ export class MainComponent implements OnInit {
   onMouseEnter(index: number): void {
     if (index !== this.cur_index) {
       const index_element = $(`#item-${index}`);
-      index_element.attr('normal-background-color', index_element.css('background-color'));
+      // index_element.attr('normal-background-color', index_element.css('background-color'));
       index_element.css('background-color', 'whitesmoke');  // lavender, ghostwhite, whitesmoke
     }
 
@@ -268,7 +267,11 @@ export class MainComponent implements OnInit {
   onMouseLeave(index: number): void {
     if (index !== this.cur_index) {
       const index_element = $(`#item-${index}`);
-      index_element.css('background-color', index_element.attr('normal-background-color'));
+      if (index === this.cur_index) {
+        index_element.css('background-color', 'gainsboro');
+      } else {
+        index_element.css('background-color', 'white');
+      }
     }
 
     if (this.sentences[index].marked || index === this.cur_index) {
@@ -302,12 +305,33 @@ export class MainComponent implements OnInit {
     this.rerender();
   }
 
-  /*
-  @HostListener('window:keydown', ['$event'])
-  onKeyDown(event: KeyboardEvent): void {
-    console.log(event);
+  @HostListener('window:keydown.arrowdown', ['$event'])
+  onArrowDown(event: KeyboardEvent): void {
+    const next = this.cur_index + 1;
+    if (next < this.sentences.length) {
+      this.onItemClick(next);
+
+      const tran_list = document.getElementById('trans-list');
+      const next_item = document.getElementById(`item-${next}`);
+      tran_list.scrollTop = next_item.offsetTop - tran_list.clientHeight + next_item.clientHeight;
+
+      event.stopPropagation();
+    }
   }
-  */
+
+  @HostListener('window:keydown.arrowup', ['$event'])
+  onArrowUp(event: KeyboardEvent): void {
+    const prev = this.cur_index - 1;
+    if (prev >= 0) {
+      this.onItemClick(prev);
+
+      const tran_list = document.getElementById('trans-list');
+      const prev_item = document.getElementById(`item-${prev}`);
+      tran_list.scrollTop = prev_item.offsetTop;
+
+      event.stopPropagation();
+    }
+  }
 
   ngOnInit() {
     // ipcMain异步读取文件，返回文件数据
