@@ -13,5 +13,10 @@ export default {
     name: '百度翻译',
     site: 'http://api.fanyi.baidu.com/api/trans/vip/translate',
     icon: 'paw icon'
+  },
+  iCIBA: {
+    name: '金山词霸',
+    site: 'http://fy.iciba.com',
+    icon: 'themeisle icon'
   }
 };

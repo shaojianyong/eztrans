@@ -14,6 +14,7 @@ import { PanelComponent } from './panel/panel.component';
 import { GoogleTranslateService } from './providers/google/google-translate.service';
 import { BaiduFanyiService } from './providers/baidu/baidu-fanyi.service';
 import { BaiduVipfyService } from './providers/baidu/baidu-vipfy.service';
+import { IcibaTransService } from './providers/iciba/iciba-trans.service';
 import { AboutComponent } from './about/about.component';
 import { SettingsComponent } from './settings/settings.component';
 
@@ -41,7 +42,7 @@ const routes: Routes = [
     HttpClientModule,
     RouterModule.forRoot(routes)
   ],
-  providers: [GoogleTranslateService, BaiduFanyiService, BaiduVipfyService],
+  providers: [GoogleTranslateService, BaiduFanyiService, BaiduVipfyService, IcibaTransService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

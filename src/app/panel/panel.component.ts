@@ -88,6 +88,10 @@ export class PanelComponent implements OnInit {
     this.rerenderEvent.emit();
   }
 
+  refresh(idx: number, sentence: SentenceModel): void {
+    console.log('re-translate');
+  }
+
   ngOnInit() {
   }
 

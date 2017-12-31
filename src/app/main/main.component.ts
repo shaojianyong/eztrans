@@ -25,7 +25,6 @@ import {SettingsComponent} from '../settings/settings.component';
 })
 export class MainComponent implements OnInit {
   sentences = [];  // new Array<SentenceModel>();
-  default_engine = 'Google';
   cur_index = -1;
 
   @ViewChild(SettingsComponent) child_settings: SettingsComponent;
@@ -118,16 +117,16 @@ export class MainComponent implements OnInit {
 
     // lightcyan; palegreen; aliceblue; lightyellow; ghostwhite; azure, cornsilk
     // $(`#table-${index}`).toggleClass('inverted');
-    $(`#item-${index}`).css('background-color', 'gainsboro');
-    $(`#item-${index}`).attr('normal-background-color', 'gainsboro');
+    const item_element = $(`#item-${index}`);
+    item_element.css('background-color', 'gainsboro');
+    item_element.attr('normal-background-color', 'gainsboro');
 
     this.cur_index = index;
-
     this.rerender();
   }
 
   onItemDblclick(index, sentence): void {
-    this.translate(sentence);
+    this.translate(index, sentence);
   }
 
   onItemContextMenu(index: number): void {
@@ -136,8 +135,17 @@ export class MainComponent implements OnInit {
   }
 
   autoTranslate(): void {
-    for (const sentence of this.sentences) {
-      this.translate(sentence);
+    for (let index = 0; index < this.sentences.length; ++index) {
+      const state_element = $(`#state-${index}`);
+      const sentence = this.sentences[index];
+      if (sentence.refers.length === this.ems.getEnabledEngineCount()
+        && !(state_element.attr('class') in ['warning circle icon', 'remove circle icon'])) {
+        continue;
+      }
+
+      state_element.parent().removeClass('ez-hide');
+      state_element.attr('class', 'spinner loading icon');
+      this.translate(index, sentence);
     }
   }
 
@@ -155,19 +163,40 @@ export class MainComponent implements OnInit {
   }
   */
 
-  translate(sentence: SentenceModel): void {
-    if (sentence.refers.length > 0) {
-      return;
-    }
-
+  translate(index: number, sentence: SentenceModel): void {
+    const state_element = $(`#state-${index}`);
     this.ems.translate(sentence.source).subscribe(
       res => {
-        sentence.target = 0;  // 显示最先返回的翻译结果
-        sentence.refers[sentence.refers.length] = res;
+        // TODO: 检查翻译结果和数量，更新翻译状态，翻译错误是显示在翻译按钮
+        // TODO: 检查整体翻译进度，启用翻译按钮？？感觉做不到。。。
+        if (res.target_text.length > 0) {
+          sentence.target = 0;  // 显示最先返回的翻译结果
+          state_element.attr('class', 'notched circle loading icon');
+        } else {
+          state_element.attr('class', 'warning circle icon');
+        }
+
+        let exist = false;
+        for (let refer of sentence.refers) {
+          if (res.engine_name === refer.engine_name) {
+            refer = res;
+            exist = true;
+          }
+        }
+        if (!exist) {
+          sentence.refers[sentence.refers.length] = res;
+        }
+
+        if (sentence.refers.length === this.ems.getEnabledEngineCount()) {
+          if (!(state_element.attr('class') in ['warning circle icon', 'remove circle icon'])) {
+            state_element.parent().toggleClass('ez-hide');
+          }
+        }
         this.rerender();
       },
       err => {
         console.log(err);  // TODO: 提供错误信息展示方案
+        state_element.attr('class', 'remove circle icon');
         this.rerender();
       }
     );
@@ -227,8 +256,9 @@ export class MainComponent implements OnInit {
 
   onMouseEnter(index: number): void {
     if (index !== this.cur_index) {
-      $(`#item-${index}`).attr('normal-background-color', $(`#item-${index}`).css('background-color'));
-      $(`#item-${index}`).css('background-color', 'whitesmoke');  // lavender, ghostwhite, whitesmoke
+      const index_element = $(`#item-${index}`);
+      index_element.attr('normal-background-color', index_element.css('background-color'));
+      index_element.css('background-color', 'whitesmoke');  // lavender, ghostwhite, whitesmoke
     }
 
     $(`#mark-${index}`).removeClass('ez-hide');
@@ -237,7 +267,8 @@ export class MainComponent implements OnInit {
 
   onMouseLeave(index: number): void {
     if (index !== this.cur_index) {
-      $(`#item-${index}`).css('background-color', $(`#item-${index}`).attr('normal-background-color'));
+      const index_element = $(`#item-${index}`);
+      index_element.css('background-color', index_element.attr('normal-background-color'));
     }
 
     if (this.sentences[index].marked || index === this.cur_index) {
@@ -307,7 +338,7 @@ export class MainComponent implements OnInit {
     });
 
     ipc.on('translate', (event) => {
-      self.translate(self.sentences[self.cur_index]);
+      self.translate(self.cur_index, self.sentences[self.cur_index]);
     });
 
     // 安装外部链接
