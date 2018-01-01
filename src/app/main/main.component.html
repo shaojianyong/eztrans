@@ -30,6 +30,7 @@
   <div id="trans-list" class="ui divided list">
     <div *ngFor="let sentence of sentences; let idx = index" id="item-{{idx}}"
          (click)="onItemClick(idx)"
+         (contextmenu)="onItemContextMenu(idx, sentence)"
          (mouseenter)="onMouseEnter(idx)"
          (mouseleave)="onMouseLeave(idx)"
          class="item">
