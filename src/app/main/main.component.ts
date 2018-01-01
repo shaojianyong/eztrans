@@ -1,5 +1,5 @@
-import { Component, OnInit, ChangeDetectorRef, ViewChild, HostListener } from '@angular/core';
-import { Title } from '@angular/platform-browser';
+import {Component, OnInit, ChangeDetectorRef, ViewChild, HostListener} from '@angular/core';
+import {Title} from '@angular/platform-browser';
 
 const electron = (<any>window).require('electron');
 const ipc = electron.ipcRenderer;
@@ -8,9 +8,9 @@ const Menu = electron.Menu;
 const MenuItem = electron.MenuItem;
 const BrowserWindow = electron.remote.BrowserWindow;
 
-import { ExLinksModule } from '../services/utils/ex-links.module';
+import {ExLinksModule} from '../services/utils/ex-links.module';
 
-import { SentenceModel } from '../services/model/sentence.model';
+import {SentenceModel} from '../services/model/sentence.model';
 import {EngineManagerService} from '../providers/manager/engine-manager.service';
 import engines from '../providers/manager/engines';
 import {AboutComponent} from '../about/about.component';
@@ -61,7 +61,7 @@ export class MainComponent implements OnInit {
     const options = {
       title: 'Open a Text File',
       filters: [
-        { name: 'Text Files', extensions: ['txt', 'html', 'md', 'po'] }
+        {name: 'Text Files', extensions: ['txt', 'html', 'md', 'po']}
       ]
     };
 
@@ -317,8 +317,11 @@ export class MainComponent implements OnInit {
 
       const tran_list = document.getElementById('trans-list');
       const next_item = document.getElementById(`item-${next}`);
-      tran_list.scrollTop = next_item.offsetTop - tran_list.clientHeight + next_item.clientHeight;
-
+      if (tran_list.scrollTop < next_item.offsetTop + next_item.clientHeight - tran_list.clientHeight) {
+        tran_list.scrollTop = next_item.offsetTop + next_item.clientHeight - tran_list.clientHeight;
+      } else if (tran_list.scrollTop > next_item.offsetTop) {
+        tran_list.scrollTop = next_item.offsetTop;
+      }
       event.preventDefault();
     }
   }
@@ -335,8 +338,11 @@ export class MainComponent implements OnInit {
 
       const tran_list = document.getElementById('trans-list');
       const prev_item = document.getElementById(`item-${prev}`);
-      tran_list.scrollTop = prev_item.offsetTop;
-
+      if (tran_list.scrollTop > prev_item.offsetTop) {
+        tran_list.scrollTop = prev_item.offsetTop;
+      } else if (tran_list.scrollTop < prev_item.offsetTop + prev_item.clientHeight - tran_list.clientHeight) {
+        tran_list.scrollTop = prev_item.offsetTop + prev_item.clientHeight - tran_list.clientHeight;
+      }
       event.preventDefault();
     }
   }
