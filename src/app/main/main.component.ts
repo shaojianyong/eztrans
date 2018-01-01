@@ -305,8 +305,12 @@ export class MainComponent implements OnInit {
     this.rerender();
   }
 
-  @HostListener('window:keydown.arrowdown', ['$event'])
-  onArrowDown(event: KeyboardEvent): void {
+  @HostListener('window:keydown.arrowright', ['$event'])
+  onArrowRight(event: KeyboardEvent): void {
+    if (document.activeElement.getAttribute('contenteditable')) {
+      return;
+    }
+
     const next = this.cur_index + 1;
     if (next < this.sentences.length) {
       this.onItemClick(next);
@@ -315,12 +319,16 @@ export class MainComponent implements OnInit {
       const next_item = document.getElementById(`item-${next}`);
       tran_list.scrollTop = next_item.offsetTop - tran_list.clientHeight + next_item.clientHeight;
 
-      event.stopPropagation();
+      event.preventDefault();
     }
   }
 
-  @HostListener('window:keydown.arrowup', ['$event'])
-  onArrowUp(event: KeyboardEvent): void {
+  @HostListener('window:keydown.arrowleft', ['$event'])
+  onArrowLeft(event: KeyboardEvent): void {
+    if (document.activeElement.getAttribute('contenteditable')) {
+      return;
+    }
+
     const prev = this.cur_index - 1;
     if (prev >= 0) {
       this.onItemClick(prev);
@@ -329,7 +337,7 @@ export class MainComponent implements OnInit {
       const prev_item = document.getElementById(`item-${prev}`);
       tran_list.scrollTop = prev_item.offsetTop;
 
-      event.stopPropagation();
+      event.preventDefault();
     }
   }
 
