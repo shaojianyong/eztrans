@@ -97,15 +97,19 @@ function saveFile (event, currentFile, content) {
 const contextMenu = new Menu();
 contextMenu.append(new MenuItem({ label: 'Translate', click: translate, icon: './dist/assets/images/icons/translate.png' }));
 contextMenu.append(new MenuItem({ type: 'separator' }));
-contextMenu.append(new MenuItem({ label: 'Merge Up', icon: './dist/assets/images/icons/arrowup.png' }));
-contextMenu.append(new MenuItem({ label: 'Merge Down', icon: './dist/assets/images/icons/arrowdown.png' }));
+contextMenu.append(new MenuItem({ label: 'Merge to Up', icon: './dist/assets/images/icons/arrowup.png' }));
+contextMenu.append(new MenuItem({ label: 'Merge to Down', icon: './dist/assets/images/icons/arrowdown.png' }));
 contextMenu.append(new MenuItem({ label: 'Split', icon: './dist/assets/images/icons/arrowleft.png' }));
 contextMenu.append(new MenuItem({ label: 'Delete', icon: './dist/assets/images/icons/delete.png' }));
 contextMenu.append(new MenuItem({ type: 'separator' }));
-contextMenu.append(new MenuItem({ label: 'Toggle', icon: './dist/assets/images/icons/flag.png' }));
+contextMenu.append(new MenuItem({ label: 'Toggle', click: toggleFlag, icon: './dist/assets/images/icons/flag.png' }));
 
 function translate(menuItem, browserWindow) {
   browserWindow.send('translate');
+}
+
+function toggleFlag(menuItem, browserWindow) {
+  browserWindow.send('toggle-flag');
 }
 
 function showItemContextMenu(event) {

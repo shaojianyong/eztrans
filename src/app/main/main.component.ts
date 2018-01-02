@@ -384,6 +384,10 @@ export class MainComponent implements OnInit {
       self.translate(self.cur_index, self.sentences[self.cur_index]);
     });
 
+    ipc.on('toggle-flag', (event) => {
+      self.changeFlagIcon(self.sentences[self.cur_index]);
+    });
+
     // 安装外部链接
     ExLinksModule.applyExLinks();
   }
