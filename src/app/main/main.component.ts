@@ -379,6 +379,8 @@ export class MainComponent implements OnInit {
     });
 
     ipc.on('translate', (event) => {
+      self.sentences[self.cur_index].target = -1;
+      self.sentences[self.cur_index].refers = [];
       self.translate(self.cur_index, self.sentences[self.cur_index]);
     });
 
