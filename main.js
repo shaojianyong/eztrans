@@ -102,7 +102,7 @@ contextMenu.append(new MenuItem({ label: 'Merge Down', icon: './dist/assets/imag
 contextMenu.append(new MenuItem({ label: 'Split', icon: './dist/assets/images/icons/arrow-left.png' }));
 contextMenu.append(new MenuItem({ label: 'Delete', icon: './dist/assets/images/icons/delete.png' }));
 contextMenu.append(new MenuItem({ type: 'separator' }));
-contextMenu.append(new MenuItem({ label: 'Toggle Flag', icon: './dist/assets/images/icons/flag.png' }));
+contextMenu.append(new MenuItem({ label: 'Toggle', icon: './dist/assets/images/icons/flag.png' }));
 
 function translate(menuItem, browserWindow) {
   browserWindow.send('translate');
