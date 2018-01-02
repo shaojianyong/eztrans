@@ -135,15 +135,12 @@ export class MainComponent implements OnInit {
 
   autoTranslate(): void {
     for (let index = 0; index < this.sentences.length; ++index) {
-      const state_element = $(`#state-${index}`);
       const sentence = this.sentences[index];
       if (sentence.refers.length === this.ems.getEnabledEngineCount()
-        && !(state_element.attr('class') in ['warning circle icon', 'remove circle icon'])) {
+        && !($(`#state-${index}`).attr('class') in ['warning circle icon', 'remove circle icon'])) {
         continue;
       }
 
-      state_element.parent().removeClass('ez-hide');
-      state_element.attr('class', 'spinner loading icon');
       this.translate(index, sentence);
     }
   }
@@ -164,9 +161,12 @@ export class MainComponent implements OnInit {
 
   translate(index: number, sentence: SentenceModel): void {
     const state_element = $(`#state-${index}`);
+    state_element.parent().removeClass('ez-hide');
+    state_element.attr('class', 'spinner loading icon');
+
     this.ems.translate(sentence.source).subscribe(
       res => {
-        // TODO: 检查翻译结果和数量，更新翻译状态，翻译错误是显示在翻译按钮
+        // TODO: 检查翻译结果和数量，更新翻译状态，翻译错误时显示翻译按钮
         // TODO: 检查整体翻译进度，启用翻译按钮？？感觉做不到。。。
         if (res.target_text.length > 0) {
           sentence.target = 0;  // 显示最先返回的翻译结果

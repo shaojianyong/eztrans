@@ -97,10 +97,11 @@ function saveFile (event, currentFile, content) {
 const contextMenu = new Menu();
 contextMenu.append(new MenuItem({ label: 'Translate', click: translate }));
 contextMenu.append(new MenuItem({ type: 'separator' }));
-contextMenu.append(new MenuItem({ label: 'Edit Source Text', role: 'editsource' }));  // 拆分，合并，删除，修改
-contextMenu.append(new MenuItem({ label: 'Edit Target Text', role: 'edittarget' }));  // 手动修改，选取更好的翻译结果（展示不同翻译引擎的结果）
+contextMenu.append(new MenuItem({ label: 'Merge', role: 'merge' }));  // 拆分，合并，删除，修改
+contextMenu.append(new MenuItem({ label: 'Split', role: 'split' }));  // 支持手动修改和选取翻译结果
+contextMenu.append(new MenuItem({ label: 'Delete', role: 'delete' }));  // 删除
 contextMenu.append(new MenuItem({ type: 'separator' }));
-contextMenu.append(new MenuItem({ label: 'Set Mark', role: 'setmark' }));  // 标星，加备注
+contextMenu.append(new MenuItem({ label: 'Toggle Flag', role: 'toggleFlag' }));  // 标星，加备注
 
 function translate(menuItem, browserWindow) {
   browserWindow.send('translate');
