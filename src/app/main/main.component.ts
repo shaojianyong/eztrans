@@ -274,9 +274,12 @@ export class MainComponent implements OnInit {
       }
     }
 
+    const mark_element = $(`#mark-${index}`);
     if (this.sentences[index].marked || index === this.cur_index) {
     } else {
-      $(`#mark-${index}`).toggleClass('ez-hide');
+      if (!mark_element.hasClass('ez-hide')) {
+        mark_element.addClass('ez-hide');
+      }
     }
     // this.hide(index);
   }
