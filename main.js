@@ -95,9 +95,10 @@ function saveFile (event, currentFile, content) {
 }
 
 const contextMenu = new Menu();
-contextMenu.append(new MenuItem({ label: 'Translate', click: translate }));
+contextMenu.append(new MenuItem({ label: 'Translate', click: translate, icon: './dist/assets/images/icons/trans-16.png' }));
 contextMenu.append(new MenuItem({ type: 'separator' }));
-contextMenu.append(new MenuItem({ label: 'Merge', role: 'merge' }));  // 拆分，合并，删除，修改
+contextMenu.append(new MenuItem({ label: 'Merge Up', role: 'mergeUp' }));  // 拆分，合并，删除，修改
+contextMenu.append(new MenuItem({ label: 'Merge Dn', role: 'mergeDn' }));  // 拆分，合并，删除，修改
 contextMenu.append(new MenuItem({ label: 'Split', role: 'split' }));  // 支持手动修改和选取翻译结果
 contextMenu.append(new MenuItem({ label: 'Delete', role: 'delete' }));  // 删除
 contextMenu.append(new MenuItem({ type: 'separator' }));
