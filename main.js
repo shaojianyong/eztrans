@@ -99,7 +99,7 @@ contextMenu.append(new MenuItem({ label: 'Refresh', click: refresh, icon: './dis
 contextMenu.append(new MenuItem({ type: 'separator' }));
 contextMenu.append(new MenuItem({ label: 'Merge Up', icon: './dist/assets/images/icons/arrowup.png' }));
 contextMenu.append(new MenuItem({ label: 'Merge Down', icon: './dist/assets/images/icons/arrowdown.png' }));
-contextMenu.append(new MenuItem({ label: 'Split Segment' }));
+contextMenu.append(new MenuItem({ label: 'Split Segment', icon: './dist/assets/images/icons/split.png' }));
 contextMenu.append(new MenuItem({ label: 'Delete', icon: './dist/assets/images/icons/delete.png' }));
 contextMenu.append(new MenuItem({ type: 'separator' }));
 contextMenu.append(new MenuItem({ label: 'Toggle Mark', click: toggleFlag, icon: './dist/assets/images/icons/flag.png' }));
