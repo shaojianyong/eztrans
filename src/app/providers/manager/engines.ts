@@ -2,7 +2,7 @@ export default {
   YFCloud: {
     name: 'YF Translate',
     site: 'https://www.yfcloud.cn',
-    icon: 'mixcloud icon'
+    icon: 'cloud icon'
   },
   Google: {
     name: 'Google Translate',
