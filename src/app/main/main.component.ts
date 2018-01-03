@@ -223,7 +223,7 @@ export class MainComponent implements OnInit {
     if (sentence.target === -2) {
       icon = 'icon';  // TODO: 手动点击翻译
     } else if (sentence.target === -1) {
-      icon = 'user icon';
+      icon = 'user outline icon';
     } else {
       icon = engines[sentence.refers[sentence.target].engine_name].icon;
     }
@@ -258,7 +258,7 @@ export class MainComponent implements OnInit {
     }
 
     $(`#mark-${index}`).removeClass('ez-hide');
-    // this.show(index);
+    this.mouseEnterShow(index);
   }
 
   onMouseLeave(index: number): void {
@@ -278,7 +278,7 @@ export class MainComponent implements OnInit {
         mark_element.addClass('ez-hide');
       }
     }
-    // this.hide(index);
+    this.mouseLeaveHide(index);
   }
 
   refresh(): void {
@@ -287,15 +287,13 @@ export class MainComponent implements OnInit {
     this.translate(this.cur_index, this.sentences[this.cur_index]);
   }
 
-  /*
-  hide(index: number): void {
-    $(`#exec-${index}`).toggleClass('ez-hide');
-  }
-
-  show(index: number): void {
+  mouseEnterShow(index: number): void {
     $(`#exec-${index}`).removeClass('ez-hide');
   }
-  */
+
+  mouseLeaveHide(index: number): void {
+    $(`#exec-${index}`).toggleClass('ez-hide');
+  }
 
   getMarkVisibility(index: number): string {
     let vz = 'ez-hide';

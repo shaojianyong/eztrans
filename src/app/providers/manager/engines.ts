@@ -1,4 +1,9 @@
 export default {
+  YFCloud: {
+    name: 'YF Translate',
+    site: 'https://www.yfcloud.cn',
+    icon: 'mixcloud icon'
+  },
   Google: {
     name: 'Google Translate',
     site: 'https://translate.google.cn',
