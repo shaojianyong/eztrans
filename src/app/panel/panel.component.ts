@@ -4,6 +4,7 @@ import { SentenceModel } from '../services/model/sentence.model';
 import { TranslateModel } from '../services/model/translate.model';
 import engines from '../providers/manager/engines';
 
+
 @Component({
   selector: 'app-panel',
   templateUrl: './panel.component.html',
@@ -12,6 +13,7 @@ import engines from '../providers/manager/engines';
 export class PanelComponent implements OnInit {
   @Input() sentence: SentenceModel;
   @Output() rerenderEvent = new EventEmitter<any>();
+  @Output() refreshEvent = new EventEmitter<any>();
 
   constructor() {
   }
@@ -88,8 +90,8 @@ export class PanelComponent implements OnInit {
     this.rerenderEvent.emit();
   }
 
-  refresh(idx: number, sentence: SentenceModel): void {
-    console.log('re-translate');
+  refresh(): void {
+    this.refreshEvent.emit();
   }
 
   ngOnInit() {

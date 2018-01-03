@@ -4,9 +4,6 @@ import {Title} from '@angular/platform-browser';
 const electron = (<any>window).require('electron');
 const ipc = electron.ipcRenderer;
 const dialog = electron.remote.dialog;
-const Menu = electron.Menu;
-const MenuItem = electron.MenuItem;
-const BrowserWindow = electron.remote.BrowserWindow;
 
 import {ExLinksModule} from '../services/utils/ex-links.module';
 
@@ -284,6 +281,12 @@ export class MainComponent implements OnInit {
     // this.hide(index);
   }
 
+  refresh(): void {
+    this.sentences[this.cur_index].target = -1;
+    this.sentences[this.cur_index].refers = [];
+    this.translate(this.cur_index, this.sentences[this.cur_index]);
+  }
+
   /*
   hide(index: number): void {
     $(`#exec-${index}`).toggleClass('ez-hide');
@@ -378,10 +381,8 @@ export class MainComponent implements OnInit {
       self.rerender();
     });
 
-    ipc.on('translate', (event) => {
-      self.sentences[self.cur_index].target = -1;
-      self.sentences[self.cur_index].refers = [];
-      self.translate(self.cur_index, self.sentences[self.cur_index]);
+    ipc.on('refresh', (event) => {
+      self.refresh();
     });
 
     ipc.on('toggle-flag', (event) => {
