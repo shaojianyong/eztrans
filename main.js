@@ -97,7 +97,7 @@ function saveFile (event, currentFile, content) {
 const contextMenu = new Menu();
 contextMenu.append(new MenuItem({ label: 'Refresh', click: refresh, icon: './dist/assets/images/icons/refresh.png' }));
 contextMenu.append(new MenuItem({ type: 'separator' }));
-contextMenu.append(new MenuItem({ label: 'Merge Up', icon: './dist/assets/images/icons/arrowup.png' }));
+contextMenu.append(new MenuItem({ label: 'Merge Up', icon: './dist/assets/images/icons/arrowup.png' }));  // merge with up
 contextMenu.append(new MenuItem({ label: 'Merge Down', icon: './dist/assets/images/icons/arrowdown.png' }));
 contextMenu.append(new MenuItem({ label: 'Split Segment', icon: './dist/assets/images/icons/split.png' }));
 contextMenu.append(new MenuItem({ label: 'Delete', icon: './dist/assets/images/icons/delete.png' }));
