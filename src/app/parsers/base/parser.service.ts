@@ -1,16 +1,16 @@
 import {Observable} from 'rxjs/Observable';
 
 export abstract class ParserService {
-  constructor(private file_type: string) {
+  constructor(private data_type: string) {
   }
 
-  getFileType(): string {
-    return this.file_type;
+  getDataType(): string {
+    return this.data_type;
   }
 
-  abstract parser(file_data: string): Observable<string>;
+  abstract parser(data: string): Observable<string>;
 
   abstract update(segments: Array<string>): void;
 
-  abstract getLastFileData(): string;
+  abstract getLastData(): string;
 }

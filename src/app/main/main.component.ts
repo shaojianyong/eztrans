@@ -8,6 +8,7 @@ const dialog = electron.remote.dialog;
 import {ExLinksModule} from '../services/utils/ex-links.module';
 
 import {SentenceModel} from '../services/model/sentence.model';
+import {ParserManagerService} from '../parsers/manager/parser-manager.service';
 import {EngineManagerService} from '../providers/manager/engine-manager.service';
 import engines from '../providers/manager/engines';
 import {AboutComponent} from '../about/about.component';
@@ -18,7 +19,7 @@ import {SettingsComponent} from '../settings/settings.component';
   selector: 'app-main',
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss'],
-  providers: [EngineManagerService]
+  providers: [EngineManagerService, ParserManagerService]
 })
 export class MainComponent implements OnInit {
   sentences = [];  // new Array<SentenceModel>();
@@ -43,7 +44,8 @@ export class MainComponent implements OnInit {
 
   constructor(private cdr: ChangeDetectorRef,
               private title: Title,
-              private ems: EngineManagerService) {
+              private ems: EngineManagerService,
+              private pms: ParserManagerService) {
   }
 
   reset(): void {
@@ -361,20 +363,27 @@ export class MainComponent implements OnInit {
 
     ipc.on('file-read', (event, err, data, filePath) => {
       self.reset();
-      const lines = data.split(/\n|\r\n/g);
-      for (let line of lines) {
-        line = line.trim();
-        if (line) {
+      const ext_name = /\.([^\.]+$)/.exec(filePath)[1];
+      const parser = this.pms.getParser(ext_name);
+      parser.parser(data).subscribe(
+        res => {
           self.sentences[self.sentences.length] = {
-            source: line,
+            source: res,
             target: -2,
             status: 0,
             marked: false,
             custom: null,
             refers: []  //  new Array<TranslateModel>()
           };
+        },
+        error => {
+          console.log(error);  // TODO: 提供错误信息展示方案
+        },
+        () => {
+          self.rerender();
         }
-      }
+      );
+
       self.title.setTitle(`Eztrans - ${filePath}`);
       self.rerender();
     });

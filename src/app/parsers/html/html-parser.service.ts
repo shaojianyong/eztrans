@@ -16,16 +16,17 @@ export class HtmlParserService extends ParserService {
     super('html');
   }
 
-  parser(file_data: string): Observable<string> {
+  parser(data: string): Observable<string> {
     return Observable.create(observer => {
       try {
-        this.dom = new JSDOM(file_data);
+        this.dom = new JSDOM(data);
         this.$ = jQuery(this.dom.window);
         for (const p of this.$('p')) {
           if (p && p.textContent && p.textContent.trim()) {
             observer.next(p.textContent);
           }
         }
+        observer.complete();
       } catch (e) {
         observer.error(e);
       }
@@ -44,7 +45,7 @@ export class HtmlParserService extends ParserService {
     }
   }
 
-  getLastFileData(): string {
+  getLastData(): string {
     return this.dom.window.document.documentElement.outerHTML;
   }
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
 import { ParserService } from '../base/parser.service';
-import { HtmlParserService } from './html/html-parser.service';
+import { HtmlParserService } from '../html/html-parser.service';
+import { TextParserService } from '../text/text-parser.service';
 
 @Injectable()
 export class ParserManagerService {
@@ -9,13 +9,22 @@ export class ParserManagerService {
 
   constructor(
     private html_parser: HtmlParserService,
+    private text_parser: TextParserService
     ) {
     this.parsers = {
-      html: html_parser
+      html: html_parser,
+      txt: text_parser
     };
   }
 
-  getParser(filename): ParserService {
-    return this.parsers[];
+  getParser(data_type: string): ParserService {
+    let parser: ParserService;
+    if (data_type in this.parsers) {
+      parser = this.parsers[data_type];
+    } else {
+      parser = this.text_parser;
+    }
+    return parser;
   }
+
 }
