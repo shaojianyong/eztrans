@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-
 const { JSDOM } = (<any>window).require('jsdom');
-const jQuery = require('jquery');
 
 import { ParserService } from '../base/parser.service';
 
@@ -10,7 +8,6 @@ import { ParserService } from '../base/parser.service';
 @Injectable()
 export class HtmlParserService extends ParserService {
   dom: any;
-  $: any;
 
   constructor() {
     super('html');
@@ -20,8 +17,7 @@ export class HtmlParserService extends ParserService {
     return Observable.create(observer => {
       try {
         this.dom = new JSDOM(data);
-        this.$ = jQuery(this.dom.window);
-        for (const p of this.$('p')) {
+        for (const p of this.dom.window.document.querySelectorAll('p')) {
           if (p && p.textContent && p.textContent.trim()) {
             observer.next(p.textContent);
           }
@@ -35,10 +31,10 @@ export class HtmlParserService extends ParserService {
 
   update(segments: Array<string>): void {
     let index = 0;
-    for (const p of this.$('p')) {
+    for (const p of this.dom.window.document.querySelectorAll('p')) {
       if (p && p.textContent && p.textContent.trim()) {
         if (segments[index]) {
-          p.textContent = segments[index];
+          p.textContent = segments[index];  // TODO: escape
         }
         ++index;
       }
