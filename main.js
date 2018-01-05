@@ -88,8 +88,8 @@ function readFileSync (event, files) {
   }
 }
 
-function saveFile (event, currentFile, content) {
-  fs.writeFile(currentFile, content, function(err) {
+function saveFile (event, filePath, content) {
+  fs.writeFile(filePath, content, function(err) {
     event.sender.send('file-saved', err);
   });
 }
