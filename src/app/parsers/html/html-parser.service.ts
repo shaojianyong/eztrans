@@ -13,7 +13,7 @@ export class HtmlParserService extends ParserService {
     super('html');
   }
 
-  parser(data: string): Observable<string> {
+  parse(data: string): Observable<string> {
     return Observable.create(observer => {
       try {
         this.dom = new JSDOM(data);
@@ -34,7 +34,7 @@ export class HtmlParserService extends ParserService {
     for (const p of this.dom.window.document.querySelectorAll('p')) {
       if (p && p.textContent && p.textContent.trim()) {
         if (segments[index]) {
-          p.textContent = segments[index];  // TODO: escape
+          p.textContent = segments[index];  // TODO: HTML escape
         }
         ++index;
       }

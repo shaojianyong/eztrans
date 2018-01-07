@@ -8,6 +8,7 @@ const dialog = electron.remote.dialog;
 import {ExLinksModule} from '../services/utils/ex-links.module';
 
 import {SentenceModel} from '../services/model/sentence.model';
+import {ParserService} from '../parsers/base/parser.service';
 import {ParserManagerService} from '../parsers/manager/parser-manager.service';
 import {EngineManagerService} from '../providers/manager/engine-manager.service';
 import engines from '../providers/manager/engines';
@@ -24,6 +25,7 @@ import {SettingsComponent} from '../settings/settings.component';
 export class MainComponent implements OnInit {
   sentences = [];  // new Array<SentenceModel>();
   cur_index = -1;
+  parser: ParserService;
 
   @ViewChild(SettingsComponent) child_settings: SettingsComponent;
   @ViewChild(AboutComponent) child_about: AboutComponent;
@@ -58,7 +60,7 @@ export class MainComponent implements OnInit {
     const self = this;
 
     const options = {
-      title: 'Open a Text File',
+      title: 'Open a Structured Text File',
       filters: [
         {name: 'Text Files', extensions: ['txt', 'html', 'md', 'po']}
       ]
@@ -67,11 +69,40 @@ export class MainComponent implements OnInit {
     dialog.showOpenDialog(options, (files) => {
       if (files) {
         self.reset();
-      } else {
-        return;
+        ipc.send('read-file', files);  // ('read-file', files, self);  进程之间不能传递对象
       }
-      ipc.send('read-file', files);  // ('read-file', files, self);  进程之间不能传递对象
     });
+  }
+
+  exportFile(): void {
+    if (this.parser) {
+      const segments = new Array<string>();
+      for (let index = 0; index < this.sentences.length; ++index) {
+        let target_text = '';
+        const current = this.sentences[index];
+        if (current.target === -1) {
+          target_text = current.custom.target_text;
+        } else if (current.target > -1) {
+          target_text = current.refers[current.target].target_text;
+        }
+        segments[index] = target_text;
+      }
+      this.parser.update(segments);
+
+      const ext_name = /\.([^\.]+$)/.exec(this.title.getTitle())[1];
+      const options = {
+        title: 'Export the Translated File',
+        filters: [
+          {name: `Text Files (*.${ext_name})`, extensions: [ext_name]}
+        ]
+      };
+
+      dialog.showSaveDialog(options, (filename) => {
+        if (filename) {
+          ipc.send('save-file', filename, this.parser.getLastData());
+        }
+      });
+    }
   }
 
   // ipcRenderer与ipcMain同步通信，在JavaScript中，同步代码好丑陋
@@ -364,8 +395,8 @@ export class MainComponent implements OnInit {
     ipc.on('file-read', (event, err, data, filePath) => {
       self.reset();
       const ext_name = /\.([^\.]+$)/.exec(filePath)[1];
-      const parser = this.pms.getParser(ext_name);
-      parser.parser(data).subscribe(
+      self.parser = this.pms.getParser(ext_name);
+      self.parser.parse(data).subscribe(
         res => {
           self.sentences[self.sentences.length] = {
             source: res,
@@ -386,6 +417,10 @@ export class MainComponent implements OnInit {
 
       self.title.setTitle(`Eztrans - ${filePath}`);
       self.rerender();
+    });
+
+    ipc.on('file-saved', (event, err) => {
+      console.log('File Saved!');  // TODO: 自动打开文件？
     });
 
     ipc.on('refresh', (event) => {

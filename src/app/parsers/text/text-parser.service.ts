@@ -11,7 +11,7 @@ export class TextParserService extends ParserService {
     super('text');
   }
 
-  parser(data: string): Observable<string> {
+  parse(data: string): Observable<string> {
     return Observable.create(observer => {
       try {
         this.lines = data.split(/\n|\r\n/g);
@@ -29,17 +29,19 @@ export class TextParserService extends ParserService {
   }
 
   update(segments: Array<string>): void {
-    let index = 0;
-    for (let line of this.lines) {
-      if (line.trim() && segments[index]) {
-        line = segments[index];
+    let count = 0;
+    for (let index = 0; index < this.lines.length; ++index) {
+      if (this.lines[index].trim()) {
+        if (segments[count] && segments[count].trim()) {
+          this.lines[index] = segments[count];
+        }
+        ++count;
       }
-      ++index;
     }
   }
 
   getLastData(): string {
-    return this.lines.join('\n');
+    return this.lines.join('\r\n');  // TODO: \n for linux，根据平台选择换行符
   }
 
 }
