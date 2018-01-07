@@ -17,7 +17,7 @@ export class HtmlParserService extends ParserService {
     return Observable.create(observer => {
       try {
         this.dom = new JSDOM(data);
-        for (const p of this.dom.window.document.querySelectorAll('p')) {
+        for (const p of this.dom.window.document.querySelectorAll('*:not(pre)')) {
           if (p && p.textContent && p.textContent.trim()) {
             observer.next(p.textContent);
           }
@@ -31,7 +31,7 @@ export class HtmlParserService extends ParserService {
 
   update(segments: Array<string>): void {
     let index = 0;
-    for (const p of this.dom.window.document.querySelectorAll('p')) {
+    for (const p of this.dom.window.document.querySelectorAll('*:not(pre)')) {
       if (p && p.textContent && p.textContent.trim()) {
         if (segments[index]) {
           p.textContent = segments[index];  // TODO: HTML escape
