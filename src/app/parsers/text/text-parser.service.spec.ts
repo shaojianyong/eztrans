@@ -2,7 +2,7 @@ import { TestBed, inject } from '@angular/core/testing';
 
 import { TextParserService } from './text-parser.service';
 
-describe('GoogleTranslateService', () => {
+describe('TextParserService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [TextParserService]

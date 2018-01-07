@@ -8,6 +8,10 @@ export abstract class ParserService {
     return this.data_type;
   }
 
+  setDataType(dataType: string): void {
+    this.data_type = dataType;
+  }
+
   abstract parse(data: string): Observable<string>;
 
   abstract update(segments: Array<string>): void;

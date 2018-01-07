@@ -29,7 +29,9 @@
     "md5": "^2.2.1",
     "node-google-translate-skidz": "^1.1.1",
     "rxjs": "^5.5.2",
+    "showdown": "^1.8.6",
     "sqlite3": "^3.1.13",
+    "turndown": "^4.0.1",
     "zone.js": "^0.8.14"
   },
   "devDependencies": {

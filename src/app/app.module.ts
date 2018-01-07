@@ -19,6 +19,7 @@ import { HtmlParserService } from './parsers/html/html-parser.service';
 import { TextParserService } from './parsers/text/text-parser.service';
 import { AboutComponent } from './about/about.component';
 import { SettingsComponent } from './settings/settings.component';
+import { MarkdownParserService } from './parsers/markdown/markdown-parser.service';
 
 
 const routes: Routes = [
@@ -50,6 +51,7 @@ const routes: Routes = [
     BaiduVipfyService,
     IcibaTransService,
     HtmlParserService,
+    MarkdownParserService,
     TextParserService
   ],
   bootstrap: [AppComponent]
