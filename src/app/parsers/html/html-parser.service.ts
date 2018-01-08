@@ -3,6 +3,7 @@ import {Observable} from 'rxjs/Observable';
 const { JSDOM } = (<any>window).require('jsdom');
 
 import { ParserService } from '../base/parser.service';
+import { FunctionUtils } from '../../services/utils/function-utils';
 
 
 @Injectable()
@@ -60,7 +61,7 @@ export class HtmlParserService extends ParserService {
     if (node.nodeType === Node.TEXT_NODE) {
       const trimmed = node.nodeValue.trim();
       if (trimmed && trimmed.length > 1) {  // TODO: 进一步三选需要翻译的情况
-        const newVal = newData.texts[newData.index];
+        const newVal = FunctionUtils.htmlEscape(newData.texts[newData.index]);
         if (newVal) {
           if (trimmed === node.nodeValue) {
             node.nodeValue = newVal;
