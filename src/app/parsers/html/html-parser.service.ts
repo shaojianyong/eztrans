@@ -58,11 +58,15 @@ export class HtmlParserService extends ParserService {
 
   traverseW(node: Node, newData: any) {
     if (node.nodeType === Node.TEXT_NODE) {
-      const val = node.nodeValue.trim();
-      if (val && val.length > 1) {  // TODO: 进一步三选需要翻译的情况
+      const trimmed = node.nodeValue.trim();
+      if (trimmed && trimmed.length > 1) {  // TODO: 进一步三选需要翻译的情况
         const newVal = newData.texts[newData.index];
         if (newVal) {
-          node.nodeValue = newVal;  // TODO: 恢复空白字符
+          if (trimmed === node.nodeValue) {
+            node.nodeValue = newVal;
+          } else {
+            node.nodeValue.replace(trimmed, newVal);  // 恢复空白字符
+          }
         }
         newData.index++;
       }
