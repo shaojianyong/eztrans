@@ -42,8 +42,12 @@ export class IcibaTransService extends TranslateService {
             if (tm.target_text.endsWith('<br/>')) {
               tm.target_text = tm.target_text.slice(0, -5);
             }
+          } else if (res['status'] === 0) {
+            tm.target_text = res['content']['word_mean'].join(' | ');
+            tm.trans_state = -1;  // 单词翻译模式，仅供参考
           } else {
-            tm.target_text = res.toString();
+            observer.error('iCIBA translate error');
+            return;
           }
           observer.next(tm);
         },

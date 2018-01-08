@@ -9,7 +9,7 @@ export class TranslateModel {
   target_text: string;
   hz_translit: string;
   engine_name: string;
-  trans_state: number;
+  trans_state: number;  // 翻译质量等级：-1-劣等；0-正常(默认)；1-优质(人工翻译)
 
   constructor(obj?: any) {
     this.source_lang = obj && obj.source_lang || 'en';

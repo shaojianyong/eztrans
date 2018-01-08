@@ -199,21 +199,33 @@ export class MainComponent implements OnInit {
         // TODO: 检查翻译结果和数量，更新翻译状态，翻译错误时显示翻译按钮
         // TODO: 检查整体翻译进度，启用翻译按钮？？感觉做不到。。。
         if (res.target_text.length > 0) {
-          sentence.target = 0;  // 显示最先返回的翻译结果
+          if (sentence.target === -2) {
+            sentence.target = 0;
+          } else if (sentence.target >= 0) {
+
+          }
+
           state_element.attr('class', 'notched circle loading icon');
         } else {
           state_element.attr('class', 'warning circle icon');
         }
 
-        let exist = false;
-        for (let refer of sentence.refers) {
-          if (res.engine_name === refer.engine_name) {
-            refer = res;
-            exist = true;
+        let exist = -1;
+        for (let i = 0; i < sentence.refers.length; ++i) {
+          if (res.engine_name === sentence.refers[i].engine_name) {
+            sentence.refers[i] = res;  // 覆盖
+            exist = i;
           }
         }
-        if (!exist) {
+        if (exist === -1) {
           sentence.refers[sentence.refers.length] = res;
+          if (sentence.target === -2) {
+            sentence.target = 0;
+          } else if (sentence.target >= 0 && sentence.target !== sentence.refers.length - 1) {
+            if (sentences.refers[sentence.refers.length - 1].trans_state > sentences.refers[sentence.target].trans_state) {
+              sentence.target = sentence.refers[sentence.refers.length - 1;
+            }
+          }
         }
 
         if (sentence.refers.length === this.ems.getEnabledEngineCount()) {
