@@ -41,9 +41,9 @@ export class HtmlParserService extends ParserService {
 
   traverseR(node: Node, observer) {
     if (node.nodeType === Node.TEXT_NODE) {
-      const str = node.nodeValue.trim();
-      if (str && str.length > 1) {  // TODO: 进一步三选需要翻译的情况
-        observer.next(str);
+      const trimmed = node.nodeValue.trim();
+      if (trimmed && trimmed.length > 1) {  // TODO: 进一步三选需要翻译的情况
+        observer.next(trimmed);
       }
     }
 
@@ -66,7 +66,7 @@ export class HtmlParserService extends ParserService {
           if (trimmed === node.nodeValue) {
             node.nodeValue = newVal;
           } else {
-            node.nodeValue.replace(trimmed, newVal);  // 恢复空白字符
+              node.nodeValue = node.nodeValue.replace(trimmed, newVal);  // 恢复空白字符
           }
         }
         newData.index++;
