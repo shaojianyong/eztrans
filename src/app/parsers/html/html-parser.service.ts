@@ -17,11 +17,7 @@ export class HtmlParserService extends ParserService {
     return Observable.create(observer => {
       try {
         this.dom = new JSDOM(data);
-        for (const p of this.dom.window.document.querySelectorAll('*:not(pre)')) {
-          if (p && p.textContent && p.textContent.trim()) {
-            observer.next(p.textContent);
-          }
-        }
+        this.traverseR(this.dom.window.document.body, observer);
         observer.complete();
       } catch (e) {
         observer.error(e);
@@ -30,19 +26,56 @@ export class HtmlParserService extends ParserService {
   }
 
   update(segments: Array<string>): void {
-    let index = 0;
-    for (const p of this.dom.window.document.querySelectorAll('*:not(pre)')) {
-      if (p && p.textContent && p.textContent.trim()) {
-        if (segments[index]) {
-          p.textContent = segments[index];  // TODO: HTML escape
-        }
-        ++index;
-      }
-    }
+    const newData = {
+      texts: segments,
+      index: 0
+    };
+    this.traverseW(this.dom.window.document.body, newData);
   }
 
   getLastData(): string {
     return this.dom.window.document.documentElement.outerHTML;
+  }
+
+
+  traverseR(node: Node, observer) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const str = node.nodeValue.trim();
+      if (str && str.length > 1) {  // TODO: 进一步三选需要翻译的情况
+        observer.next(str);
+      }
+    }
+
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      const nodeList = node.childNodes;
+      for (let i = 0; i < nodeList.length; ++i) {
+        if (node.nodeName.toLowerCase() !== 'script') {
+          this.traverseR(nodeList[i], observer);
+        }
+      }
+    }
+  }
+
+  traverseW(node: Node, newData: any) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const val = node.nodeValue.trim();
+      if (val && val.length > 1) {  // TODO: 进一步三选需要翻译的情况
+        const newVal = newData.texts[newData.index];
+        if (newVal) {
+          node.nodeValue = newVal;  // TODO: 恢复空白字符
+        }
+        newData.index++;
+      }
+    }
+
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      const nodeList = node.childNodes;
+      for (let i = 0; i < nodeList.length; ++i) {
+        if (node.nodeName.toLowerCase() !== 'script') {
+          this.traverseW(nodeList[i], newData);
+        }
+      }
+    }
   }
 
 }
