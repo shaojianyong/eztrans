@@ -42,7 +42,7 @@ export class HtmlParserService extends ParserService {
   traverseR(node: Node, observer) {
     if (node.nodeType === Node.TEXT_NODE) {
       const trimmed = node.nodeValue.trim();
-      if (trimmed && trimmed.length > 1) {  // TODO: 进一步三选需要翻译的情况
+      if (trimmed && trimmed.length > 1) {  // TODO: 进一步筛选需要翻译的情况
         observer.next(trimmed);
       }
     }
@@ -60,7 +60,7 @@ export class HtmlParserService extends ParserService {
   traverseW(node: Node, newData: any) {
     if (node.nodeType === Node.TEXT_NODE) {
       const trimmed = node.nodeValue.trim();
-      if (trimmed && trimmed.length > 1) {  // TODO: 进一步三选需要翻译的情况
+      if (trimmed && trimmed.length > 1) {  // TODO: 进一步筛选需要翻译的情况
         const newVal = FunctionUtils.htmlEscape(newData.texts[newData.index]);
         if (newVal) {
           if (trimmed === node.nodeValue) {
