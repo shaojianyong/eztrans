@@ -199,12 +199,6 @@ export class MainComponent implements OnInit {
         // TODO: 检查翻译结果和数量，更新翻译状态，翻译错误时显示翻译按钮
         // TODO: 检查整体翻译进度，启用翻译按钮？？感觉做不到。。。
         if (res.target_text.length > 0) {
-          if (sentence.target === -2) {
-            sentence.target = 0;
-          } else if (sentence.target >= 0) {
-
-          }
-
           state_element.attr('class', 'notched circle loading icon');
         } else {
           state_element.attr('class', 'warning circle icon');
@@ -222,8 +216,10 @@ export class MainComponent implements OnInit {
           if (sentence.target === -2) {
             sentence.target = 0;
           } else if (sentence.target >= 0 && sentence.target !== sentence.refers.length - 1) {
-            if (sentences.refers[sentence.refers.length - 1].trans_state > sentences.refers[sentence.target].trans_state) {
-              sentence.target = sentence.refers[sentence.refers.length - 1;
+            const cur_state = sentence.refers[sentence.target].trans_state;
+            const new_state = sentence.refers[sentence.refers.length - 1].trans_state;
+            if (cur_state < new_state) {
+              sentence.target = sentence.refers.length - 1;
             }
           }
         }

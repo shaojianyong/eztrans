@@ -66,7 +66,7 @@ export class HtmlParserService extends ParserService {
           if (trimmed === node.nodeValue) {
             node.nodeValue = newVal;
           } else {
-              node.nodeValue = node.nodeValue.replace(trimmed, newVal);  // 恢复空白字符
+            node.nodeValue = node.nodeValue.replace(trimmed, newVal);  // 恢复空白字符
           }
         }
         newData.index++;
