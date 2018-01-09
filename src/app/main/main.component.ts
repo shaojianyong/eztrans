@@ -323,7 +323,9 @@ export class MainComponent implements OnInit {
   }
 
   refresh(): void {
-    this.sentences[this.cur_index].target = -1;
+    if (this.sentences[this.cur_index].target !== -1) {
+      this.sentences[this.cur_index].target = -2;
+    }
     this.sentences[this.cur_index].refers = [];
     this.translate(this.cur_index, this.sentences[this.cur_index]);
   }
