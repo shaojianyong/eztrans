@@ -80,10 +80,12 @@ export class MainComponent implements OnInit {
       for (let index = 0; index < this.sentences.length; ++index) {
         let target_text = '';
         const current = this.sentences[index];
-        if (current.target === -1) {
-          target_text = current.custom.target_text;
-        } else if (current.target > -1) {
-          target_text = current.refers[current.target].target_text;
+        if (!current.ignore) {
+          if (current.target === -1) {
+            target_text = current.custom.target_text;
+          } else if (current.target > -1) {
+            target_text = current.refers[current.target].target_text;
+          }
         }
         segments[index] = target_text;
       }
@@ -123,6 +125,8 @@ export class MainComponent implements OnInit {
           self.sentences[this.sentences.length] = {
             source: line,
             target: -2,
+            ignore: false,
+            hidden: false,
             status: 0,
             marked: 0,
             custom: null,
@@ -166,11 +170,10 @@ export class MainComponent implements OnInit {
   autoTranslate(): void {
     for (let index = 0; index < this.sentences.length; ++index) {
       const sentence = this.sentences[index];
-      if (sentence.refers.length === this.ems.getEnabledEngineCount()
-        && !($(`#state-${index}`).attr('class') in ['warning circle icon', 'remove circle icon'])) {
+      if (sentence.ignore || sentence.hidden || (sentence.refers.length === this.ems.getEnabledEngineCount()
+          && sentence.status in [1, 2, 3])) {  // 避免重复发送请求
         continue;
       }
-
       this.translate(index, sentence);
     }
   }
@@ -180,27 +183,19 @@ export class MainComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  /*
-  translate(sentence): void {
-    this.googleTranslate.translate((<any>sentence).source, (result) => {
-      (<any>sentence).target = result;
-      this.rerender();
-    });
-  }
-  */
-
   translate(index: number, sentence: SentenceModel): void {
     const state_element = $(`#state-${index}`);
     state_element.parent().removeClass('ez-hide');
+    sentence.status = 1;  // 发起请求
     state_element.attr('class', 'spinner loading icon');
 
     this.ems.translate(sentence.source).subscribe(
       res => {
-        // TODO: 检查翻译结果和数量，更新翻译状态，翻译错误时显示翻译按钮
-        // TODO: 检查整体翻译进度，启用翻译按钮？？感觉做不到。。。
         if (res.target_text.length > 0) {
+          sentence.status = 2;  // 返回响应
           state_element.attr('class', 'notched circle loading icon');
         } else {
+          sentence.status = 4;  // 告警
           state_element.attr('class', 'warning circle icon');
         }
 
@@ -226,6 +221,7 @@ export class MainComponent implements OnInit {
 
         if (sentence.refers.length === this.ems.getEnabledEngineCount()) {
           if (!(state_element.attr('class') in ['warning circle icon', 'remove circle icon'])) {
+            sentence.status = 3;  // 翻译完成
             state_element.parent().toggleClass('ez-hide');
           }
         }
@@ -233,10 +229,31 @@ export class MainComponent implements OnInit {
       },
       err => {
         console.log(err);  // TODO: 提供错误信息展示方案
+        sentence.status = 5;  // 错误
         state_element.attr('class', 'remove circle icon');
         this.rerender();
       }
     );
+  }
+
+  getStatusIcon(sentence: SentenceModel): string {
+    let icon = 'placeholder icon';
+    if (sentence.ignore) {
+      icon = 'ban icon';
+    } else if (sentence.status === 0) {
+      icon = 'placeholder icon';
+    } else if (sentence.status === 1) {
+      icon = 'spinner loading icon';
+    } else if (sentence.status === 2) {
+      icon = 'notched circle loading icon';
+    } else if (sentence.status === 3) {
+      icon = 'placeholder icon';
+    } else if (sentence.status === 4) {
+      icon = 'warning circle icon';
+    } else if (sentence.status === 5) {
+      icon = 'remove circle icon';
+    }
+    return icon;
   }
 
   toggle(): void {
@@ -323,6 +340,10 @@ export class MainComponent implements OnInit {
   }
 
   refresh(): void {
+    if (this.sentences[this.cur_index].ignore || this.sentences[this.cur_index].hidden) {
+      return;
+    }
+
     if (this.sentences[this.cur_index].target !== -1) {
       this.sentences[this.cur_index].target = -2;
     }
@@ -411,6 +432,8 @@ export class MainComponent implements OnInit {
           self.sentences[self.sentences.length] = {
             source: res,
             target: -2,
+            ignore: false,
+            hidden: false,
             status: 0,
             marked: false,
             custom: null,

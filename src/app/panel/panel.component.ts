@@ -80,8 +80,8 @@ export class PanelComponent implements OnInit {
     return icon;
   }
 
-  changeFlagIcon(sentence: SentenceModel): void {
-    sentence.marked = !sentence.marked;
+  changeFlagIcon(): void {
+    this.sentence.marked = !this.sentence.marked;
     this.rerenderEvent.emit();
   }
 
@@ -92,6 +92,16 @@ export class PanelComponent implements OnInit {
 
   refresh(): void {
     this.refreshEvent.emit();
+  }
+
+  ignore(): void {
+    this.sentence.ignore = !this.sentence.ignore;
+    this.rerenderEvent.emit();
+  }
+
+  hide(): void {
+    this.sentence.hidden = !this.sentence.hidden;
+    this.rerenderEvent.emit();
   }
 
   ngOnInit() {

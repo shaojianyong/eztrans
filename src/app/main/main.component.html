@@ -34,12 +34,15 @@
          (mouseenter)="onMouseEnter(idx)"
          (mouseleave)="onMouseLeave(idx)"
          class="item">
-      <table id="table-{{idx}}" class="ui very basic table">
+
+      <a *ngIf="sentence.hidden" (click)="unhide()"><i class="{{getStatusIcon(sentence)}}"></i>摘要信息...</a>
+
+      <table *ngIf="!sentence.hidden" id="table-{{idx}}" class="ui very basic table">
         <tbody>
         <tr>
           <td rowspan="2" class="collapsing">
-            <a class="ez-hide">
-              <i id="state-{{idx}}" class="edit icon"></i>
+            <a class="{{getStatusIcon(sentence) === 'placeholder icon' ? 'ez-hide' : ''}}">
+              <i id="state-{{idx}}" class="{{getStatusIcon(sentence)}}"></i>
             </a>
           </td>
           <td class="source-cell">
@@ -54,7 +57,7 @@
         </tr>
         <tr>
           <td class="target-cell">
-            {{getTargetText(sentence)}}
+            {{sentence.ignore ? '' : getTargetText(sentence)}}
           </td>
           <td class="collapsing">
             <a id="exec-{{idx}}" class="ez-hide">
