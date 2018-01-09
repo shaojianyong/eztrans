@@ -279,9 +279,9 @@ export class MainComponent implements OnInit {
   getEngineIcon(sentence: SentenceModel): string {
     let icon = '';
     if (sentence.target === -2) {
-      icon = 'icon';  // TODO: 手动点击翻译
+      icon = 'refresh icon';  // TODO: 手动点击翻译
     } else if (sentence.target === -1) {
-      icon = 'user outline icon';
+      icon = 'star icon';
     } else {
       icon = engines[sentence.refers[sentence.target].engine_name].icon;
     }

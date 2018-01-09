@@ -2,16 +2,16 @@
   <div class="ui segment">
     <p>{{sentence.source}}</p>
     <div class="ui small icon secondary menu">
-      <a class="item" (click)="changeFlagIcon()">
+      <!--a class="item" (click)="changeFlagIcon()">
         <i class="{{getFlagIcon(sentence)}}"></i>
-      </a>
+      </a-->
       <a class="item" (click)="refresh()">
         <i class="refresh icon"></i>
       </a>
-      <a class="right item" (click)="ignore()">
+      <a class="item" (click)="ignore()">
         <i class="ban icon"></i>
       </a>
-      <a class="item" (click)="hide()">
+      <a class="right item" (click)="hide()">
         <i class="hide icon"></i>
       </a>
     </div>
