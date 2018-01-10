@@ -159,8 +159,8 @@ export class MainComponent implements OnInit {
     this.rerender();
   }
 
-  onItemDblclick(index, sentence): void {
-    this.translate(index, sentence);
+  onItemDblclick(index): void {
+    this.translate(index, this.sentences[index]);
   }
 
   onItemContextMenu(index: number): void {
@@ -237,7 +237,8 @@ export class MainComponent implements OnInit {
     );
   }
 
-  getStatusIcon(sentence: SentenceModel): string {
+  getStatusIcon(index: number): string {
+    const sentence = this.sentences[index];
     let icon = 'placeholder icon';
     if (sentence.ignore) {
       icon = 'ban icon';
@@ -277,7 +278,8 @@ export class MainComponent implements OnInit {
     }).sidebar('toggle');
   }
 
-  getEngineIcon(sentence: SentenceModel): string {
+  getEngineIcon(index: number): string {
+    const sentence = this.sentences[index];
     let icon = '';
     if (sentence.target === -2) {
       icon = 'refresh icon';  // TODO: 手动点击翻译
@@ -289,8 +291,9 @@ export class MainComponent implements OnInit {
     return icon;
   }
 
-  getTargetText(sentence: SentenceModel): string {
+  getTargetText(index: number): string {
     let target_text = '';
+    const sentence = this.sentences[index];
     if (sentence.target === -2) {
       target_text = '';
     } else if (sentence.target === -1) {
@@ -302,12 +305,12 @@ export class MainComponent implements OnInit {
   }
 
   getPageCount(): number {
-    const pageCount = (this.sentences.length / 100) + ((this.sentences.length % 100) ? 1 : 0);
-    return parseInt(pageCount.toString(), 10);
+    return Math.floor(this.sentences.length / 100) + ((this.sentences.length % 100) ? 1 : 0);
   }
 
-  getPageData(): Array<SentenceModel> {
-    return this.sentences.slice(this.cur_page * 100, (this.cur_page + 1) * 100);
+  getPageRange(): Array<number> {
+    const indexArray = Array.from(new Array(this.sentences.length), (x, i) => i);
+    return indexArray.slice(this.cur_page * 100, (this.cur_page + 1) * 100);
   }
 
   showSettings(): void {
@@ -378,7 +381,8 @@ export class MainComponent implements OnInit {
     return vz;
   }
 
-  changeFlagIcon(sentence: SentenceModel): void {
+  changeFlagIcon(index: number): void {
+    const sentence = this.sentences[index];
     sentence.marked = !sentence.marked;
     this.rerender();
   }
@@ -422,6 +426,20 @@ export class MainComponent implements OnInit {
         tran_list.scrollTop = prev_item.offsetTop + prev_item.clientHeight - tran_list.clientHeight;
       }
       event.preventDefault();
+    }
+  }
+
+  nextPage(): void {
+    if (this.cur_page + 1 < this.getPageCount()) {
+      this.cur_page++;
+      this.rerender();
+    }
+  }
+  
+  prevPage(): void {
+    if (this.cur_page > 0) {
+      this.cur_page--;
+      this.rerender();
     }
   }
 

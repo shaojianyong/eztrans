@@ -29,40 +29,40 @@
 <!-- Translate (list & side) -relaxed -->
 <div id="trans-container">
   <div id="trans-list" class="ui divided list">
-    <div *ngFor="let sentence of getPageData(); let idx = index + cur_page * 100" id="item-{{idx}}"
+    <div *ngFor="let idx of getPageRange()" id="item-{{idx}}"
          (click)="onItemClick(idx)"
-         (contextmenu)="onItemContextMenu(idx, sentence)"
+         (contextmenu)="onItemContextMenu(idx)"
          (mouseenter)="onMouseEnter(idx)"
          (mouseleave)="onMouseLeave(idx)"
          class="item">
 
-      <a (click)="unhide()"><i class="{{getStatusIcon(sentence)}}"></i>摘要信息...</a>
+      <a *ngIf="sentences[idx].hidden" (click)="unhide()"><i class="{{getStatusIcon(idx)}}"></i>摘要信息...</a>
 
-      <table id="table-{{idx}}" class="ui very basic table">
+      <table *ngIf="!sentences[idx].hidden" id="table-{{idx}}" class="ui very basic table">
         <tbody>
         <tr>
           <td rowspan="2" class="collapsing">
-            <a class="{{getStatusIcon(sentence) === 'placeholder icon' ? 'ez-hide' : ''}}">
-              <i id="state-{{idx}}" class="{{getStatusIcon(sentence)}}"></i>
+            <a class="{{getStatusIcon(idx) === 'placeholder icon' ? 'ez-hide' : ''}}">
+              <i id="state-{{idx}}" class="{{getStatusIcon(idx)}}"></i>
             </a>
           </td>
           <td class="source-cell">
-            {{sentence.source}}
+            {{sentences[idx].source}}
           </td>
           <td class="collapsing">
-            <a id="mark-{{idx}}" class="{{getMarkVisibility(idx)}}" (click)="changeFlagIcon(sentence)">
-              <i *ngIf="sentence.marked" class="flag icon"></i>
-              <i *ngIf="!sentence.marked" class="flag outline icon"></i>
+            <a id="mark-{{idx}}" class="{{getMarkVisibility(idx)}}" (click)="changeFlagIcon(idx)">
+              <i *ngIf="sentences[idx].marked" class="flag icon"></i>
+              <i *ngIf="!sentences[idx].marked" class="flag outline icon"></i>
             </a>
           </td>
         </tr>
         <tr>
           <td class="target-cell">
-            {{sentence.ignore ? '' : getTargetText(sentence)}}
+            {{sentences[idx].ignore ? '' : getTargetText(idx)}}
           </td>
           <td class="collapsing">
             <a id="exec-{{idx}}" class="ez-hide">
-            <i class="grey {{getEngineIcon(sentence)}}"></i>
+            <i class="grey {{getEngineIcon(idx)}}"></i>
             </a>
           </td>
         </tr>
