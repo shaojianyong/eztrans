@@ -389,10 +389,10 @@ export class MainComponent implements OnInit {
 
   @HostListener('window:keydown.arrowright', ['$event'])
   onArrowRight(event: KeyboardEvent): void {
-    if (document.activeElement.getAttribute('contenteditable')) {
+    if (document.activeElement.getAttribute('contenteditable') || this.cur_index === -1) {
       return;
     }
-
+    // TODO: 自动翻页？只针对当前页？
     const next = this.cur_index + 1;
     if (next < this.sentences.length) {
       this.onItemClick(next);
@@ -410,7 +410,7 @@ export class MainComponent implements OnInit {
 
   @HostListener('window:keydown.arrowleft', ['$event'])
   onArrowLeft(event: KeyboardEvent): void {
-    if (document.activeElement.getAttribute('contenteditable')) {
+    if (document.activeElement.getAttribute('contenteditable') || this.cur_index === -1) {
       return;
     }
 
@@ -432,6 +432,8 @@ export class MainComponent implements OnInit {
   nextPage(): void {
     if (this.cur_page + 1 < this.getPageCount()) {
       this.cur_page++;
+      document.getElementById('trans-list').scrollTop = 0;
+      this.cur_index = -1;
       this.rerender();
     }
   }
@@ -439,6 +441,8 @@ export class MainComponent implements OnInit {
   prevPage(): void {
     if (this.cur_page > 0) {
       this.cur_page--;
+      document.getElementById('trans-list').scrollTop = 0;
+      this.cur_index = -1;
       this.rerender();
     }
   }
