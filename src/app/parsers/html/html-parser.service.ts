@@ -5,6 +5,7 @@ const { JSDOM } = (<any>window).require('jsdom');
 import { ParserService } from '../base/parser.service';
 import { FunctionUtils } from '../../services/utils/function-utils';
 
+const SKIP_ELEMENTS = ['script', 'pre', 'code'];
 
 @Injectable()
 export class HtmlParserService extends ParserService {
@@ -42,16 +43,15 @@ export class HtmlParserService extends ParserService {
   traverseR(node: Node, observer) {
     if (node.nodeType === Node.TEXT_NODE) {
       const trimmed = node.nodeValue.trim();
-      if (trimmed && trimmed.length > 1) {  // TODO: 进一步筛选需要翻译的情况
+      if (trimmed && trimmed.length > 1) {
         observer.next(trimmed);
       }
     }
 
     if (node.nodeType === Node.ELEMENT_NODE) {
-      const nodeList = node.childNodes;
-      for (let i = 0; i < nodeList.length; ++i) {
-        if (node.nodeName.toLowerCase() !== 'script') {
-          this.traverseR(nodeList[i], observer);
+      if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
+        for (let i = 0; i < node.childNodes.length; ++i) {
+          this.traverseR(node.childNodes[i], observer);
         }
       }
     }
@@ -60,7 +60,7 @@ export class HtmlParserService extends ParserService {
   traverseW(node: Node, newData: any) {
     if (node.nodeType === Node.TEXT_NODE) {
       const trimmed = node.nodeValue.trim();
-      if (trimmed && trimmed.length > 1) {  // TODO: 进一步筛选需要翻译的情况
+      if (trimmed && trimmed.length > 1) {
         const newVal = FunctionUtils.htmlEscape(newData.texts[newData.index]);
         if (newVal) {
           if (trimmed === node.nodeValue) {
@@ -74,10 +74,9 @@ export class HtmlParserService extends ParserService {
     }
 
     if (node.nodeType === Node.ELEMENT_NODE) {
-      const nodeList = node.childNodes;
-      for (let i = 0; i < nodeList.length; ++i) {
-        if (node.nodeName.toLowerCase() !== 'script') {
-          this.traverseW(nodeList[i], newData);
+      if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
+        for (let i = 0; i < node.childNodes.length; ++i) {
+          this.traverseW(node.childNodes[i], newData);
         }
       }
     }

@@ -435,7 +435,7 @@ export class MainComponent implements OnInit {
       this.rerender();
     }
   }
-  
+
   prevPage(): void {
     if (this.cur_page > 0) {
       this.cur_page--;
