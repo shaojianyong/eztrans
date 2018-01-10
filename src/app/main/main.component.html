@@ -29,16 +29,16 @@
 <!-- Translate (list & side) -relaxed -->
 <div id="trans-container">
   <div id="trans-list" class="ui divided list">
-    <div *ngFor="let sentence of sentences; let idx = index" id="item-{{idx}}"
+    <div *ngFor="let sentence of getPageData(); let idx = index + cur_page * 100" id="item-{{idx}}"
          (click)="onItemClick(idx)"
          (contextmenu)="onItemContextMenu(idx, sentence)"
          (mouseenter)="onMouseEnter(idx)"
          (mouseleave)="onMouseLeave(idx)"
          class="item">
 
-      <a *ngIf="sentence.hidden" (click)="unhide()"><i class="{{getStatusIcon(sentence)}}"></i>摘要信息...</a>
+      <a (click)="unhide()"><i class="{{getStatusIcon(sentence)}}"></i>摘要信息...</a>
 
-      <table *ngIf="!sentence.hidden" id="table-{{idx}}" class="ui very basic table">
+      <table id="table-{{idx}}" class="ui very basic table">
         <tbody>
         <tr>
           <td rowspan="2" class="collapsing">
@@ -82,7 +82,7 @@
 <div id="status-bar" class="ui blue inverted attached stackable menu">
 
   <div class="item">
-    <i class="angle right icon"></i> {{cur_index + 1}} / {{sentences.length}}
+    <i class="caret right icon"></i> {{cur_index + 1}} / {{sentences.length}}
   </div>
 
 

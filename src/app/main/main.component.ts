@@ -306,6 +306,10 @@ export class MainComponent implements OnInit {
     return parseInt(pageCount.toString(), 10);
   }
 
+  getPageData(): Array<SentenceModel> {
+    return this.sentences.slice(this.cur_page * 100, (this.cur_page + 1) * 100);
+  }
+
   showSettings(): void {
     this.child_settings.show();
   }
