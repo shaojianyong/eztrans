@@ -25,6 +25,7 @@ import {SettingsComponent} from '../settings/settings.component';
 export class MainComponent implements OnInit {
   sentences = [];  // new Array<SentenceModel>();
   cur_index = -1;
+  cur_page = 0;
   parser: ParserService;
 
   @ViewChild(SettingsComponent) child_settings: SettingsComponent;
@@ -298,6 +299,11 @@ export class MainComponent implements OnInit {
       target_text = sentence.refers[sentence.target].target_text;
     }
     return target_text;
+  }
+
+  getPageCount(): number {
+    const pageCount = (this.sentences.length / 100) + ((this.sentences.length % 100) ? 1 : 0);
+    return parseInt(pageCount.toString(), 10);
   }
 
   showSettings(): void {

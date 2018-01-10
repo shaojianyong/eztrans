@@ -9,6 +9,7 @@
   <a class="item" (click)="exportFile()">
     <i class="sign out icon"></i> Export
   </a>
+
   <!--div class="ui dropdown item"> More
     <i class="dropdown icon"></i>
     <div class="menu">
@@ -79,9 +80,12 @@
 
 <!-- Status Bar -->
 <div id="status-bar" class="ui blue inverted attached stackable menu">
+
   <div class="item">
-    <i class="angle right icon"></i> {{cur_index + 1}}/{{sentences.length}}
+    <i class="angle right icon"></i> {{cur_index + 1}} / {{sentences.length}}
   </div>
+
+
   <a class="item">
     <i class="bar chart icon"></i> G10 B10 U10
   </a>
@@ -89,10 +93,20 @@
     <i class="world icon"></i> English -> Simplified Chinese
   </a>
 
-
-  <a class="right item" (click)="showAbout()">
-    <i class="help icon"></i>
-  </a>
+  <div class="right menu">
+    <a *ngIf="sentences.length > 100" class="ui icon item" (click)="nextPage()">
+      <i class="chevron right icon"></i>
+    </a>
+    <div *ngIf="sentences.length > 100" class="ui text item">
+      {{cur_page + 1}} / {{getPageCount()}}
+    </div>
+    <a *ngIf="sentences.length > 100" class="ui icon item" (click)="prevPage()">
+      <i class="chevron left icon"></i>
+    </a>
+    <a class="item" (click)="showAbout()">
+      <i class="help icon"></i>
+    </a>
+  </div>
 </div>
 
 <!-- Setting Dialog -->
