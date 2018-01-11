@@ -184,6 +184,13 @@ export class MainComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  forceRerender(event: any): void {
+    if (event.forceShowSelected) {
+      this.showSelectedItem();
+    }
+    this.rerender();
+  }
+
   translate(index: number, sentence: SentenceModel): void {
     const state_element = $(`#state-${index}`);
     state_element.parent().removeClass('ez-hide');
@@ -364,6 +371,13 @@ export class MainComponent implements OnInit {
     this.translate(this.cur_index, this.sentences[this.cur_index]);
   }
 
+  forceRefresh(event: any): void {
+    if (event.forceShowSelected) {
+      this.showSelectedItem();
+    }
+    this.refresh();
+  }
+
   mouseEnterShow(index: number): void {
     $(`#exec-${index}`).removeClass('ez-hide');
   }
@@ -394,7 +408,8 @@ export class MainComponent implements OnInit {
     }
     // TODO: 自动翻页？只针对当前页？
     const next = this.cur_index + 1;
-    if (next < this.sentences.length) {
+    const range = this.getPageRange();
+    if (next <= range[range.length - 1]) {
       this.onItemClick(next);
 
       const tran_list = document.getElementById('trans-list');
@@ -415,7 +430,8 @@ export class MainComponent implements OnInit {
     }
 
     const prev = this.cur_index - 1;
-    if (prev >= 0) {
+    const range = this.getPageRange();
+    if (prev >= range[0]) {
       this.onItemClick(prev);
 
       const tran_list = document.getElementById('trans-list');
@@ -444,6 +460,18 @@ export class MainComponent implements OnInit {
       document.getElementById('trans-list').scrollTop = 0;
       this.cur_index = -1;
       this.rerender();
+    }
+  }
+
+  showSelectedItem(): void {
+    if (this.cur_index !== -1) {
+      const tran_list = document.getElementById('trans-list');
+      const tran_item = document.getElementById(`item-${this.cur_index}`);
+      if (tran_list.scrollTop > tran_item.offsetTop) {
+        tran_list.scrollTop = tran_item.offsetTop;
+      } else if (tran_list.scrollTop < tran_item.offsetTop + tran_item.clientHeight - tran_list.clientHeight) {
+        tran_list.scrollTop = tran_item.offsetTop + tran_item.clientHeight - tran_list.clientHeight;
+      }
     }
   }
 

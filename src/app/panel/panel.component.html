@@ -22,7 +22,7 @@
       <div id="custom-editor" contenteditable="true" [textContent]="sentence.custom.target_text"
            (input)="onEditInput()"></div>
       <div class="ui small icon secondary menu">
-        <a class="item" (click)="select(-1)">
+        <a class="item" (click)="selectTranslation(-1)">
           <i class="{{getHeartIcon(-1)}}"></i>
         </a>
         <a class="item" (click)="removeCustom()">
@@ -37,7 +37,7 @@
     <div *ngFor="let refer of sentence.refers; let idx = index" class="ui segment">
       <p>{{refer.target_text}}</p>
       <div class="ui small icon secondary menu">
-        <a class="item" (click)="select(idx)">
+        <a class="item" (click)="selectTranslation(idx)">
           <i class="{{getHeartIcon(idx)}}"></i>
         </a>
         <a class="item" (click)="clone(idx)">

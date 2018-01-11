@@ -18,9 +18,9 @@ export class PanelComponent implements OnInit {
   constructor() {
   }
 
-  select(refer_index: number): void {
+  selectTranslation(refer_index: number): void {
     this.sentence.target = refer_index;
-    this.rerenderEvent.emit();
+    this.rerenderEvent.emit({forceShowSelected: true});
   }
 
   clone(refer_index: number): void {
@@ -44,10 +44,11 @@ export class PanelComponent implements OnInit {
     }
 
     this.sentence.target = -1;  // 默认选中定制翻译
-    this.rerenderEvent.emit();
-    $('#custom-editor').text(this.sentence.custom.target_text);
-    $('#custom-editor').attr('contenteditable', 'true');
-    $('#custom-editor').focus();
+    this.rerenderEvent.emit({forceShowSelected: true});
+    const ce = $('#custom-editor');
+    ce.text(this.sentence.custom.target_text);
+    ce.attr('contenteditable', 'true');
+    ce.focus();
   }
 
   onExLink(engine_name: string): void {
@@ -69,7 +70,7 @@ export class PanelComponent implements OnInit {
   removeCustom(): void {
     this.sentence.target = 0;  // 选中第一个，还是默认引擎？
     this.sentence.custom = null;
-    this.rerenderEvent.emit();
+    this.rerenderEvent.emit({forceShowSelected: true});
   }
 
   getFlagIcon(sentence: SentenceModel): string {
@@ -82,26 +83,26 @@ export class PanelComponent implements OnInit {
 
   changeFlagIcon(): void {
     this.sentence.marked = !this.sentence.marked;
-    this.rerenderEvent.emit();
+    this.rerenderEvent.emit({forceShowSelected: true});
   }
 
   onEditInput(): void {
     this.sentence.custom.target_text = $('#custom-editor').text();
-    this.rerenderEvent.emit();
+    this.rerenderEvent.emit({forceShowSelected: true});
   }
 
   refresh(): void {
-    this.refreshEvent.emit();
+    this.refreshEvent.emit({forceShowSelected: true});
   }
 
   ignore(): void {
     this.sentence.ignore = !this.sentence.ignore;
-    this.rerenderEvent.emit();
+    this.rerenderEvent.emit({forceShowSelected: true});
   }
 
   hide(): void {
     this.sentence.hidden = !this.sentence.hidden;
-    this.rerenderEvent.emit();
+    this.rerenderEvent.emit({forceShowSelected: true});
   }
 
   ngOnInit() {

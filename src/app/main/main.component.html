@@ -72,8 +72,8 @@
   </div>
 
   <app-panel [sentence]="sentences[cur_index]"
-             (rerenderEvent)="rerender()"
-             (refreshEvent)="refresh()"
+             (rerenderEvent)="forceRerender($event)"
+             (refreshEvent)="forceRefresh($event)"
              id="trans-side">
   </app-panel>
 </div>
