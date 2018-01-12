@@ -1,5 +1,8 @@
 <!-- Too bar -->
 <div id="tool-bar" class="ui blue inverted attached menu">
+  <a class="item" (click)="toggle()">
+    <i class="sidebar icon"></i> Home
+  </a>
   <a class="item" (click)="openFile()">
     <i class="sign in icon"></i> Import
   </a>
@@ -8,6 +11,9 @@
   </a>
   <a class="item" (click)="exportFile()">
     <i class="sign out icon"></i> Export
+  </a>
+  <a class="item" (click)="exportFile()">
+    <i class="refresh icon"></i> Sync
   </a>
 
   <!--div class="ui dropdown item"> More
@@ -36,12 +42,10 @@
          (mouseleave)="onMouseLeave(idx)"
          class="item">
 
-      <a *ngIf="sentences[idx].hidden" (click)="unhide()"><i class="{{getStatusIcon(idx)}}"></i>摘要信息...</a>
-
-      <table *ngIf="!sentences[idx].hidden" id="table-{{idx}}" class="ui very basic table">
+      <table id="table-{{idx}}" class="ui very basic table">
         <tbody>
         <tr>
-          <td rowspan="2" class="collapsing">
+          <td [attr.rowspan]="(sentences[idx].target == -2 || sentences[idx].ignore) ? 1 : 2" class="collapsing">
             <a class="{{getStatusIcon(idx) === 'placeholder icon' ? 'ez-hide' : ''}}">
               <i id="state-{{idx}}" class="{{getStatusIcon(idx)}}"></i>
             </a>
@@ -49,27 +53,28 @@
           <td class="source-cell">
             {{sentences[idx].source}}
           </td>
-          <td class="collapsing">
+          <td [attr.rowspan]="(sentences[idx].target == -2 || sentences[idx].ignore) ? 1 : 2" class="collapsing">
             <a id="mark-{{idx}}" class="{{getMarkVisibility(idx)}}" (click)="changeFlagIcon(idx)">
               <i *ngIf="sentences[idx].marked" class="flag icon"></i>
               <i *ngIf="!sentences[idx].marked" class="flag outline icon"></i>
             </a>
           </td>
         </tr>
-        <tr>
+        <tr *ngIf="sentences[idx].target != -2 && !sentences[idx].ignore">
           <td class="target-cell">
             {{sentences[idx].ignore ? '' : getTargetText(idx)}}
-          </td>
-          <td class="collapsing">
-            <a id="exec-{{idx}}" class="ez-hide">
-            <i class="grey {{getEngineIcon(idx)}}"></i>
-            </a>
           </td>
         </tr>
         </tbody>
       </table>
     </div>
   </div>
+
+<!--td class="collapsing">
+  <a id="exec-{{idx}}" class="ez-hide">
+  <i class="grey {{getEngineIcon(idx)}}"></i>
+  </a>
+</td-->
 
   <app-panel [sentence]="sentences[cur_index]"
              (rerenderEvent)="forceRerender($event)"
@@ -114,3 +119,8 @@
 
 <!-- About Dialog -->
 <app-about></app-about>
+
+<!--
+https://github.com/angular/angular/issues/4610
+https://stackoverflow.com/questions/35615751/why-is-colspan-not-a-known-native-attribute-in-angular-2
+-->
