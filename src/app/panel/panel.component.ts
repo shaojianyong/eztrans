@@ -100,11 +100,6 @@ export class PanelComponent implements OnInit {
     this.rerenderEvent.emit({forceShowSelected: true});
   }
 
-  hide(): void {
-    this.sentence.hidden = !this.sentence.hidden;
-    this.rerenderEvent.emit({forceShowSelected: true});
-  }
-
   ngOnInit() {
   }
 

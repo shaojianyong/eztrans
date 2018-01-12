@@ -127,7 +127,6 @@ export class MainComponent implements OnInit {
             source: line,
             target: -2,
             ignore: false,
-            hidden: false,
             status: 0,
             marked: 0,
             custom: null,
@@ -171,7 +170,7 @@ export class MainComponent implements OnInit {
   autoTranslate(): void {
     for (let index = 0; index < this.sentences.length; ++index) {
       const sentence = this.sentences[index];
-      if (sentence.ignore || sentence.hidden || (sentence.refers.length === this.ems.getEnabledEngineCount()
+      if (sentence.ignore || (sentence.refers.length === this.ems.getEnabledEngineCount()
           && sentence.status in [1, 2, 3])) {  // 避免重复发送请求
         continue;
       }
@@ -360,7 +359,7 @@ export class MainComponent implements OnInit {
   }
 
   refresh(): void {
-    if (this.sentences[this.cur_index].ignore || this.sentences[this.cur_index].hidden) {
+    if (this.sentences[this.cur_index].ignore) {
       return;
     }
 
@@ -493,7 +492,6 @@ export class MainComponent implements OnInit {
             source: res,
             target: -2,
             ignore: false,
-            hidden: false,
             status: 0,
             marked: false,
             custom: null,
