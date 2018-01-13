@@ -94,25 +94,68 @@ function saveFile (event, filePath, content) {
   });
 }
 
-const contextMenu = new Menu();
-contextMenu.append(new MenuItem({ label: 'Refresh', click: refresh, icon: './dist/assets/images/icons/refresh.png' }));
-contextMenu.append(new MenuItem({ type: 'separator' }));
-contextMenu.append(new MenuItem({ label: 'Merge Up', icon: './dist/assets/images/icons/arrowup.png' }));  // merge with up
-contextMenu.append(new MenuItem({ label: 'Merge Down', icon: './dist/assets/images/icons/arrowdown.png' }));
-contextMenu.append(new MenuItem({ label: 'Split Segment', icon: './dist/assets/images/icons/split.png' }));
-contextMenu.append(new MenuItem({ label: 'Delete', icon: './dist/assets/images/icons/delete.png' }));
-contextMenu.append(new MenuItem({ type: 'separator' }));
-contextMenu.append(new MenuItem({ label: 'Toggle Mark', click: toggleFlag, icon: './dist/assets/images/icons/flag.png' }));
+function retranslate(menuItem, browserWindow) {
+  browserWindow.send('retranslate');
+}
 
-function refresh(menuItem, browserWindow) {
-  browserWindow.send('refresh');
+function skipOver(menuItem, browserWindow) {
+  browserWindow.send('skip_over');
+}
+
+function nextPage(menuItem, browserWindow) {
+  browserWindow.send('next_page');
+}
+
+function prevPage(menuItem, browserWindow) {
+  browserWindow.send('previous_page');
 }
 
 function toggleFlag(menuItem, browserWindow) {
   browserWindow.send('toggle-flag');
 }
 
-function showItemContextMenu(event) {
+function showItemContextMenu(event, page_count, cur_page) {
+  const contextMenu = new Menu();
+  contextMenu.append(new MenuItem({
+    label: 'Retranslate',
+    click: retranslate,
+    icon: './dist/assets/images/icons/repeat.png'
+  }));
+  contextMenu.append(new MenuItem({
+    label: 'Toggle Skip',
+    click: skipOver,
+    icon: './dist/assets/images/icons/ban.png'
+  }));
+  if (page_count > 1) {
+    contextMenu.append(new MenuItem({type: 'separator'}));
+    contextMenu.append(new MenuItem({
+      label: 'Next Page',
+      click: nextPage,
+      visible: cur_page + 1 < page_count,
+      icon: './dist/assets/images/icons/arrowright.png'
+    }));
+    contextMenu.append(new MenuItem({
+      label: 'Previous Page',
+      click: prevPage,
+      visible: cur_page > 0,
+      icon: './dist/assets/images/icons/arrowleft.png'
+    }));
+  }
+  contextMenu.append(new MenuItem({ type: 'separator' }));
+  contextMenu.append(new MenuItem({
+    label: 'Toggle Mark',
+    click: toggleFlag,
+    icon: './dist/assets/images/icons/flag.png'
+  }));
+
+  /*
+  contextMenu.append(new MenuItem({ type: 'separator' }));
+  contextMenu.append(new MenuItem({ label: 'Merge Up', icon: './dist/assets/images/icons/arrowup.png' }));  // merge with up
+  contextMenu.append(new MenuItem({ label: 'Merge Down', icon: './dist/assets/images/icons/arrowdown.png' }));
+  contextMenu.append(new MenuItem({ label: 'Split Segment', icon: './dist/assets/images/icons/split.png' }));
+  contextMenu.append(new MenuItem({ label: 'Delete', icon: './dist/assets/images/icons/delete.png' }));
+  */
+
   const win = BrowserWindow.fromWebContents(event.sender);
   contextMenu.popup(win);
 }
