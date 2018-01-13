@@ -164,7 +164,7 @@ export class MainComponent implements OnInit {
 
   onItemContextMenu(index: number): void {
     this.onItemClick(index);
-    ipc.send('show-item-context-menu');
+    ipc.send('show-item-context-menu', this.getPageCount(), this.cur_page);
   }
 
   autoTranslate(): void {
@@ -358,7 +358,7 @@ export class MainComponent implements OnInit {
     this.mouseLeaveHide(index);
   }
 
-  refresh(): void {
+  retranslate(): void {
     if (this.sentences[this.cur_index].ignore) {
       return;
     }
@@ -370,11 +370,11 @@ export class MainComponent implements OnInit {
     this.translate(this.cur_index, this.sentences[this.cur_index]);
   }
 
-  forceRefresh(event: any): void {
+  forceRetranslate(event: any): void {
     if (event.forceShowSelected) {
       this.showSelectedItem();
     }
-    this.refresh();
+    this.retranslate();
   }
 
   mouseEnterShow(index: number): void {
@@ -394,8 +394,8 @@ export class MainComponent implements OnInit {
     return vz;
   }
 
-  changeFlagIcon(index: number): void {
-    const sentence = this.sentences[index];
+  changeFlagIcon(): void {
+    const sentence = this.sentences[this.cur_index];
     sentence.marked = !sentence.marked;
     this.rerender();
   }
@@ -474,6 +474,11 @@ export class MainComponent implements OnInit {
     }
   }
 
+  skipOver(): void {
+    this.sentences[this.cur_index].ignore = !this.sentences[this.cur_index].ignore;
+    this.rerender();
+  }
+
   ngOnInit() {
     // ipcMain异步读取文件，返回文件数据
 
@@ -514,12 +519,24 @@ export class MainComponent implements OnInit {
       console.log('File Saved!');  // TODO: 自动打开文件？
     });
 
-    ipc.on('refresh', (event) => {
-      self.refresh();
+    ipc.on('retranslate', (event) => {
+      self.retranslate();
+    });
+
+    ipc.on('skip_over', (event) => {
+      self.skipOver();
+    });
+
+    ipc.on('next_page', (event) => {
+      self.nextPage();
+    });
+
+    ipc.on('previous_page', (event) => {
+      self.prevPage();
     });
 
     ipc.on('toggle-flag', (event) => {
-      self.changeFlagIcon(self.sentences[self.cur_index]);
+      self.changeFlagIcon();
     });
 
     // 安装外部链接
