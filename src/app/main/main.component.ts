@@ -292,7 +292,7 @@ export class MainComponent implements OnInit {
     if (sentence.target === -2) {
       icon = 'refresh icon';  // TODO: 手动点击翻译
     } else if (sentence.target === -1) {
-      icon = 'star icon';
+      icon = 'user outline icon';
     } else {
       icon = engines[sentence.refers[sentence.target].engine_name].icon;
     }
