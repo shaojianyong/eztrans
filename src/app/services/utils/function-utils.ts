@@ -9,4 +9,8 @@ export class FunctionUtils {
       .replace(/'/g, '&#27;')
       .replace(/\//g, '&#2f;');
   }
+
+  static getExtName(filePath: string): string {
+    return /\.([^\.]+$)/.exec(filePath)[1];
+  }
 }

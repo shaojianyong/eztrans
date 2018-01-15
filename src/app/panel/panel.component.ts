@@ -68,8 +68,12 @@ export class PanelComponent implements OnInit {
   }
 
   removeCustom(): void {
-    this.sentence.target = 0;  // 选中第一个，还是默认引擎？
     this.sentence.custom = null;
+    if (this.sentence.refers && this.sentence.refers.length > 0) {
+      this.sentence.target = 0;  // TODO: 选中第一个，还是默认引擎？
+    } else {
+      this.sentence.target = -2;
+    }
     this.rerenderEvent.emit({forceShowSelected: true});
   }
 

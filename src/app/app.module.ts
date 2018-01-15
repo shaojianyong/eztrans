@@ -20,6 +20,7 @@ import { TextParserService } from './parsers/text/text-parser.service';
 import { AboutComponent } from './about/about.component';
 import { SettingsComponent } from './settings/settings.component';
 import { MarkdownParserService } from './parsers/markdown/markdown-parser.service';
+import { PoParserService } from './parsers/po/po-parser.service';
 
 
 const routes: Routes = [
@@ -52,6 +53,7 @@ const routes: Routes = [
     IcibaTransService,
     HtmlParserService,
     MarkdownParserService,
+    PoParserService,
     TextParserService
   ],
   bootstrap: [AppComponent]

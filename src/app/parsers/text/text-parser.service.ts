@@ -7,18 +7,17 @@ import {ParserService} from '../base/parser.service';
 export class TextParserService extends ParserService {
   lines: Array<string>;
 
-  constructor() {
-    super('text');
-  }
-
-  parse(data: string): Observable<string> {
+  parse(data: string): Observable<any> {
     return Observable.create(observer => {
       try {
         this.lines = data.split(/\n|\r\n/g);
         for (let line of this.lines) {
           line = line.trim();
           if (line) {
-            observer.next(line);
+            observer.next({
+              source: line,
+              target: null
+            });
           }
         }
         observer.complete();
@@ -40,7 +39,7 @@ export class TextParserService extends ParserService {
     }
   }
 
-  getLastData(): string {
+  getLastData(dataType: string): string {
     return this.lines.join('\r\n');  // TODO: \n for linux，根据平台选择换行符
   }
 

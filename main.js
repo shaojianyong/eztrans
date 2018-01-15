@@ -131,14 +131,14 @@ function showItemContextMenu(event, page_count, cur_page) {
     contextMenu.append(new MenuItem({
       label: 'Next Page',
       click: nextPage,
-      visible: cur_page + 1 < page_count,
-      icon: './dist/assets/images/icons/arrowright.png'
+      enabled: cur_page + 1 < page_count,
+      icon: './dist/assets/images/icons/' + (cur_page + 1 < page_count ? 'arrowright.png' : 'arrowright0.png')
     }));
     contextMenu.append(new MenuItem({
       label: 'Previous Page',
       click: prevPage,
-      visible: cur_page > 0,
-      icon: './dist/assets/images/icons/arrowleft.png'
+      enabled: cur_page > 0,
+      icon: './dist/assets/images/icons/' + (cur_page > 0 ? 'arrowleft.png' : 'arrowleft0.png')
     }));
   }
   contextMenu.append(new MenuItem({ type: 'separator' }));
@@ -150,7 +150,7 @@ function showItemContextMenu(event, page_count, cur_page) {
 
   /*
   contextMenu.append(new MenuItem({ type: 'separator' }));
-  contextMenu.append(new MenuItem({ label: 'Merge Up', icon: './dist/assets/images/icons/arrowup.png' }));  // merge with up
+  contextMenu.append(new MenuItem({ label: 'Merge Up', icon: './dist/assets/images/icons/arrowup.png' }));
   contextMenu.append(new MenuItem({ label: 'Merge Down', icon: './dist/assets/images/icons/arrowdown.png' }));
   contextMenu.append(new MenuItem({ label: 'Split Segment', icon: './dist/assets/images/icons/split.png' }));
   contextMenu.append(new MenuItem({ label: 'Delete', icon: './dist/assets/images/icons/delete.png' }));

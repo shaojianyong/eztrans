@@ -30,6 +30,14 @@ export class EngineManagerService {
     this.target_lang = language;
   }
 
+  getSourceLanguage(): string {
+    return this.source_lang;
+  }
+
+  getTargetLanguage(): string {
+    return this.target_lang;
+  }
+
   getEnabledEngineCount(): number {
     return this.engine_list.length;
   }

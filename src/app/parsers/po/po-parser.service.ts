@@ -1,25 +1,29 @@
 import { Injectable } from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-const { JSDOM } = (<any>window).require('jsdom');
+
+const gettextParser = (<any>window).require('gettext-parser');
 
 import { ParserService } from '../base/parser.service';
-import { FunctionUtils } from '../../services/utils/function-utils';
 
-const SKIP_ELEMENTS = ['script', 'pre', 'code'];
 
 @Injectable()
 export class PoParserService extends ParserService {
-  dom: any;
+  po: any;
 
-  constructor() {
-    super('html');
-  }
-
-  parse(data: string): Observable<string> {
+  parse(data: string): Observable<any> {
     return Observable.create(observer => {
       try {
-        this.dom = new JSDOM(data);
-        this.traverseR(this.dom.window.document.body, observer);
+        this.po = gettextParser.po.parse(data);  // defaultCharset
+        for (const msgkey in this.po.translations['']) {
+          if (msgkey) {
+            observer.next({
+              source: this.po.translations[''][msgkey]['msgid'],
+              target: this.po.translations[''][msgkey]['msgstr'][0]
+            });
+            // assert this.po.translations[''][msgkey]['msgstr'].length === 1
+            // assert msgkey === this.po.translations[''][msgkey]['msgid']
+          }
+        }
         observer.complete();
       } catch (e) {
         observer.error(e);
@@ -28,58 +32,23 @@ export class PoParserService extends ParserService {
   }
 
   update(segments: Array<string>): void {
-    const newData = {
-      texts: segments,
-      index: 0
-    };
-    this.traverseW(this.dom.window.document.body, newData);
-  }
-
-  getLastData(): string {
-    return this.dom.window.document.documentElement.outerHTML;
-  }
-
-
-  traverseR(node: Node, observer) {
-    if (node.nodeType === Node.TEXT_NODE) {
-      const trimmed = node.nodeValue.trim();
-      if (trimmed && trimmed.length > 1) {
-        observer.next(trimmed);
-      }
-    }
-
-    if (node.nodeType === Node.ELEMENT_NODE) {
-      if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
-        for (let i = 0; i < node.childNodes.length; ++i) {
-          this.traverseR(node.childNodes[i], observer);
-        }
+    let count = 0;
+    for (const msgkey in this.po.translations['']) {
+      if (msgkey) {
+        this.po.translations[''][msgkey]['msgstr'][0] = segments[count];
+        ++count;
       }
     }
   }
 
-  traverseW(node: Node, newData: any) {
-    if (node.nodeType === Node.TEXT_NODE) {
-      const trimmed = node.nodeValue.trim();
-      if (trimmed && trimmed.length > 1) {
-        const newVal = FunctionUtils.htmlEscape(newData.texts[newData.index]);
-        if (newVal) {
-          if (trimmed === node.nodeValue) {
-            node.nodeValue = newVal;
-          } else {
-            node.nodeValue = node.nodeValue.replace(trimmed, newVal);  // 恢复空白字符
-          }
-        }
-        newData.index++;
-      }
+  getLastData(dataType: string): string {
+    let res = null;
+    if (dataType === 'po') {
+      res = gettextParser.po.compile(this.po);
+    } else if (dataType === 'mo') {
+      res = gettextParser.mo.compile(this.po);
     }
-
-    if (node.nodeType === Node.ELEMENT_NODE) {
-      if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
-        for (let i = 0; i < node.childNodes.length; ++i) {
-          this.traverseW(node.childNodes[i], newData);
-        }
-      }
-    }
+    return res;
   }
 
 }

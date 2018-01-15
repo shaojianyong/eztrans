@@ -7,7 +7,9 @@ const dialog = electron.remote.dialog;
 
 import {ExLinksModule} from '../services/utils/ex-links.module';
 
+import { FunctionUtils } from '../services/utils/function-utils';
 import {SentenceModel} from '../services/model/sentence.model';
+import {TranslateModel} from '../services/model/translate.model';
 import {ParserService} from '../parsers/base/parser.service';
 import {ParserManagerService} from '../parsers/manager/parser-manager.service';
 import {EngineManagerService} from '../providers/manager/engine-manager.service';
@@ -77,7 +79,7 @@ export class MainComponent implements OnInit {
 
   exportFile(): void {
     if (this.parser) {
-      const segments = new Array<string>();
+      const segments = [];
       for (let index = 0; index < this.sentences.length; ++index) {
         let target_text = '';
         const current = this.sentences[index];
@@ -92,17 +94,17 @@ export class MainComponent implements OnInit {
       }
       this.parser.update(segments);
 
-      const ext_name = /\.([^\.]+$)/.exec(this.title.getTitle())[1];
+      const extName = FunctionUtils.getExtName(this.title.getTitle()).toLowerCase();
+      const expInfo = this.pms.getExportInfo(extName);
       const options = {
-        title: 'Export the Translated File',
-        filters: [
-          {name: `Text Files (*.${ext_name})`, extensions: [ext_name]}
-        ]
+        title: expInfo.title,
+        filters: expInfo.filters
       };
 
       dialog.showSaveDialog(options, (filename) => {
         if (filename) {
-          ipc.send('save-file', filename, this.parser.getLastData());
+          const fileExt = FunctionUtils.getExtName(filename).toLowerCase();
+          ipc.send('save-file', filename, this.parser.getLastData(fileExt));
         }
       });
     }
@@ -479,6 +481,25 @@ export class MainComponent implements OnInit {
     this.rerender();
   }
 
+  getStatInfo(): string {
+    const stats = {
+      skipped: 0,  // 跳过的
+      undealt: 0,  // 未翻译的
+      revised: 0   // 修订的
+      };
+
+    for (const sentence of this.sentences) {
+      if (sentence.ignore) {
+        ++stats.skipped;
+      } else if (sentence.target === -2) {
+        ++stats.undealt;
+      } else if (sentence.target === -1) {
+        ++stats.revised;
+      }
+    }
+    return `un=${stats.undealt} sk=${stats.skipped} rv=${stats.revised}`;
+  }
+
   ngOnInit() {
     // ipcMain异步读取文件，返回文件数据
 
@@ -489,12 +510,12 @@ export class MainComponent implements OnInit {
 
     ipc.on('file-read', (event, err, data, filePath) => {
       self.reset();
-      const ext_name = /\.([^\.]+$)/.exec(filePath)[1];
+      const ext_name = FunctionUtils.getExtName(filePath);
       self.parser = this.pms.getParser(ext_name);
       self.parser.parse(data).subscribe(
         res => {
-          self.sentences[self.sentences.length] = {
-            source: res,
+          const sentence = {
+            source: res.source,
             target: -2,
             ignore: false,
             status: 0,
@@ -502,6 +523,19 @@ export class MainComponent implements OnInit {
             custom: null,
             refers: []  //  new Array<TranslateModel>()
           };
+
+          if (res.target) {
+            sentence.target = -1;
+            sentence.custom = new TranslateModel();
+            sentence.custom.source_lang = self.ems.getSourceLanguage();
+            sentence.custom.target_lang = self.ems.getTargetLanguage();
+            sentence.custom.source_text = res.source;
+            sentence.custom.target_text = res.target;
+            sentence.custom.hz_translit =  '';
+            sentence.custom.engine_name = 'user';
+            sentence.custom.trans_state = 0;
+          }
+          self.sentences[self.sentences.length] = sentence;
         },
         error => {
           console.log(error);  // TODO: 提供错误信息展示方案

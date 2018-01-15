@@ -11,11 +11,7 @@ const SKIP_ELEMENTS = ['script', 'pre', 'code'];
 export class HtmlParserService extends ParserService {
   dom: any;
 
-  constructor() {
-    super('html');
-  }
-
-  parse(data: string): Observable<string> {
+  parse(data: string): Observable<any> {
     return Observable.create(observer => {
       try {
         this.dom = new JSDOM(data);
@@ -35,7 +31,7 @@ export class HtmlParserService extends ParserService {
     this.traverseW(this.dom.window.document.body, newData);
   }
 
-  getLastData(): string {
+  getLastData(dataType: string): string {
     return this.dom.window.document.documentElement.outerHTML;
   }
 
@@ -44,7 +40,10 @@ export class HtmlParserService extends ParserService {
     if (node.nodeType === Node.TEXT_NODE) {
       const trimmed = node.nodeValue.trim();
       if (trimmed && trimmed.length > 1) {
-        observer.next(trimmed);
+        observer.next({
+          source: trimmed,
+          target: null
+        });
       }
     }
 
