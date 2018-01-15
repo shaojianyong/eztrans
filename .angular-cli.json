@@ -22,7 +22,11 @@
         "./assets/semantic-ui/semantic.min.css",
         "styles.css"
       ],
-      "scripts": ["../node_modules/jquery/dist/jquery.min.js", "./assets/semantic-ui/semantic.min.js"],
+      "scripts": [
+        "../node_modules/jquery/dist/jquery.min.js",
+        "../node_modules/jquery-highlight/jquery.highlight.js",
+        "./assets/semantic-ui/semantic.min.js"
+      ],
       "environmentSource": "environments/environment.ts",
       "environments": {
         "dev": "environments/environment.ts",

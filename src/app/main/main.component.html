@@ -26,10 +26,10 @@
   </div-->
   <div class="right menu">
     <div class="item">
-      <div class="ui inverted transparent left icon input">
-        <input type="text" placeholder="Search...">
-        <i class="search icon"></i>
-        <!--i class="search link icon"></i-->
+      <div class="ui inverted transparent icon input">
+        <input #searchtext type="text" placeholder="Search..." (input)="onSearchInput(searchtext.value)">
+        <i *ngIf="!searchtext.value" class="search icon"></i>
+        <i *ngIf="searchtext.value" class="remove link icon" (click)="onCloseSearch(searchtext)"></i>
       </div>
     </div>
     <a class="item" (click)="showSettings()">

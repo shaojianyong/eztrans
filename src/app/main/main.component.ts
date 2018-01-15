@@ -28,6 +28,8 @@ export class MainComponent implements OnInit {
   sentences = [];  // new Array<SentenceModel>();
   cur_index = -1;
   cur_page = 0;
+  search_text = '';
+  search_result = [];
   parser: ParserService;
 
   @ViewChild(SettingsComponent) child_settings: SettingsComponent;
@@ -314,7 +316,13 @@ export class MainComponent implements OnInit {
   }
 
   getPageCount(): number {
-    return Math.floor(this.sentences.length / 100) + ((this.sentences.length % 100) ? 1 : 0);
+    let pageCount = 0;
+    if (this.search_text) {
+
+    } else {
+      pageCount = Math.floor(this.sentences.length / 100) + ((this.sentences.length % 100) ? 1 : 0);
+    }
+    return pageCount;
   }
 
   getPageRange(): Array<number> {
@@ -408,7 +416,7 @@ export class MainComponent implements OnInit {
     if (document.activeElement.getAttribute('contenteditable') || this.cur_index === -1) {
       return;
     }
-    // TODO: 自动翻页？只针对当前页？
+
     const next = this.cur_index + 1;
     const range = this.getPageRange();
     if (next <= range[range.length - 1]) {
@@ -499,6 +507,34 @@ export class MainComponent implements OnInit {
       }
     }
     return `un=${stats.undealt} sk=${stats.skipped} rv=${stats.revised}`;
+  }
+
+  // TODO: 添加在原文中搜索还是在译文中搜索选项；添加是否忽略大小写选项；添加是否搜索单词选项
+  onSearchInput(text: string) {
+    if (text.trim()) {
+      this.search_result = [];
+      for (let i = 0; i < this.sentences.length; ++i) {
+        const str = text.toLowerCase();
+        const source_text = this.sentences[i].source_text.toLowerCase();
+        const target_text = this.getTargetText(i).toLowerCase();
+        if (source_text.indexOf(str) !== -1 || target_text.indexOf(str) !== -1) {
+          this.search_result[this.search_result.length] = i;
+          $(`#table-${{i}}.source-cell`).highlight(text, {
+            caseSensitive: false,
+            wordsOnly: false,
+            // wordsBoundaryEnd: '\\W*\\b'
+          });
+        }
+      }
+      this.search_text = text;
+      this.rerender();
+    }
+  }
+
+  onCloseSearch(inputbox: HTMLInputElement): void {
+    inputbox.value = '';
+    this.search_text = '';
+    this.rerender();
   }
 
   ngOnInit() {
