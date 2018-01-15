@@ -54,6 +54,7 @@ export class MainComponent implements OnInit {
   }
 
   reset(): void {
+    this.cur_page = 0;
     this.cur_index = -1;
     this.sentences = [];
   }
