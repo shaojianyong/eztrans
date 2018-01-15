@@ -1,9 +1,9 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 
 const gettextParser = (<any>window).require('gettext-parser');
 
-import { ParserService } from '../base/parser.service';
+import {ParserService} from '../base/parser.service';
 
 
 @Injectable()
@@ -14,14 +14,16 @@ export class PoParserService extends ParserService {
     return Observable.create(observer => {
       try {
         this.po = gettextParser.po.parse(data);  // defaultCharset
-        for (const msgkey in this.po.translations['']) {
-          if (msgkey) {
-            observer.next({
-              source: this.po.translations[''][msgkey]['msgid'],
-              target: this.po.translations[''][msgkey]['msgstr'][0]
-            });
-            // assert this.po.translations[''][msgkey]['msgstr'].length === 1
-            // assert msgkey === this.po.translations[''][msgkey]['msgid']
+        for (const group in this.po.translations) {
+          if (this.po.translations.hasOwnProperty(group)) {
+            for (const msgKey in this.po.translations[group]) {
+              if (this.po.translations[group].hasOwnProperty(msgKey) && msgKey) {
+                observer.next({
+                  source: this.po.translations[group][msgKey]['msgid'],
+                  target: this.po.translations[group][msgKey]['msgstr'][0]
+                });
+              }
+            }
           }
         }
         observer.complete();
@@ -33,10 +35,14 @@ export class PoParserService extends ParserService {
 
   update(segments: Array<string>): void {
     let count = 0;
-    for (const msgkey in this.po.translations['']) {
-      if (msgkey) {
-        this.po.translations[''][msgkey]['msgstr'][0] = segments[count];
-        ++count;
+    for (const group in this.po.translations) {
+      if (this.po.translations.hasOwnProperty(group)) {
+        for (const msgKey in this.po.translations[group]) {
+          if (this.po.translations[group].hasOwnProperty(msgKey) && msgKey) {
+            this.po.translations[group][msgKey]['msgstr'][0] = segments[count];
+            ++count;
+          }
+        }
       }
     }
   }
