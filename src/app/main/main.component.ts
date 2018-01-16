@@ -1,3 +1,5 @@
+/// <reference path="../../types/jquery-highlight/index.d.ts" />
+
 import {Component, OnInit, ChangeDetectorRef, ViewChild, HostListener} from '@angular/core';
 import {Title} from '@angular/platform-browser';
 
@@ -59,6 +61,7 @@ export class MainComponent implements OnInit {
     this.cur_page = 0;
     this.cur_index = -1;
     this.sentences = [];
+    this.search_result = [];
   }
 
   // ipcRenderer与ipcMain同步通信
@@ -212,10 +215,10 @@ export class MainComponent implements OnInit {
         }
 
         let exist = -1;
-        for (let i = 0; i < sentence.refers.length; ++i) {
-          if (res.engine_name === sentence.refers[i].engine_name) {
-            sentence.refers[i] = res;  // 覆盖
-            exist = i;
+        for (let index = 0; index < sentence.refers.length; ++index) {
+          if (res.engine_name === sentence.refers[index].engine_name) {
+            sentence.refers[index] = res;  // 覆盖
+            exist = index;
           }
         }
         if (exist === -1) {
@@ -316,17 +319,22 @@ export class MainComponent implements OnInit {
   }
 
   getPageCount(): number {
-    let pageCount = 0;
+    let count = 0;
     if (this.search_text) {
-
+      count = this.search_result.length;
     } else {
-      pageCount = Math.floor(this.sentences.length / 100) + ((this.sentences.length % 100) ? 1 : 0);
+      count = this.sentences.length;
     }
-    return pageCount;
+    return Math.floor(count / 100) + ((count % 100) ? 1 : 0);
   }
 
   getPageRange(): Array<number> {
-    const indexArray = Array.from(new Array(this.sentences.length), (x, i) => i);
+    let indexArray = [];
+    if (this.search_text) {
+      indexArray = this.search_result;
+    } else {
+      indexArray = Array.from(new Array(this.sentences.length), (x, i) => i);
+    }
     return indexArray.slice(this.cur_page * 100, (this.cur_page + 1) * 100);
   }
 
@@ -512,18 +520,18 @@ export class MainComponent implements OnInit {
   // TODO: 添加在原文中搜索还是在译文中搜索选项；添加是否忽略大小写选项；添加是否搜索单词选项
   onSearchInput(text: string) {
     if (text.trim()) {
-      this.search_result = [];
-      for (let i = 0; i < this.sentences.length; ++i) {
+      this.reset();
+      for (let index = 0; index < this.sentences.length; ++index) {
         const str = text.toLowerCase();
-        const source_text = this.sentences[i].source_text.toLowerCase();
-        const target_text = this.getTargetText(i).toLowerCase();
+        const source_text = this.sentences[index].source.toLowerCase();
+        const target_text = this.getTargetText(index).toLowerCase();
         if (source_text.indexOf(str) !== -1 || target_text.indexOf(str) !== -1) {
-          this.search_result[this.search_result.length] = i;
-          $(`#table-${{i}}.source-cell`).highlight(text, {
+          this.search_result[this.search_result.length] = index;
+          /*$(`#table-${index}.source-cell`).highlight(text, {
             caseSensitive: false,
             wordsOnly: false,
             // wordsBoundaryEnd: '\\W*\\b'
-          });
+          });*/
         }
       }
       this.search_text = text;
@@ -534,6 +542,7 @@ export class MainComponent implements OnInit {
   onCloseSearch(inputbox: HTMLInputElement): void {
     inputbox.value = '';
     this.search_text = '';
+    this.search_result = [];
     this.rerender();
   }
 
