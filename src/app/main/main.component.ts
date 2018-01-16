@@ -520,7 +520,10 @@ export class MainComponent implements OnInit {
   // TODO: 添加在原文中搜索还是在译文中搜索选项；添加是否忽略大小写选项；添加是否搜索单词选项
   onSearchInput(text: string) {
     if (text.trim()) {
-      this.reset();
+      this.cur_page = 0;
+      this.cur_index = -1;
+      this.search_result = [];
+
       for (let index = 0; index < this.sentences.length; ++index) {
         const str = text.toLowerCase();
         const source_text = this.sentences[index].source.toLowerCase();
@@ -536,11 +539,17 @@ export class MainComponent implements OnInit {
       }
       this.search_text = text;
       this.rerender();
+    } else if (text === '') {
+      this.onCloseSearch();
     }
   }
 
-  onCloseSearch(inputbox: HTMLInputElement): void {
-    inputbox.value = '';
+  onCloseSearch(inputbox?: HTMLInputElement): void {
+    if (inputbox) {
+      inputbox.value = '';
+    }
+    this.cur_page = 0;
+    this.cur_index = -1;
     this.search_text = '';
     this.search_result = [];
     this.rerender();
