@@ -202,3 +202,31 @@
   <i class="red dont icon"></i>
   <i class="disabled user icon"></i>
 </i-->
+
+<style>
+  .highlight {background-color: #FFFF88; }
+</style>
+<script>
+  $(function(){
+    $('#search').click(function(){
+      var key = $('#key').val();
+      console.log(key);
+      if(key.length > 0) {
+        var body = $('#search-body');
+        body.unhighlight();
+        body.highlight(key);
+      } else {
+        alert("请输入关键字！")
+      }
+    });
+  });
+</script>
+
+<div>
+  <input id="key" type="text">
+  <input id="search" type="button" value="搜索">
+</div>
+<div id="search-body">
+  This is a test body!
+</div>
+

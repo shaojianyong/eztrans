@@ -533,11 +533,6 @@ export class MainComponent implements OnInit {
         const target_text = this.getTargetText(index).toLowerCase();
         if (source_text.indexOf(str) !== -1 || target_text.indexOf(str) !== -1) {
           this.search_result[this.search_result.length] = index;
-          /*$(`#table-${index}.source-cell`).highlight(text, {
-            caseSensitive: false,
-            wordsOnly: false,
-            // wordsBoundaryEnd: '\\W*\\b'
-          });*/
         }
       }
       this.search_text = text;
@@ -556,6 +551,19 @@ export class MainComponent implements OnInit {
     this.search_text = '';
     this.search_result = [];
     this.rerender();
+  }
+
+  test() {
+    /*if (this.search_text) {
+      $('#trans-list').highlight(this.search_text, {
+        caseSensitive: false,
+        wordsOnly: false,
+        // wordsBoundaryEnd: '\\W*\\b'
+      });
+    }
+    */
+
+    $('#my-test-p').highlight('Share');
   }
 
   ngOnInit() {
