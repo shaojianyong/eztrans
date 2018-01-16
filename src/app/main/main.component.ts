@@ -425,9 +425,11 @@ export class MainComponent implements OnInit {
       return;
     }
 
-    const next = this.cur_index + 1;
+    // const next = this.cur_index + 1;
     const range = this.getPageRange();
-    if (next <= range[range.length - 1]) {
+    const index = range.indexOf(this.cur_index);
+    if (index < range.length - 1) {
+      const next = range[index + 1];
       this.onItemClick(next);
 
       const tran_list = document.getElementById('trans-list');
@@ -447,9 +449,10 @@ export class MainComponent implements OnInit {
       return;
     }
 
-    const prev = this.cur_index - 1;
     const range = this.getPageRange();
-    if (prev >= range[0]) {
+    const index = range.indexOf(this.cur_index);
+    if (index > 0) {
+      const prev = range[index - 1];
       this.onItemClick(prev);
 
       const tran_list = document.getElementById('trans-list');
