@@ -16,10 +16,6 @@
     overflow-x: hidden;
     overflow-y: auto;
 
-    .highlight {
-      background-color: #FFFF88;
-    }
-
     .item {
       padding-left: 8px;
       padding-right: 8px;
@@ -76,7 +72,9 @@
   // display: none;    // 方法3：不渲染元素，不占空间了
 }
 
+/* for jquery-highlight 但放在这里不管用！！！
 .highlight { background-color: #FFFF88; }
+*/
 
 /*
 .ez-show {

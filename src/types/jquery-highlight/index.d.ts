@@ -6,7 +6,26 @@
 
 /// <reference types="jquery" />
 
+interface JQueryHighlightOptions {
+  className?: string;  // default: .highlight
+  element?: string;    // default: span
+  caseSensitive?: boolean;  // default: false
+  wordsOnly?: boolean;      // default: false
+  wordsBoundary?: string;   // default: \b
+  wordsBoundaryStart?: string;
+  wordsBoundaryEnd?: string;
+}
+
+interface JQueryUnhighlightOptions {
+  className?: string;  // default: .highlight
+  element?: string;    // default: span
+}
+
 interface JQuery {
-  highlight(words: any, options?: any, callback?: any): JQuery;
-  unhighlight(options?: any): JQuery;
+  highlight(words: string|Array<string>): JQuery;
+  highlight(words: string|Array<string>, JQueryHighlightOptions): JQuery;
+  highlight(words: string|Array<string>, JQueryHighlightOptions, callback: (el)=>void): JQuery;
+
+  unhighlight(): JQuery;
+  unhighlight(options: JQueryUnhighlightOptions): JQuery;
 }

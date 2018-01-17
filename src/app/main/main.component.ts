@@ -537,6 +537,8 @@ export class MainComponent implements OnInit {
       }
       this.search_text = text;
       this.rerender();
+      $('#trans-list').unhighlight();
+      $('#trans-list').highlight(this.search_text);
     } else if (text === '') {
       this.onCloseSearch();
     }
@@ -551,19 +553,11 @@ export class MainComponent implements OnInit {
     this.search_text = '';
     this.search_result = [];
     this.rerender();
+    $('#trans-list').unhighlight();
   }
 
+  // only for test
   test() {
-    /*if (this.search_text) {
-      $('#trans-list').highlight(this.search_text, {
-        caseSensitive: false,
-        wordsOnly: false,
-        // wordsBoundaryEnd: '\\W*\\b'
-      });
-    }
-    */
-
-    $('#my-test-p').highlight('Share');
   }
 
   ngOnInit() {

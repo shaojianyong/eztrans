@@ -3,3 +3,8 @@ body {
   font-family: Microsoft YaHei;
   overflow: hidden;
 }
+
+/* for jquery-highlight */
+.highlight {
+  background-color: #FFFF88;
+}
