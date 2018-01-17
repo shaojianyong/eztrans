@@ -526,14 +526,12 @@ export class MainComponent implements OnInit {
 
   // TODO: 添加在原文中搜索还是在译文中搜索选项；添加是否忽略大小写选项；添加是否搜索单词选项
   onSearchInput(inputBox: HTMLInputElement): void {
-    console.log('---------------------');
-
     const text = inputBox.value.trim();
     if (text) {
       if (text === this.search_text) {
         return;
       }
-      console.log('+++++++++++++++++++++');
+
       this.cur_page = 0;
       this.cur_index = -1;
       this.search_result = [];
