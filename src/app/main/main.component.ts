@@ -306,8 +306,12 @@ export class MainComponent implements OnInit {
   }
 
   getTargetText(index: number): string {
-    let target_text = '';
     const sentence = this.sentences[index];
+    if (sentence.ignore) {
+      return '';
+    }
+
+    let target_text = '';
     if (sentence.target === -2) {
       target_text = '';
     } else if (sentence.target === -1) {

@@ -73,7 +73,7 @@
         </tr>
         <tr *ngIf="sentences[idx].target != -2 && !sentences[idx].ignore">
           <td class="target-cell">
-            {{sentences[idx].ignore ? '' : getTargetText(idx)}}
+            {{getTargetText(idx)}}
           </td>
         </tr>
         </tbody>
