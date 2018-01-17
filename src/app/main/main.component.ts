@@ -1,5 +1,3 @@
-/// <reference path="../../types/jquery-highlight/index.d.ts" />
-
 import {Component, OnInit, ChangeDetectorRef, ViewChild, HostListener} from '@angular/core';
 import {Title} from '@angular/platform-browser';
 
@@ -18,6 +16,7 @@ import {EngineManagerService} from '../providers/manager/engine-manager.service'
 import engines from '../providers/manager/engines';
 import {AboutComponent} from '../about/about.component';
 import {SettingsComponent} from '../settings/settings.component';
+import {StatisticsModel} from '../services/model/statistics.model';
 
 
 @Component({
@@ -505,14 +504,8 @@ export class MainComponent implements OnInit {
     this.rerender();
   }
 
-  getStatInfo() {
-    const stats = {
-      skipped: 0,  // 跳过的
-      undealt: 0,  // 未翻译的
-      directs: 0,  // 直接引用的
-      revised: 0   // 修订的
-      };
-
+  getStatInfo(): StatisticsModel {
+    const stats = new StatisticsModel();
     for (const sentence of this.sentences) {
       if (sentence.ignore) {
         ++stats.skipped;
@@ -525,6 +518,15 @@ export class MainComponent implements OnInit {
       }
     }
     return stats;
+  }
+
+  showStatInfo(stats: StatisticsModel): void {
+    $('#stats-info').popup({
+      on: 'click',
+      position : 'top center',
+      title : 'My favorite dog',
+      content : 'My favorite dog would like other dogs as much as themselves'
+    }).popup('toggle');
   }
 
   // TODO: 添加在原文中搜索还是在译文中搜索选项；添加是否忽略大小写选项；添加是否搜索单词选项
