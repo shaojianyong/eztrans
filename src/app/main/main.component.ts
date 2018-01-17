@@ -525,8 +525,15 @@ export class MainComponent implements OnInit {
   }
 
   // TODO: 添加在原文中搜索还是在译文中搜索选项；添加是否忽略大小写选项；添加是否搜索单词选项
-  onSearchInput(text: string) {
-    if (text.trim()) {
+  onSearchInput(inputBox: HTMLInputElement): void {
+    console.log('---------------------');
+
+    const text = inputBox.value.trim();
+    if (text) {
+      if (text === this.search_text) {
+        return;
+      }
+      console.log('+++++++++++++++++++++');
       this.cur_page = 0;
       this.cur_index = -1;
       this.search_result = [];
@@ -541,17 +548,16 @@ export class MainComponent implements OnInit {
       }
       this.search_text = text;
       this.rerender();
-      $('#trans-list').unhighlight();
-      $('#trans-list').highlight(this.search_text);
-    } else if (text === '') {
-      this.onCloseSearch();
+      const transList = $('#trans-list');
+      transList.unhighlight();
+      transList.highlight(this.search_text);
+    } else {
+      this.onCloseSearch(inputBox);
     }
   }
 
-  onCloseSearch(inputbox?: HTMLInputElement): void {
-    if (inputbox) {
-      inputbox.value = '';
-    }
+  onCloseSearch(inputBox: HTMLInputElement): void {
+    inputBox.value = '';
     this.cur_page = 0;
     this.cur_index = -1;
     this.search_text = '';
@@ -561,7 +567,7 @@ export class MainComponent implements OnInit {
   }
 
   // only for test
-  test() {
+  test(): void {
   }
 
   ngOnInit() {
