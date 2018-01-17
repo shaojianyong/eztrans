@@ -214,14 +214,14 @@ export class MainComponent implements OnInit {
           state_element.attr('class', 'warning circle icon');
         }
 
-        let exist = -1;
-        for (let index = 0; index < sentence.refers.length; ++index) {
-          if (res.engine_name === sentence.refers[index].engine_name) {
-            sentence.refers[index] = res;  // 覆盖
-            exist = index;
+        let exist = false;
+        for (let idx = 0; idx < sentence.refers.length; ++idx) {
+          if (res.engine_name === sentence.refers[idx].engine_name) {
+            sentence.refers[idx] = res;  // 覆盖
+            exist = true;
           }
         }
-        if (exist === -1) {
+        if (!exist) {
           sentence.refers[sentence.refers.length] = res;
           if (sentence.target === -2) {
             sentence.target = 0;
@@ -533,15 +533,19 @@ export class MainComponent implements OnInit {
       }
 
       this.cur_page = 0;
-      this.cur_index = -1;
       this.search_result = [];
-
       for (let index = 0; index < this.sentences.length; ++index) {
         const str = text.toLowerCase();
         const source_text = this.sentences[index].source.toLowerCase();
         const target_text = this.getTargetText(index).toLowerCase();
         if (source_text.indexOf(str) !== -1 || target_text.indexOf(str) !== -1) {
           this.search_result[this.search_result.length] = index;
+        }
+      }
+
+      if (this.cur_index !== -1) {
+        if (this.search_result.indexOf(this.cur_index) === -1) {
+          this.cur_index = -1;
         }
       }
       this.search_text = text;
@@ -556,10 +560,14 @@ export class MainComponent implements OnInit {
 
   onCloseSearch(inputBox: HTMLInputElement): void {
     inputBox.value = '';
-    this.cur_page = 0;
-    this.cur_index = -1;
     this.search_text = '';
     this.search_result = [];
+    this.cur_page = 0;
+    if (this.cur_index !== -1) {
+      if (this.getPageRange().indexOf(this.cur_index) === -1) {
+        this.cur_index = -1;
+      }
+    }
     this.rerender();
     $('#trans-list').unhighlight();
   }
