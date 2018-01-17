@@ -505,10 +505,11 @@ export class MainComponent implements OnInit {
     this.rerender();
   }
 
-  getStatInfo(): string {
+  getStatInfo() {
     const stats = {
       skipped: 0,  // 跳过的
       undealt: 0,  // 未翻译的
+      directs: 0,  // 直接引用的
       revised: 0   // 修订的
       };
 
@@ -519,9 +520,11 @@ export class MainComponent implements OnInit {
         ++stats.undealt;
       } else if (sentence.target === -1) {
         ++stats.revised;
+      } else {
+        ++stats.directs;
       }
     }
-    return `un=${stats.undealt} sk=${stats.skipped} rv=${stats.revised}`;
+    return stats;
   }
 
   // TODO: 添加在原文中搜索还是在译文中搜索选项；添加是否忽略大小写选项；添加是否搜索单词选项
