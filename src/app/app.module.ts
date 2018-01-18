@@ -21,6 +21,7 @@ import { AboutComponent } from './about/about.component';
 import { SettingsComponent } from './settings/settings.component';
 import { MarkdownParserService } from './parsers/markdown/markdown-parser.service';
 import { PoParserService } from './parsers/po/po-parser.service';
+import { HomeComponent } from './home/home.component';
 
 
 const routes: Routes = [
@@ -37,7 +38,8 @@ const routes: Routes = [
     MainComponent,
     PanelComponent,
     AboutComponent,
-    SettingsComponent
+    SettingsComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,

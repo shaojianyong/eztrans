@@ -60,6 +60,8 @@ export class MainComponent implements OnInit {
     this.cur_page = 0;
     this.cur_index = -1;
     this.sentences = [];
+    this.search_text = '';
+    $('input').val('');
     this.search_result = [];
   }
 
@@ -273,7 +275,7 @@ export class MainComponent implements OnInit {
 
   toggle(): void {
     console.log('Hello World!');
-    $('.ui.sidebar').sidebar({
+    $('app-home').sidebar({
       context: 'body',
       dimPage: false
       /*
@@ -504,7 +506,7 @@ export class MainComponent implements OnInit {
     this.rerender();
   }
 
-  getStatInfo(): StatisticsModel {
+  getStatistics(): StatisticsModel {
     const stats = new StatisticsModel();
     for (const sentence of this.sentences) {
       if (sentence.ignore) {
@@ -520,13 +522,9 @@ export class MainComponent implements OnInit {
     return stats;
   }
 
-  showStatInfo(stats: StatisticsModel): void {
-    $('#stats-info').popup({
-      on: 'click',
-      position : 'top center',
-      title : 'My favorite dog',
-      content : 'My favorite dog would like other dogs as much as themselves'
-    }).popup('toggle');
+  getStatInfo(): string {
+    const stats = this.getStatistics();
+    return `t=${this.sentences.length} s=${stats.skipped} r=${stats.revised}`;
   }
 
   // TODO: 添加在原文中搜索还是在译文中搜索选项；添加是否忽略大小写选项；添加是否搜索单词选项
@@ -581,6 +579,64 @@ export class MainComponent implements OnInit {
   test(): void {
   }
 
+  installPopupTips0(): void {
+    $(document).ready(() => {
+      $('.refresh.icon').parent()
+        .popup({
+          on: 'hover',
+          position: 'bottom center'
+        });
+
+      $('.setting.icon').parent()
+        .popup({
+          on: 'hover',
+          position: 'bottom right'
+        });
+
+      $('.caret.right.icon').parent()
+        .popup({
+          on: 'hover',
+          position: 'top left'
+        });
+
+      $('.bar.chart.icon').parent()
+        .popup({
+          on: 'hover',
+          position: 'top center'
+        });
+
+      $('.world.icon').parent()
+        .popup({
+          on: 'hover',
+          position: 'top center'
+        });
+
+      $('.help.icon').parent()
+        .popup({
+          on: 'hover',
+          position: 'top right'
+        });
+    });
+  }
+
+  installPopupTips1(): void {
+    $('.chevron.right.icon').parent()
+      .popup({
+        on: 'hover',
+        position: 'top center'
+      });
+
+    $('.chevron.left.icon').parent()
+      .popup({
+        on: 'hover',
+        position: 'top center'
+      });
+  }
+
+  sync(): void {
+    // 与翻译云同步
+  }
+
   ngOnInit() {
     // ipcMain异步读取文件，返回文件数据
 
@@ -623,6 +679,10 @@ export class MainComponent implements OnInit {
         },
         () => {
           self.rerender();
+          $('#trans-list').unhighlight();
+          if (self.getPageCount() > 1) {
+            self.installPopupTips1();
+          }
         }
       );
 
@@ -656,6 +716,7 @@ export class MainComponent implements OnInit {
 
     // 安装外部链接
     ExLinksModule.applyExLinks();
+    this.installPopupTips0();
   }
 
 }

@@ -117,7 +117,7 @@ function toggleFlag(menuItem, browserWindow) {
 function showItemContextMenu(event, page_count, cur_page) {
   const contextMenu = new Menu();
   contextMenu.append(new MenuItem({
-    label: 'Retranslate',
+    label: 'Re-translate',
     click: retranslate,
     icon: './dist/assets/images/icons/repeat.png'
   }));
