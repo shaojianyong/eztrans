@@ -37,13 +37,14 @@
     "zone.js": "^0.8.14"
   },
   "devDependencies": {
+    "@angular-devkit/core": "^0.0.28",
     "@angular/cli": "1.5.0",
     "@angular/compiler-cli": "^5.0.0",
     "@angular/language-service": "^5.0.0",
     "@types/jasmine": "~2.5.53",
     "@types/jasminewd2": "~2.0.2",
-    "@types/node": "~6.0.60",
     "@types/jquery": "^3.2.16",
+    "@types/node": "~6.0.60",
     "@types/semantic-ui": "^2.2.6",
     "codelyzer": "~3.2.0",
     "electron": "^1.7.9",
