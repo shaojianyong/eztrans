@@ -1,5 +1,5 @@
 <!-- Too bar -->
-<div id="tool-bar" class="ui blue inverted attached menu">
+<div id="tool-bar" class="ui violet inverted attached menu">
   <a class="ui icon item" (click)="toggle()">
     <i class="sidebar icon"></i>
   </a>
@@ -95,11 +95,11 @@
 </div>
 
 <!-- Status Bar -->
-<div id="status-bar" class="ui blue inverted attached stackable menu">
+<div id="status-bar" class="ui violet inverted attached stackable menu">
 
-  <div class="item" data-content="No. / PageSize" data-variation="tiny">
+  <a class="item" data-content="No. / PageSize" data-variation="tiny">
     <i class="caret right icon"></i> {{getPageRange().indexOf(cur_index) + 1}} / {{getPageRange().length}}
-  </div>
+  </a>
   <a class="item" data-content="t-total s-skipped r-revised" data-variation="tiny">
     <i class="bar chart icon"></i> {{getStatInfo()}}
   </a>
