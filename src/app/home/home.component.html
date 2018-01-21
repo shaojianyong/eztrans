@@ -1,71 +1,51 @@
-<div id="mysidebar" class="ui sidebar inverted vertical accordion menu">
-  <div class="item">
-    <a class="active title">
-      <i class="dropdown icon"></i>
-      Size
-    </a>
-    <div class="active content">
-      <div class="ui form">
-        <div class="grouped fields">
-          <div class="field">
-            <div class="ui radio checkbox">
-              <input type="radio" name="size" value="small" />
-              <label>Small</label>
-            </div>
-          </div>
-          <div class="field">
-            <div class="ui radio checkbox">
-              <input type="radio" name="size" value="medium" />
-              <label>Medium</label>
-            </div>
-          </div>
-          <div class="field">
-            <div class="ui radio checkbox">
-              <input type="radio" name="size" value="large" />
-              <label>Large</label>
-            </div>
-          </div>
-          <div class="field">
-            <div class="ui radio checkbox">
-              <input type="radio" name="size" value="x-large" />
-              <label>X-Large</label>
-            </div>
-          </div>
+<div id="my-sidebar" class="ui sidebar">
+  <div class="ui items">
+    <div id="menu-item" class="ui item">
+      <div id="side-menu" class="ui top attached inverted small icon secondary menu">
+        <a class="item">
+          <i class="gamepad icon"></i>
+        </a>
+        <a class="item">
+          <i class="video camera icon"></i>
+        </a>
+        <div class="right menu">
+          <a class="item">
+            <i class="minus icon"></i>
+          </a>
+          <a class="item">
+            <i class="plus icon"></i>
+          </a>
         </div>
       </div>
     </div>
-  </div>
-  <div class="item">
-    <a class="title">
-      <i class="dropdown icon"></i>
-      Colors
-    </a>
-    <div class="content">
-      <div class="ui form">
-        <div class="grouped fields">
-          <div class="field">
-            <div class="ui checkbox">
-              <input type="checkbox" name="small" />
-              <label>Red</label>
-            </div>
+    <div id="list-item" class="ui item">
+      <div id="side-list" class="ui attached inverted vertical following fluid accordion secondary menu">
+        <div class="item">
+          <a class="active title">
+            <i class="dropdown icon"></i>
+            My translations
+          </a>
+          <div class="active content menu">
+            <a class="item active">Site</a>
+            <a class="item">
+              <div class="ui green label">done</div>
+              <span>Check out</span>
+            </a>
+            <a class="item">Consumer</a>
+            <a class="item">Group</a>
           </div>
-          <div class="field">
-            <div class="ui checkbox">
-              <input type="checkbox" name="medium" />
-              <label>Orange</label>
-            </div>
-          </div>
-          <div class="field">
-            <div class="ui checkbox">
-              <input type="checkbox" name="large" />
-              <label>Green</label>
-            </div>
-          </div>
-          <div class="field">
-            <div class="ui checkbox">
-              <input type="checkbox" name="x-large" />
-              <label>Blue</label>
-            </div>
+        </div>
+        <div class="item">
+          <a class="title">
+            <i class="dropdown icon"></i>My translations2</a>
+          <div class="content menu">
+            <a class="item active">Enterprise2</a>
+            <a class="item">
+              <div class="ui label">51%</div>
+              <span class="text-overflow-ellipsis">A menu can point to show its relationship to nearby content</span>
+            </a>
+            <a class="item">Consumer2</a>
+            <a class="item">Group2</a>
           </div>
         </div>
       </div>

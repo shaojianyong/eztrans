@@ -1,0 +1,34 @@
+#my-sidebar {
+  overflow-x: hidden;
+  overflow-y: auto;
+  #menu-item {
+    margin: 0;
+    padding-top: 4px;
+    padding-left: 2px;
+    padding-right: 2px;
+    padding-bottom: 0;
+  }
+  #list-item {
+    margin: 0;
+    padding-top: 0;
+    width: 100%;
+    height: 100%;
+    #side-list {
+      top: 0;
+      width: 100%;
+      height: 100%;
+    }
+  }
+  /*#side-menu {
+    width: 100%;
+    height: 100%;
+  }*/
+}
+
+.text-overflow-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space:nowrap;
+  width: 14.2em;
+  display:block;
+}
