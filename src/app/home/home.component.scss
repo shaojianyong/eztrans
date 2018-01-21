@@ -1,22 +1,27 @@
-#my-sidebar {
+#left-side {
   overflow-x: hidden;
   overflow-y: auto;
-  #menu-item {
+  .ui.secondary.menu {
+    height: 48px;
     margin: 0;
-    padding-top: 4px;
+    /*padding-top: 4px;
     padding-left: 2px;
     padding-right: 2px;
-    padding-bottom: 0;
+    padding-bottom: 0;*/
   }
-  #list-item {
+  .ui.items {
     margin: 0;
     padding-top: 0;
     width: 100%;
     height: 100%;
-    #side-list {
-      top: 0;
+    .ui.item {
       width: 100%;
       height: 100%;
+      .ui.table {
+        top: 0;
+        width: 100%;
+        height: 100%;
+      }
     }
   }
   /*#side-menu {

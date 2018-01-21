@@ -274,8 +274,8 @@ export class MainComponent implements OnInit {
   }
 
   toggle(): void {
-    console.log('toggle...');
-    $('#my-sidebar').sidebar({
+    console.log('toggle sidebar');
+    $('#left-side').sidebar({
       context: 'body',
       dimPage: false
       /*
