@@ -20,7 +20,7 @@
       "prefix": "app",
       "styles": [
         "./assets/semantic-ui/semantic.min.css",
-        "styles.css"
+        "styles.scss"
       ],
       "scripts": [
         "../node_modules/jquery/dist/jquery.min.js",
