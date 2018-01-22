@@ -192,22 +192,19 @@ function showDocContextMenu(event) {
     click: docRename
   }));
   contextMenu.append(new MenuItem({
-    label: 'Delete',
-    click: docDelete,
-    icon: './dist/assets/images/icons/delete.png'
+    label: 'Move To',
+    click: docMoveTo
   }));
 
   contextMenu.append(new MenuItem({type: 'separator'}));
-
-  contextMenu.append(new MenuItem({
-    label: 'Move To',
-    click: docMoveTo,
-    icon: './dist/assets/images/icons/delete.png'
-  }));
-
   contextMenu.append(new MenuItem({
     label: 'Export',
     click: docExport
+  }));
+  contextMenu.append(new MenuItem({
+    label: 'Delete',
+    click: docDelete,
+    icon: './dist/assets/images/icons/delete.png'
   }));
 
   const win = BrowserWindow.fromWebContents(event.sender);
