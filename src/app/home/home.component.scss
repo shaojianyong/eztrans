@@ -40,26 +40,32 @@ div.trans-group.item {
 */
 
 .ui.accordion {
-  padding-left: 4px;
-  padding-right: 4px;
-
-  div.content {
-    margin-left: 16px;
+  .title {
+    padding-left: 4px;
+    padding-right: 4px;
   }
 
-  td.collapsing {
+  td.collapsing.left-mark {
+    margin-left: 2px;
+    margin-right: 2px;
+    padding-left: 18px;
+    padding-right: 2px;
+  }
+
+  td.collapsing.right-mark {
     margin-left: 2px;
     margin-right: 2px;
     padding-left: 2px;
     padding-right: 2px;
   }
 
-  td.trans-title {
+  td.trans-data {
     margin-left: 2px;
     margin-right: 2px;
     padding-left: 2px;
     padding-right: 2px;
   }
 }
+
 
 
