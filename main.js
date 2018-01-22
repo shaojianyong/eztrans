@@ -122,6 +122,10 @@ function docDelete(menuItem, browserWindow) {
   browserWindow.send('doc-delete');
 }
 
+function docMoveTo(menuItem, browserWindow) {
+  browserWindow.send('doc-move-to');
+}
+
 function docExport(menuItem, browserWindow) {
   browserWindow.send('doc-export');
 }
@@ -194,10 +198,18 @@ function showDocContextMenu(event) {
   }));
 
   contextMenu.append(new MenuItem({type: 'separator'}));
+
+  contextMenu.append(new MenuItem({
+    label: 'Move To',
+    click: docMoveTo,
+    icon: './dist/assets/images/icons/delete.png'
+  }));
+
   contextMenu.append(new MenuItem({
     label: 'Export',
     click: docExport
   }));
+
   const win = BrowserWindow.fromWebContents(event.sender);
   contextMenu.popup(win);
 }
