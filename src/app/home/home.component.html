@@ -1,72 +1,77 @@
 <div id="left-side" class="ui sidebar">
-  <div class="ui items">
-    <div class="ui item">
-      <div class="ui top attached inverted secondary small icon menu">
-        <a class="item">
-          <i class="gamepad icon"></i>
-        </a>
-        <a class="item">
-          <i class="video camera icon"></i>
-        </a>
-        <div class="right menu">
-          <a class="item">
-            <i class="minus icon"></i>
-          </a>
-          <a class="item">
-            <i class="plus icon"></i>
-          </a>
-        </div>
+  <div class="ui inverted fluid vertical accordion">
+    <div class="item">
+      <div class="active title">
+        <i class="dropdown icon"></i>
+        <b>What is a dog?</b>
+      </div>
+      <div class="active content">
+
+        <table class="ui inverted small very basic table">
+          <tbody>
+          <tr (click)="select($event)">
+            <td class="collapsing">
+              <i class="file text icon"></i>
+            </td>
+            <td id="my-row" class="trans-title">
+              hello.html
+            </td>
+            <td class="collapsing">
+              <i class="checkmark icon"></i>
+            </td>
+          </tr>
+          <tr (click)="select($event)">
+            <td class="collapsing">
+              <i class="file text icon"></i>
+            </td>
+            <td class="trans-title">
+              hello.html
+            </td>
+            <td class="collapsing">
+              <i class="checkmark icon"></i>
+            </td>
+          </tr>
+          <tr (click)="select($event)">
+            <td class="collapsing">
+              <i class="file text icon"></i>
+            </td>
+            <td class="trans-title">
+              hello.html
+            </td>
+            <td class="collapsing">
+              <i class="edit icon"></i>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+
       </div>
     </div>
-    <div class="ui item">
-      <div class="ui attached inverted vertical accordion">
 
-        <div class="item">
-          <a class="active title">
-            <i class="dropdown icon"></i>
-            My translations
-          </a>
-          <div class="active content">
-            <table class="ui inverted very basic table">
-              <tbody>
-              <tr>
-                <td class="collapsing">
-                  <i class="star icon"></i>
-                </td>
-                <td>
-                  hello.html
-                </td>
-                <td class="collapsing">
-                  <i class="flag icon"></i>
-                </td>
-              </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
 
-        <div class="item">
-          <a class="title">
-            <i class="dropdown icon"></i>
-            My translations2
-          </a>
-          <table class="ui inverted very basic table">
-            <tbody>
-            <tr>
-              <td class="collapsing">
-                <i class="star icon"></i>
-              </td>
-              <td>
-                hello.html
-              </td>
-              <td class="collapsing">
-                <i class="flag icon"></i>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
 
+    <div class="item">
+      <div class="title">
+        <i class="dropdown icon"></i>
+        What kinds of dogs are there?
+      </div>
+      <div class="content">
+        <p>There are many breeds of dogs. Each breed varies in size and temperament. Owners often select a breed of dog
+          that they find to be compatible with their own lifestyle and desires from a companion.</p>
+      </div>
+    </div>
+    <div class="item">
+      <div class="title">
+        <i class="dropdown icon"></i>
+        How do you acquire a dog?
+      </div>
+      <div class="content">
+        <p>Three common ways for a prospective owner to acquire a dog is from pet shops, private owners, or
+          shelters.</p>
+        <p>A pet shop may be the most convenient way to buy a dog. Buying a dog from a private owner allows you to
+          assess
+          the pedigree and upbringing of your dog before choosing to take it home. Lastly, finding your dog from a
+          shelter, helps give a good home to a dog who may not find one so readily.</p>
       </div>
     </div>
   </div>
