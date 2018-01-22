@@ -39,6 +39,11 @@ export class HomeComponent implements OnInit {
     ipc.send('show-doc-context-menu');
   }
 
+  onGroupContextMenu(group: GroupModel): void {
+
+    ipc.send('show-group-context-menu');
+  }
+
   loadDocGroups(): void {
     this.doc_groups = [
       {

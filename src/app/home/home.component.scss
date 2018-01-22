@@ -16,6 +16,13 @@
       .title {
         padding-left: 4px;
         padding-right: 4px;
+        color: lightgray;
+      }
+
+      .active.title {
+        padding-left: 4px;
+        padding-right: 4px;
+        color: white;
       }
 
       td.collapsing.left-mark {
