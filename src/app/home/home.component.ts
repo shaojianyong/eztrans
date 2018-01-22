@@ -30,6 +30,11 @@ export class HomeComponent implements OnInit {
     this.cur_select = doc;
   }
 
+  onDocContextMenu(doc: DocumentModel): void {
+    this.select(doc);
+    // TODO: show context menu
+  }
+
   loadDocGroups(): void {
     this.doc_groups = [
       {
