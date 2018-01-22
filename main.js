@@ -114,6 +114,26 @@ function toggleFlag(menuItem, browserWindow) {
   browserWindow.send('toggle-flag');
 }
 
+function docRename(menuItem, browserWindow) {
+  browserWindow.send('doc-rename');
+}
+
+function docDelete(menuItem, browserWindow) {
+  browserWindow.send('doc-delete');
+}
+
+function docExport(menuItem, browserWindow) {
+  browserWindow.send('doc-export');
+}
+
+function groupRename(menuItem, browserWindow) {
+  browserWindow.send('group-rename');
+}
+
+function groupDelete(menuItem, browserWindow) {
+  browserWindow.send('group-delete');
+}
+
 function showItemContextMenu(event, page_count, cur_page) {
   const contextMenu = new Menu();
   contextMenu.append(new MenuItem({
@@ -162,74 +182,37 @@ function showItemContextMenu(event, page_count, cur_page) {
 
 function showDocContextMenu(event) {
   const contextMenu = new Menu();
+
   contextMenu.append(new MenuItem({
-    label: 'Re-translate',
-    click: retranslate,
-    icon: './dist/assets/images/icons/repeat.png'
+    label: 'Rename',
+    click: docRename
   }));
   contextMenu.append(new MenuItem({
-    label: 'Toggle Skip',
-    click: skipOver,
-    icon: './dist/assets/images/icons/ban.png'
+    label: 'Delete',
+    click: docDelete,
+    icon: './dist/assets/images/icons/delete.png'
   }));
 
   contextMenu.append(new MenuItem({type: 'separator'}));
   contextMenu.append(new MenuItem({
-    label: 'Next Page',
-    click: nextPage,
-    enabled: true,
-    icon: './dist/assets/images/icons/arrowright.png'
+    label: 'Export',
+    click: docExport
   }));
-  contextMenu.append(new MenuItem({
-    label: 'Previous Page',
-    click: prevPage,
-    enabled: true,
-    icon: './dist/assets/images/icons/arrowleft.png'
-  }));
-
-  contextMenu.append(new MenuItem({ type: 'separator' }));
-  contextMenu.append(new MenuItem({
-    label: 'Toggle Mark',
-    click: toggleFlag,
-    icon: './dist/assets/images/icons/flag.png'
-  }));
-
   const win = BrowserWindow.fromWebContents(event.sender);
   contextMenu.popup(win);
 }
 
 function showGroupContextMenu(event) {
   const contextMenu = new Menu();
-  contextMenu.append(new MenuItem({
-    label: 'Re-translate',
-    click: retranslate,
-    icon: './dist/assets/images/icons/repeat.png'
-  }));
-  contextMenu.append(new MenuItem({
-    label: 'Toggle Skip',
-    click: skipOver,
-    icon: './dist/assets/images/icons/ban.png'
-  }));
 
-  contextMenu.append(new MenuItem({type: 'separator'}));
   contextMenu.append(new MenuItem({
-    label: 'Next Page',
-    click: nextPage,
-    enabled: true,
-    icon: './dist/assets/images/icons/arrowright.png'
+    label: 'Rename',
+    click: groupRename
   }));
   contextMenu.append(new MenuItem({
-    label: 'Previous Page',
-    click: prevPage,
-    enabled: true,
-    icon: './dist/assets/images/icons/arrowleft.png'
-  }));
-
-  contextMenu.append(new MenuItem({ type: 'separator' }));
-  contextMenu.append(new MenuItem({
-    label: 'Toggle Mark',
-    click: toggleFlag,
-    icon: './dist/assets/images/icons/flag.png'
+    label: 'Delete',
+    click: groupDelete,
+    icon: './dist/assets/images/icons/delete.png'
   }));
 
   const win = BrowserWindow.fromWebContents(event.sender);
