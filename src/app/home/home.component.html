@@ -23,7 +23,7 @@
     <div id="left-side-list" class="ui item">
       <div class="ui inverted fluid vertical accordion">
         <div *ngFor="let group of doc_groups" class="item">
-          <div class="active title">
+          <div class="active title" (contextmenu)="onGroupContextMenu(group)">
             <i class="dropdown icon"></i>
             <b>{{group.doc_group.group_name}}</b>
           </div>

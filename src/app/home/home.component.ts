@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+const electron = (<any>window).require('electron');
+const ipc = electron.ipcRenderer;
+
 import { DocumentModel } from '../services/model/document.model';
 import { GroupModel } from '../services/model/group.model';
+
 
 class DocGroup {
   doc_group: GroupModel;
@@ -32,7 +36,7 @@ export class HomeComponent implements OnInit {
 
   onDocContextMenu(doc: DocumentModel): void {
     this.select(doc);
-    // TODO: show context menu
+    ipc.send('show-doc-context-menu');
   }
 
   loadDocGroups(): void {

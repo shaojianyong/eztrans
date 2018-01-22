@@ -160,8 +160,55 @@ function showItemContextMenu(event, page_count, cur_page) {
   contextMenu.popup(win);
 }
 
+function showDocContextMenu(event) {
+  const contextMenu = new Menu();
+  contextMenu.append(new MenuItem({
+    label: 'Re-translate',
+    click: retranslate,
+    icon: './dist/assets/images/icons/repeat.png'
+  }));
+  contextMenu.append(new MenuItem({
+    label: 'Toggle Skip',
+    click: skipOver,
+    icon: './dist/assets/images/icons/ban.png'
+  }));
+
+  contextMenu.append(new MenuItem({type: 'separator'}));
+  contextMenu.append(new MenuItem({
+    label: 'Next Page',
+    click: nextPage,
+    enabled: true,
+    icon: './dist/assets/images/icons/arrowright.png'
+  }));
+  contextMenu.append(new MenuItem({
+    label: 'Previous Page',
+    click: prevPage,
+    enabled: true,
+    icon: './dist/assets/images/icons/arrowleft.png'
+  }));
+
+  contextMenu.append(new MenuItem({ type: 'separator' }));
+  contextMenu.append(new MenuItem({
+    label: 'Toggle Mark',
+    click: toggleFlag,
+    icon: './dist/assets/images/icons/flag.png'
+  }));
+
+  /*
+  contextMenu.append(new MenuItem({ type: 'separator' }));
+  contextMenu.append(new MenuItem({ label: 'Merge Up', icon: './dist/assets/images/icons/arrowup.png' }));
+  contextMenu.append(new MenuItem({ label: 'Merge Down', icon: './dist/assets/images/icons/arrowdown.png' }));
+  contextMenu.append(new MenuItem({ label: 'Split Segment', icon: './dist/assets/images/icons/split.png' }));
+  contextMenu.append(new MenuItem({ label: 'Delete', icon: './dist/assets/images/icons/delete.png' }));
+  */
+
+  const win = BrowserWindow.fromWebContents(event.sender);
+  contextMenu.popup(win);
+}
+
 // Handles reading the contents of a file
 ipc.on('read-file', readFile);
 ipc.on('read-file-sync', readFileSync);
 ipc.on('save-file', saveFile);
 ipc.on('show-item-context-menu', showItemContextMenu);
+ipc.on('show-doc-context-menu', showDocContextMenu);
