@@ -122,9 +122,17 @@ function docDelete(menuItem, browserWindow) {
   browserWindow.send('doc-delete');
 }
 
+function docMoveUp(menuItem, browserWindow) {
+  browserWindow.send('doc-move-up');
+}
+
+function docMoveDown(menuItem, browserWindow) {
+  browserWindow.send('doc-move-down');
+}
+
 function docMoveTo(menuItem, browserWindow) {
   console.log(menuItem.group_id);
-  browserWindow.send('doc-move-to');
+  browserWindow.send('doc-move-to', menuItem.group_id);
 }
 
 function docExport(menuItem, browserWindow) {
@@ -216,21 +224,21 @@ function showDocContextMenu(event, moveTo) {
 
   contextMenu.append(new MenuItem({type: 'separator'}));
   contextMenu.append(new MenuItem({
-    label: 'Move To',
-    icon: './dist/assets/images/icons/moveto.png',
-    submenu: subMenuItems
-  }));
-
-  contextMenu.append(new MenuItem({
     label: 'Move Up',
-    click: docMoveTo,
+    click: docMoveUp,
     icon: './dist/assets/images/icons/arrowup.png'
   }));
 
   contextMenu.append(new MenuItem({
     label: 'Move Down',
-    click: docMoveTo,
+    click: docMoveDown,
     icon: './dist/assets/images/icons/arrowdown.png'
+  }));
+
+  contextMenu.append(new MenuItem({
+    label: 'Move To',
+    icon: './dist/assets/images/icons/moveto.png',
+    submenu: subMenuItems
   }));
 
   contextMenu.append(new MenuItem({type: 'separator'}));
