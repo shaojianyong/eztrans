@@ -36,7 +36,16 @@ export class HomeComponent implements OnInit {
 
   onDocContextMenu(doc: DocumentModel): void {
     this.select(doc);
-    ipc.send('show-doc-context-menu');
+    const moveTo = [];
+    for (const group of this.doc_groups) {
+      if (group.doc_group.group_id !== doc.doc_group) {
+        moveTo.push({
+          group_id: group.doc_group.group_id,
+          group_name: group.doc_group.group_name
+        });
+      }
+    }
+    ipc.send('show-doc-context-menu', moveTo);
   }
 
   onGroupContextMenu(group: GroupModel): void {

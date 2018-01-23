@@ -123,6 +123,7 @@ function docDelete(menuItem, browserWindow) {
 }
 
 function docMoveTo(menuItem, browserWindow) {
+  console.log(menuItem.group_id);
   browserWindow.send('doc-move-to');
 }
 
@@ -188,7 +189,17 @@ function showItemContextMenu(event, page_count, cur_page) {
   contextMenu.popup(win);
 }
 
-function showDocContextMenu(event) {
+function showDocContextMenu(event, moveTo) {
+  const subMenuItems = [];
+  for (const group of moveTo) {
+    subMenuItems.push({
+      label: group.group_name,
+      click: docMoveTo,
+      icon: './dist/assets/images/icons/folder.png',
+      group_id: group.group_id
+    });
+  }
+
   const contextMenu = new Menu();
 
   contextMenu.append(new MenuItem({
@@ -206,8 +217,8 @@ function showDocContextMenu(event) {
   contextMenu.append(new MenuItem({type: 'separator'}));
   contextMenu.append(new MenuItem({
     label: 'Move To',
-    click: docMoveTo,
-    icon: './dist/assets/images/icons/moveto.png'
+    icon: './dist/assets/images/icons/moveto.png',
+    submenu: subMenuItems
   }));
 
   contextMenu.append(new MenuItem({
