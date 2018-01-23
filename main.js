@@ -138,6 +138,10 @@ function groupDelete(menuItem, browserWindow) {
   browserWindow.send('group-delete');
 }
 
+function importDoc(menuItem, browserWindow) {
+  browserWindow.send('import-doc');
+}
+
 function showItemContextMenu(event, page_count, cur_page) {
   const contextMenu = new Menu();
   contextMenu.append(new MenuItem({
@@ -191,8 +195,26 @@ function showDocContextMenu(event) {
     label: 'Rename',
     click: docRename
   }));
+
+  contextMenu.append(new MenuItem({
+    label: 'Delete',
+    click: docDelete,
+    icon: './dist/assets/images/icons/delete.png'
+  }));
+
+  contextMenu.append(new MenuItem({type: 'separator'}));
   contextMenu.append(new MenuItem({
     label: 'Move To',
+    click: docMoveTo
+  }));
+
+  contextMenu.append(new MenuItem({
+    label: 'Move Up',
+    click: docMoveTo
+  }));
+
+  contextMenu.append(new MenuItem({
+    label: 'Move Down',
     click: docMoveTo
   }));
 
@@ -200,11 +222,6 @@ function showDocContextMenu(event) {
   contextMenu.append(new MenuItem({
     label: 'Export',
     click: docExport
-  }));
-  contextMenu.append(new MenuItem({
-    label: 'Delete',
-    click: docDelete,
-    icon: './dist/assets/images/icons/delete.png'
   }));
 
   const win = BrowserWindow.fromWebContents(event.sender);
@@ -215,13 +232,31 @@ function showGroupContextMenu(event) {
   const contextMenu = new Menu();
 
   contextMenu.append(new MenuItem({
+    label: 'Import',
+    click: importDoc
+  }));
+
+  contextMenu.append(new MenuItem({type: 'separator'}));
+  contextMenu.append(new MenuItem({
     label: 'Rename',
     click: groupRename
   }));
+
   contextMenu.append(new MenuItem({
     label: 'Delete',
     click: groupDelete,
     icon: './dist/assets/images/icons/delete.png'
+  }));
+
+  contextMenu.append(new MenuItem({type: 'separator'}));
+  contextMenu.append(new MenuItem({
+    label: 'Move Up',
+    click: docMoveTo
+  }));
+
+  contextMenu.append(new MenuItem({
+    label: 'Move Down',
+    click: docMoveTo
   }));
 
   const win = BrowserWindow.fromWebContents(event.sender);
