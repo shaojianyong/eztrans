@@ -193,7 +193,8 @@ function showDocContextMenu(event) {
 
   contextMenu.append(new MenuItem({
     label: 'Rename',
-    click: docRename
+    click: docRename,
+    icon: './dist/assets/images/icons/rename.png'
   }));
 
   contextMenu.append(new MenuItem({
@@ -205,23 +206,27 @@ function showDocContextMenu(event) {
   contextMenu.append(new MenuItem({type: 'separator'}));
   contextMenu.append(new MenuItem({
     label: 'Move To',
-    click: docMoveTo
+    click: docMoveTo,
+    icon: './dist/assets/images/icons/moveto.png'
   }));
 
   contextMenu.append(new MenuItem({
     label: 'Move Up',
-    click: docMoveTo
+    click: docMoveTo,
+    icon: './dist/assets/images/icons/arrowup.png'
   }));
 
   contextMenu.append(new MenuItem({
     label: 'Move Down',
-    click: docMoveTo
+    click: docMoveTo,
+    icon: './dist/assets/images/icons/arrowdown.png'
   }));
 
   contextMenu.append(new MenuItem({type: 'separator'}));
   contextMenu.append(new MenuItem({
     label: 'Export',
-    click: docExport
+    click: docExport,
+    icon: './dist/assets/images/icons/export.png'
   }));
 
   const win = BrowserWindow.fromWebContents(event.sender);
@@ -233,13 +238,15 @@ function showGroupContextMenu(event) {
 
   contextMenu.append(new MenuItem({
     label: 'Import',
-    click: importDoc
+    click: importDoc,
+    icon: './dist/assets/images/icons/import.png'
   }));
 
   contextMenu.append(new MenuItem({type: 'separator'}));
   contextMenu.append(new MenuItem({
     label: 'Rename',
-    click: groupRename
+    click: groupRename,
+    icon: './dist/assets/images/icons/rename.png'
   }));
 
   contextMenu.append(new MenuItem({
@@ -251,12 +258,14 @@ function showGroupContextMenu(event) {
   contextMenu.append(new MenuItem({type: 'separator'}));
   contextMenu.append(new MenuItem({
     label: 'Move Up',
-    click: docMoveTo
+    click: docMoveTo,
+    icon: './dist/assets/images/icons/arrowup.png'
   }));
 
   contextMenu.append(new MenuItem({
     label: 'Move Down',
-    click: docMoveTo
+    click: docMoveTo,
+    icon: './dist/assets/images/icons/arrowdown.png'
   }));
 
   const win = BrowserWindow.fromWebContents(event.sender);
