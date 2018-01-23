@@ -4,6 +4,7 @@
 
 import { SentenceModel } from './sentence.model';
 
+// local_file: string;  本地文件
 export class DocumentModel {
   doc_seqno: string;    // 文档序号
   doc_group: string;    // 分组标识
