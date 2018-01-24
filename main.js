@@ -6,11 +6,20 @@ const BrowserWindow = electron.BrowserWindow;
 const fs = require('fs');
 const url = require('url');
 const path = require('path');
+const loki = require('lokijs', {env: 'NODEJS'});
 
 const ipc = electron.ipcMain;
 const dialog = electron.dialog;
 const Menu = electron.Menu;
 const MenuItem = electron.MenuItem;
+
+const appDB = new loki('appdata/eztrans.lkdb', {
+  env: 'NODEJS',
+  autoload: true,
+  autosave: true,
+  autosaveInterval: 5000,  // 每隔五秒自动保存一次
+
+});
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -289,6 +298,10 @@ function showGroupContextMenu(event) {
 
   const win = BrowserWindow.fromWebContents(event.sender);
   contextMenu.popup(win);
+}
+
+function addFileRecord(event) {
+
 }
 
 // Handles reading the contents of a file
