@@ -6,20 +6,38 @@ const BrowserWindow = electron.BrowserWindow;
 const fs = require('fs');
 const url = require('url');
 const path = require('path');
-const loki = require('lokijs', {env: 'NODEJS'});
+const loki = require('lokijs');
+const moment = require('moment');
 
 const ipc = electron.ipcMain;
 const dialog = electron.dialog;
 const Menu = electron.Menu;
 const MenuItem = electron.MenuItem;
 
-const appDB = new loki('appdata/eztrans.lkdb', {
+const appSettingsDb = new loki(path.join(__dirname, 'appdata', 'app-settings.db'), {
   env: 'NODEJS',
   autoload: true,
-  autosave: true,
-  autosaveInterval: 5000,  // 每隔五秒自动保存一次
-
+  autosave: false
 });
+
+const appStatusDb = new loki(path.join(__dirname, 'appdata', 'app-status.db'), {
+  env: 'NODEJS',
+  autoload: true,
+  autosave: false
+});
+
+const docGroupsDb = new loki(path.join(__dirname, 'userdata', 'doc-groups.db'), {
+  env: 'NODEJS',
+  autoload: true,
+  autosave: false
+});
+
+const docListDb = new loki(path.join(__dirname, 'userdata', 'doc-list.db'), {
+  env: 'NODEJS',
+  autoload: true,
+  autosave: false
+});
+
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -74,11 +92,30 @@ app.on('activate', function () {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
-function readFile (event, files) {
+function readFile (event, files, groupId) {
   if (files) {
     const filePath = files[0];
     fs.readFile(filePath, 'utf8', function(err, data) {
-      event.sender.send('file-read', err, data, filePath);
+      let docList = docListDb.getCollection('doc-list');
+      if (docList === null) {
+        docList = docListDb.addCollection('doc-list');
+      }
+
+      const mm = moment();
+      const ns = filePath.split(/\/|\\/);
+
+      const doc_id = 'doc-' + mm.format('YYYYMMDDHHmmssSSS');
+      docList.insert({
+        doc_seqno: doc_id,
+        group_id: groupId,
+        doc_title: ns[ns.length - 1],
+        orig_path: filePath,
+        doc_state: 1,
+        create_time: mm.format('YYYY-MM-DD HH:mm:ss'),
+        modify_time: mm.format('YYYY-MM-DD HH:mm:ss')
+      });
+      docListDb.saveDatabase();
+      event.sender.send('file-read', err, data, filePath, doc_id);
     });
   }
 }
@@ -300,7 +337,11 @@ function showGroupContextMenu(event) {
   contextMenu.popup(win);
 }
 
-function addFileRecord(event) {
+function loadGroups(event) {
+  docGroupsDb.
+}
+
+function loadDocuments(event) {
 
 }
 
@@ -311,3 +352,5 @@ ipc.on('save-file', saveFile);
 ipc.on('show-item-context-menu', showItemContextMenu);
 ipc.on('show-doc-context-menu', showDocContextMenu);
 ipc.on('show-group-context-menu', showGroupContextMenu);
+ipc.on('load-groups', loadGroups);
+ipc.on('load-documents', loadDocuments);

@@ -54,6 +54,9 @@ export class HomeComponent implements OnInit {
   }
 
   loadDocGroups(): void {
+    const groups = ipc.sendSync('load-groups');
+    const documents = ipc.sendSync('load-documents');
+
     this.doc_groups = [
       {
         doc_group: new GroupModel({
