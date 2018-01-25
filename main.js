@@ -338,7 +338,7 @@ function showGroupContextMenu(event) {
 }
 
 function loadGroups(event) {
-  docGroupsDb.
+  return docGroupsDb;
 }
 
 function loadDocuments(event) {
