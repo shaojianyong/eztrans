@@ -14,30 +14,17 @@ const dialog = electron.dialog;
 const Menu = electron.Menu;
 const MenuItem = electron.MenuItem;
 
-const appSettingsDb = new loki(path.join(__dirname, 'appdata', 'app-settings.db'), {
-  env: 'NODEJS',
+// app-settings, app-status
+const appDb = new loki(path.join(__dirname, 'appdata', 'app.db'), {
   autoload: true,
   autosave: false
 });
 
-const appStatusDb = new loki(path.join(__dirname, 'appdata', 'app-status.db'), {
-  env: 'NODEJS',
+// doc-groups
+const docDb = new loki(path.join(__dirname, 'usrdata', 'doc.db'), {
   autoload: true,
   autosave: false
 });
-
-const docGroupsDb = new loki(path.join(__dirname, 'userdata', 'doc-groups.db'), {
-  env: 'NODEJS',
-  autoload: true,
-  autosave: false
-});
-
-const docListDb = new loki(path.join(__dirname, 'userdata', 'doc-list.db'), {
-  env: 'NODEJS',
-  autoload: true,
-  autosave: false
-});
-
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -96,26 +83,27 @@ function readFile (event, files, groupId) {
   if (files) {
     const filePath = files[0];
     fs.readFile(filePath, 'utf8', function(err, data) {
-      let docList = docListDb.getCollection('doc-list');
+      let docList = docDb.getCollection('docList');
       if (docList === null) {
-        docList = docListDb.addCollection('doc-list');
+        docList = docDb.addCollection('docList', {indices: ['id']});
       }
 
       const mm = moment();
       const ns = filePath.split(/\/|\\/);
 
-      const doc_id = 'doc-' + mm.format('YYYYMMDDHHmmssSSS');
+      const docId = 'doc-' + mm.format('YYYYMMDDHHmmssSSS');
       docList.insert({
-        doc_seqno: doc_id,
-        group_id: groupId,
+        id: docId,
+        group_id: groupId ? groupId : '',
         doc_title: ns[ns.length - 1],
-        orig_path: filePath,
+        data_file: docId + '.db',
+        orig_file: filePath,
         doc_state: 1,
         create_time: mm.format('YYYY-MM-DD HH:mm:ss'),
         modify_time: mm.format('YYYY-MM-DD HH:mm:ss')
       });
-      docListDb.saveDatabase();
-      event.sender.send('file-read', err, data, filePath, doc_id);
+      docDb.saveDatabase();
+      event.sender.send('file-read', err, data, filePath, docId);
     });
   }
 }
@@ -337,11 +325,11 @@ function showGroupContextMenu(event) {
   contextMenu.popup(win);
 }
 
-function loadGroups(event) {
-  return docGroupsDb;
+function loadDocGroups(event) {
+  return docDb.getCollection('docGroups').data();
 }
 
-function loadDocuments(event) {
+function saveDocGroups(event, docGroups) {
 
 }
 
@@ -352,5 +340,5 @@ ipc.on('save-file', saveFile);
 ipc.on('show-item-context-menu', showItemContextMenu);
 ipc.on('show-doc-context-menu', showDocContextMenu);
 ipc.on('show-group-context-menu', showGroupContextMenu);
-ipc.on('load-groups', loadGroups);
-ipc.on('load-documents', loadDocuments);
+ipc.on('load-doc-groups', loadDocGroups);
+ipc.on('save-doc-groups', saveDocGroups);

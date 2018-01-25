@@ -7,7 +7,8 @@ import { GroupModel } from '../services/model/group.model';
 
 
 class DocGroup {
-  doc_group: GroupModel;
+  id: string;
+  name: string;
   documents: Array<DocumentModel>;
 }
 
@@ -54,9 +55,16 @@ export class HomeComponent implements OnInit {
   }
 
   loadDocGroups(): void {
-    const groups = ipc.sendSync('load-groups');
-    const documents = ipc.sendSync('load-documents');
+    this.doc_groups = ipc.sendSync('load-doc-groups');
+    if (this.doc_groups.length === 0) {
+      this.doc_groups.push({
+        id: '',  // 默认分组，不允许删除
+        name: 'My Translations',
+        documents: []
+      });
+    }
 
+    /*
     this.doc_groups = [
       {
         doc_group: new GroupModel({
@@ -104,6 +112,19 @@ export class HomeComponent implements OnInit {
           })]
       }
     ];
+    */
+  }
+
+  addDocument(): void {
+
+  }
+
+  updateDocGroup(): void {
+
+  }
+
+  saveDocGroups(): void {
+    ipc.send('save-doc-groups', this.doc_groups);
   }
 
   ngOnInit() {
