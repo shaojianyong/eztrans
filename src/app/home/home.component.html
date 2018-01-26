@@ -28,7 +28,7 @@
                   id="doc-{{doc.id}}"
                   (click)="select(doc)"
                   (contextmenu)="onDocContextMenu(doc)"
-                  class="{{(cur_doc && doc.id === cur_doc.id) ? 'selected_document' : ''}}">
+                  class="{{(sel_doc && doc.id === sel_doc.id) ? 'selected_document' : ''}}">
                 <td class="collapsing left-mark">
                   <i class="file text icon"></i>
                 </td>

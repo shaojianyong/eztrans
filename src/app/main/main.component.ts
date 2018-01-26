@@ -636,7 +636,7 @@ export class MainComponent implements OnInit {
     ipc.on('file-read', (event, err, data, filePath) => {
       self.reset();
       this.child_home.addDocument(filePath);
-      self.sentences = this.child_home.getCurrentDoc().sentences;
+      self.sentences = this.child_home.cur_doc.sentences;
       const ext_name = FunctionUtils.getExtName(filePath);
       self.parser = this.pms.getParser(ext_name);
       self.parser.parse(data).subscribe(

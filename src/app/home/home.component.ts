@@ -15,31 +15,31 @@ import { DocInfoModel } from '../services/model/doc-info.model';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
+  @Output() rerenderEvent = new EventEmitter<any>();
+
   doc_groups = [];
   cache_docs = {};
-  cur_doc = null;  // DocInfoModel
-  cur_select = null;
+  sel_doc = null;  // DocInfoModel
+  cur_doc = null;  // DocumentModel
 
   constructor() { }
 
-  getCurrentDoc(): DocumentModel {
-    return this.cache_docs[this.cur_doc.id];
-  }
 
   select(doc: DocInfoModel): void {
-    if (this.cur_doc && this.cur_doc.id === doc.id) {
+    if (this.sel_doc && this.sel_doc.id === doc.id) {
       return;
     }
 
-    if (this.cur_doc) {
-      $(`#doc-${this.cur_doc.id}`).toggleClass('selected_document');
+    if (this.sel_doc) {
+      $(`#doc-${this.sel_doc.id}`).toggleClass('selected_document');
     }
     $(`#doc-${doc.id}`).toggleClass('selected_document');
-    this.cur_doc = doc;
+    this.sel_doc = doc;
   }
 
   openDoc(): void {
-
+    this.cur_doc = this.cache_docs[this.sel_doc.id];
+    this.rerenderEvent.emit({forceShowSelected: false});
   }
 
   onDocContextMenu(doc: DocInfoModel): void {
@@ -73,14 +73,16 @@ export class HomeComponent implements OnInit {
     const mm = moment();
     const docId = mm.format('YYYYMMDDHHmmssSSS');
 
-    this.cur_doc = new DocInfoModel({
+    this.sel_doc = new DocInfoModel({
       id: docId,
       name: FunctionUtils.getFileName(filePath),
       group_id: this.doc_groups[0].id,
       orig_file: filePath
     })
-    this.doc_groups[0].documents.push(this.cur_doc);
-    this.cache_docs[docId] = new DocumentModel({id: docId});
+    this.doc_groups[0].documents.push(this.sel_doc);
+
+    this.cur_doc = new DocumentModel({id: docId});
+    this.cache_docs[docId] = this.cur_doc;
   }
 
   updateDocGroup(): void {
