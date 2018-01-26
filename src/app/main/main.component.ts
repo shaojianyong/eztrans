@@ -27,7 +27,7 @@ import {StatisticsModel} from '../services/model/statistics.model';
   providers: [EngineManagerService, ParserManagerService]
 })
 export class MainComponent implements OnInit {
-  sentences = [];  // new Array<SentenceModel>();
+  sentences = [];
   cur_index = -1;
   cur_page = 0;
   search_text = '';
@@ -61,7 +61,6 @@ export class MainComponent implements OnInit {
   reset(): void {
     this.cur_page = 0;
     this.cur_index = -1;
-    this.sentences = [];
     this.search_text = '';
     $('input').val('');
     this.search_result = [];
@@ -636,6 +635,8 @@ export class MainComponent implements OnInit {
 
     ipc.on('file-read', (event, err, data, filePath) => {
       self.reset();
+      this.child_home.addDocument(filePath);
+      self.sentences = this.child_home.getCurrentDoc().sentences;
       const ext_name = FunctionUtils.getExtName(filePath);
       self.parser = this.pms.getParser(ext_name);
       self.parser.parse(data).subscribe(
@@ -667,7 +668,6 @@ export class MainComponent implements OnInit {
       );
 
       self.title.setTitle(`Eztrans - ${filePath}`);
-      this.child_home.addDocument(filePath);
       self.rerender();
     });
 

@@ -17,23 +17,23 @@
     <div id="left-side-list" class="ui item">
       <div class="ui inverted fluid vertical accordion">
         <div *ngFor="let group of doc_groups" class="item">
-          <div class="title" (contextmenu)="onGroupContextMenu(group)" id="group-{{group.group_id}}">  <!--active-->
+          <div class="title" (contextmenu)="onGroupContextMenu(group)" id="group-{{group.id}}">  <!--active-->
             <i class="dropdown icon"></i>
-            {{group.doc_group.group_name}}
+            {{group.name}}
           </div>
           <div class="content">  <!--active content-->
             <table class="ui inverted small very basic table">  <!--selectable-->
               <tbody>
               <tr *ngFor="let doc of group.documents"
-                  id="doc-{{doc.doc_seqno}}"
+                  id="doc-{{doc.id}}"
                   (click)="select(doc)"
                   (contextmenu)="onDocContextMenu(doc)"
-                  class="{{(cur_select && doc.doc_seqno === cur_select.doc_seqno) ? 'selected_document' : ''}}">
+                  class="{{(cur_doc && doc.id === cur_doc.id) ? 'selected_document' : ''}}">
                 <td class="collapsing left-mark">
                   <i class="file text icon"></i>
                 </td>
                 <td class="trans-data">
-                  {{doc.doc_title}}
+                  {{doc.name}}
                 </td>
                 <td class="collapsing right-mark">
                   <i *ngIf="doc.doc_state === 1" class="edit icon"></i>

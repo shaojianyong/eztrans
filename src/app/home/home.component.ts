@@ -6,12 +6,8 @@ const ipc = electron.ipcRenderer;
 import { FunctionUtils } from '../services/utils/function-utils';
 import { DocumentModel } from '../services/model/document.model';
 import { GroupModel } from '../services/model/group.model';
+import { DocInfoModel } from '../services/model/doc-info.model';
 
-
-class Document {
-  id: string;
-  sentences: Array<SentenceModel>;
-}
 
 @Component({
   selector: 'app-home',
@@ -21,30 +17,39 @@ class Document {
 export class HomeComponent implements OnInit {
   doc_groups = [];
   cache_docs = {};
+  cur_doc = null;  // DocInfoModel
   cur_select = null;
 
   constructor() { }
 
-  select(doc: DocumentModel): void {
-    if (this.cur_select && this.cur_select.doc_seqno === doc.doc_seqno) {
+  getCurrentDoc(): DocumentModel {
+    return this.cache_docs[this.cur_doc.id];
+  }
+
+  select(doc: DocInfoModel): void {
+    if (this.cur_doc && this.cur_doc.id === doc.id) {
       return;
     }
 
-    if (this.cur_select) {
-      $(`#doc-${this.cur_select.doc_seqno}`).toggleClass('selected_document');
+    if (this.cur_doc) {
+      $(`#doc-${this.cur_doc.id}`).toggleClass('selected_document');
     }
-    $(`#doc-${doc.doc_seqno}`).toggleClass('selected_document');
-    this.cur_select = doc;
+    $(`#doc-${doc.id}`).toggleClass('selected_document');
+    this.cur_doc = doc;
   }
 
-  onDocContextMenu(doc: DocumentModel): void {
+  openDoc(): void {
+
+  }
+
+  onDocContextMenu(doc: DocInfoModel): void {
     this.select(doc);
     const moveTo = [];
     for (const group of this.doc_groups) {
-      if (group.doc_group.group_id !== doc.doc_group) {
+      if (group.id !== doc.group_id) {
         moveTo.push({
-          group_id: group.doc_group.group_id,
-          group_name: group.doc_group.group_name
+          id: group.id,
+          name: group.name
         });
       }
     }
@@ -60,25 +65,22 @@ export class HomeComponent implements OnInit {
     if (docGroups && docGroups.length) {
       this.doc_groups = docGroups;
     } else {
-      this.doc_groups.push({
-        id: '',  // 默认分组，不允许删除
-        name: 'My Translations',
-        documents: []
-      });
+      this.doc_groups.push(new GroupModel());
     }
   }
 
   addDocument(filePath: string): void {
     const mm = moment();
-    const docId = 'doc-' + mm.format('YYYYMMDDHHmmssSSS');
+    const docId = mm.format('YYYYMMDDHHmmssSSS');
 
-    this.doc_groups[0].documents.push({
+    this.cur_doc = new DocInfoModel({
       id: docId,
       name: FunctionUtils.getFileName(filePath),
-      orig_file: filePath,
-      create_time: mm.format('YYYY-MM-DD HH:mm:ss'),
-      modify_time: mm.format('YYYY-MM-DD HH:mm:ss')
-    });
+      group_id: this.doc_groups[0].id,
+      orig_file: filePath
+    })
+    this.doc_groups[0].documents.push(this.cur_doc);
+    this.cache_docs[docId] = new DocumentModel({id: docId});
   }
 
   updateDocGroup(): void {
@@ -97,6 +99,10 @@ export class HomeComponent implements OnInit {
 
     ipc.on('rsp-doc-groups', (event, data) => {
       this.loadDocGroups(data);
+    });
+
+    ipc.on('doc-open', (event) => {
+      this.openDoc();
     });
   }
 

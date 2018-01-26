@@ -152,6 +152,10 @@ function docExport(menuItem, browserWindow) {
   browserWindow.send('doc-export');
 }
 
+function docOpen(menuItem, browserWindow) {
+  browserWindow.send('doc-open');
+}
+
 function groupRename(menuItem, browserWindow) {
   browserWindow.send('group-rename');
 }
@@ -214,15 +218,22 @@ function showDocContextMenu(event, moveTo) {
   const subMenuItems = [];
   for (const group of moveTo) {
     subMenuItems.push({
-      label: group.group_name,
+      label: group.name,
       click: docMoveTo,
       icon: './dist/assets/images/icons/folder.png',
-      group_id: group.group_id
+      group_id: group.id
     });
   }
 
   const contextMenu = new Menu();
 
+  contextMenu.append(new MenuItem({
+    label: 'Open',
+    click: docOpen,
+    icon: './dist/assets/images/icons/edit.png'
+  }));
+
+  contextMenu.append(new MenuItem({type: 'separator'}));
   contextMenu.append(new MenuItem({
     label: 'Rename',
     click: docRename,
@@ -248,12 +259,13 @@ function showDocContextMenu(event, moveTo) {
     icon: './dist/assets/images/icons/arrowdown.png'
   }));
 
-  contextMenu.append(new MenuItem({
-    label: 'Move To',
-    icon: './dist/assets/images/icons/moveto.png',
-    submenu: subMenuItems
-  }));
-
+  if (subMenuItems.length) {
+    contextMenu.append(new MenuItem({
+      label: 'Move To',
+      icon: './dist/assets/images/icons/moveto.png',
+      submenu: subMenuItems
+    }));
+  }
   contextMenu.append(new MenuItem({type: 'separator'}));
   contextMenu.append(new MenuItem({
     label: 'Export',
@@ -308,6 +320,8 @@ function reqDocGroups(event) {
   const docGroups = docDb.getCollection('docGroups');
   if (docGroups) {
     event.sender.send('rsp-doc-groups', docGroups.data());
+  } else {
+    event.sender.send('rsp-doc-groups', null);
   }
 }
 
