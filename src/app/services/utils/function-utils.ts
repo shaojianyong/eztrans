@@ -13,4 +13,13 @@ export class FunctionUtils {
   static getExtName(filePath: string): string {
     return /\.([^\.]+$)/.exec(filePath)[1];
   }
+
+  static getFileName(filePath: string): string {
+    let res = null;
+    const ns = filePath.split(/\/|\\/);
+    if (ns.length) {
+      res = ns[ns.length - 1];
+    }
+    return res;
+  }
 }

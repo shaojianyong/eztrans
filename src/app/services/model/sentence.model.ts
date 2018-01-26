@@ -8,4 +8,14 @@ export class SentenceModel {
   marked: boolean;
   custom: TranslateModel;
   refers: Array<TranslateModel>;
+
+  constructor(obj?: any) {
+    this.source = obj && obj.source || '';
+    this.target = obj && obj.target || -2;
+    this.ignore = obj && obj.ignore || false;
+    this.status = obj && obj.status || 0;
+    this.marked = obj && obj.marked || false;
+    this.custom = obj && obj.custom || null;
+    this.refers = obj && obj.refers || [];
+  }
 }

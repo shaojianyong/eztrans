@@ -1,15 +1,16 @@
 import { Component, OnInit } from '@angular/core';
+const moment = (<any>window).require('moment');
 const electron = (<any>window).require('electron');
 const ipc = electron.ipcRenderer;
 
+import { FunctionUtils } from '../services/utils/function-utils';
 import { DocumentModel } from '../services/model/document.model';
 import { GroupModel } from '../services/model/group.model';
 
 
-class DocGroup {
+class Document {
   id: string;
-  name: string;
-  documents: Array<DocumentModel>;
+  sentences: Array<SentenceModel>;
 }
 
 @Component({
@@ -19,6 +20,7 @@ class DocGroup {
 })
 export class HomeComponent implements OnInit {
   doc_groups = [];
+  cache_docs = {};
   cur_select = null;
 
   constructor() { }
@@ -54,69 +56,29 @@ export class HomeComponent implements OnInit {
     ipc.send('show-group-context-menu');
   }
 
-  loadDocGroups(): void {
-    this.doc_groups = ipc.sendSync('load-doc-groups');
-    if (this.doc_groups.length === 0) {
+  loadDocGroups(docGroups: any): void {
+    if (docGroups && docGroups.length) {
+      this.doc_groups = docGroups;
+    } else {
       this.doc_groups.push({
         id: '',  // 默认分组，不允许删除
         name: 'My Translations',
         documents: []
       });
     }
-
-    /*
-    this.doc_groups = [
-      {
-        doc_group: new GroupModel({
-          group_id: '1',
-          group_name: 'My Translations'
-        }),
-        documents: [
-          new DocumentModel({
-            doc_seqno: 'a',
-            doc_group: '1',
-            doc_title: 'hello.html',
-          }),
-          new DocumentModel({
-            doc_seqno: 'b',
-            doc_group: '1',
-            doc_title: 'world.html'
-          }),
-          new DocumentModel({
-            doc_seqno: 'c',
-            doc_group: '1',
-            doc_title: 'john.html'
-          })]
-      },
-      {
-        doc_group: new GroupModel({
-          group_id: '2',
-          group_name: 'My Translations2'
-        }),
-        documents: [
-          new DocumentModel({
-            doc_seqno: 'd',
-            doc_group: '2',
-            doc_title: 'hello.html'
-          }),
-          new DocumentModel({
-            doc_seqno: 'e',
-            doc_group: '2',
-            doc_title: 'world.html'
-          }),
-          new DocumentModel({
-            doc_seqno: 'f',
-            doc_group: '2',
-            doc_title: 'john.html',
-            doc_state: 2
-          })]
-      }
-    ];
-    */
   }
 
-  addDocument(): void {
+  addDocument(filePath: string): void {
+    const mm = moment();
+    const docId = 'doc-' + mm.format('YYYYMMDDHHmmssSSS');
 
+    this.doc_groups[0].documents.push({
+      id: docId,
+      name: FunctionUtils.getFileName(filePath),
+      orig_file: filePath,
+      create_time: mm.format('YYYY-MM-DD HH:mm:ss'),
+      modify_time: mm.format('YYYY-MM-DD HH:mm:ss')
+    });
   }
 
   updateDocGroup(): void {
@@ -131,7 +93,11 @@ export class HomeComponent implements OnInit {
     $('.ui.accordion')
       .accordion();
 
-    this.loadDocGroups();
+    ipc.send('req-doc-groups');
+
+    ipc.on('rsp-doc-groups', (event, data) => {
+      this.loadDocGroups(data);
+    });
   }
 
 }

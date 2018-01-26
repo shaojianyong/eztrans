@@ -14,6 +14,7 @@ import {ParserService} from '../parsers/base/parser.service';
 import {ParserManagerService} from '../parsers/manager/parser-manager.service';
 import {EngineManagerService} from '../providers/manager/engine-manager.service';
 import engines from '../providers/manager/engines';
+import {HomeComponent} from '../home/home.component';
 import {AboutComponent} from '../about/about.component';
 import {SettingsComponent} from '../settings/settings.component';
 import {StatisticsModel} from '../services/model/statistics.model';
@@ -33,6 +34,7 @@ export class MainComponent implements OnInit {
   search_result = [];
   parser: ParserService;
 
+  @ViewChild(HomeComponent) child_home: HomeComponent;
   @ViewChild(SettingsComponent) child_settings: SettingsComponent;
   @ViewChild(AboutComponent) child_about: AboutComponent;
 
@@ -118,7 +120,7 @@ export class MainComponent implements OnInit {
   }
 
   // ipcRenderer与ipcMain同步通信，在JavaScript中，同步代码好丑陋
-  openFileSync(): void {
+  /*openFileSync(): void {
     const self = this;
     dialog.showOpenDialog((files) => {
       if (files) {
@@ -146,7 +148,7 @@ export class MainComponent implements OnInit {
       self.title.setTitle(`Eztrans - ${files[0]}`);
       self.rerender();
     });
-  }
+  }*/
 
   onItemClick(index: number): void {
     if (index === this.cur_index) {
@@ -638,26 +640,17 @@ export class MainComponent implements OnInit {
       self.parser = this.pms.getParser(ext_name);
       self.parser.parse(data).subscribe(
         res => {
-          const sentence = {
-            source: res.source,
-            target: -2,
-            ignore: false,
-            status: 0,
-            marked: false,
-            custom: null,
-            refers: []  //  new Array<TranslateModel>()
-          };
+          const sentence = new SentenceModel({source: res.source});
 
           if (res.target) {
             sentence.target = -1;
-            sentence.custom = new TranslateModel();
-            sentence.custom.source_lang = self.ems.getSourceLanguage();
-            sentence.custom.target_lang = self.ems.getTargetLanguage();
-            sentence.custom.source_text = res.source;
-            sentence.custom.target_text = res.target;
-            sentence.custom.hz_translit =  '';
-            sentence.custom.engine_name = 'user';
-            sentence.custom.trans_state = 0;
+            sentence.custom = new TranslateModel({
+              source_lang: self.ems.getSourceLanguage(),
+              target_lang: self.ems.getTargetLanguage(),
+              source_text: res.source,
+              target_text: res.target,
+              engine_name: 'user'
+            });
           }
           self.sentences[self.sentences.length] = sentence;
         },
@@ -674,6 +667,7 @@ export class MainComponent implements OnInit {
       );
 
       self.title.setTitle(`Eztrans - ${filePath}`);
+      this.child_home.addDocument(filePath);
       self.rerender();
     });
 

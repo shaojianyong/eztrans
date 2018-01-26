@@ -7,7 +7,6 @@ const fs = require('fs');
 const url = require('url');
 const path = require('path');
 const loki = require('lokijs');
-const moment = require('moment');
 
 const ipc = electron.ipcMain;
 const dialog = electron.dialog;
@@ -79,31 +78,11 @@ app.on('activate', function () {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
-function readFile (event, files, groupId) {
+function readFile (event, files) {
   if (files) {
     const filePath = files[0];
     fs.readFile(filePath, 'utf8', function(err, data) {
-      let docList = docDb.getCollection('docList');
-      if (docList === null) {
-        docList = docDb.addCollection('docList', {indices: ['id']});
-      }
-
-      const mm = moment();
-      const ns = filePath.split(/\/|\\/);
-
-      const docId = 'doc-' + mm.format('YYYYMMDDHHmmssSSS');
-      docList.insert({
-        id: docId,
-        group_id: groupId ? groupId : '',
-        doc_title: ns[ns.length - 1],
-        data_file: docId + '.db',
-        orig_file: filePath,
-        doc_state: 1,
-        create_time: mm.format('YYYY-MM-DD HH:mm:ss'),
-        modify_time: mm.format('YYYY-MM-DD HH:mm:ss')
-      });
-      docDb.saveDatabase();
-      event.sender.send('file-read', err, data, filePath, docId);
+      event.sender.send('file-read', err, data, filePath);
     });
   }
 }
@@ -325,8 +304,11 @@ function showGroupContextMenu(event) {
   contextMenu.popup(win);
 }
 
-function loadDocGroups(event) {
-  return docDb.getCollection('docGroups').data();
+function reqDocGroups(event) {
+  const docGroups = docDb.getCollection('docGroups');
+  if (docGroups) {
+    event.sender.send('rsp-doc-groups', docGroups.data());
+  }
 }
 
 function saveDocGroups(event, docGroups) {
@@ -340,5 +322,5 @@ ipc.on('save-file', saveFile);
 ipc.on('show-item-context-menu', showItemContextMenu);
 ipc.on('show-doc-context-menu', showDocContextMenu);
 ipc.on('show-group-context-menu', showGroupContextMenu);
-ipc.on('load-doc-groups', loadDocGroups);
+ipc.on('req-doc-groups', reqDocGroups);
 ipc.on('save-doc-groups', saveDocGroups);

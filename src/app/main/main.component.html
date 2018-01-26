@@ -81,12 +81,6 @@
     </div>
   </div>
 
-<!--td class="collapsing">
-  <a id="exec-{{idx}}" class="ez-hide">
-  <i class="grey {{getEngineIcon(idx)}}"></i>
-  </a>
-</td-->
-
   <app-panel [sentence]="sentences[cur_index]"
              (rerenderEvent)="forceRerender($event)"
              (refreshEvent)="forceRefresh($event)"
@@ -127,6 +121,9 @@
     </a>
   </div>
 </div>
+
+<!-- doc tree -->
+<app-home></app-home>
 
 <!-- Setting Dialog -->
 <app-settings></app-settings>
