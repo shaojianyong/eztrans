@@ -327,14 +327,17 @@ function reqDocGroups(event) {
 
 function saveDocGroups(event, docGroups) {
   let dgc = docDb.getCollection('docGroups');
-  if (dgc) {
-    dgc.removeDataOnly();
-  } else {
-    dgc = docDb.addCollection('docGroups');
+  if (!dgc) {
+    dgc = docDb.addCollection('docGroups', {indices: ['id']});
+    dgc.ensureUniqueIndex('id');
   }
 
   for(const group of docGroups) {
-    dgc.insert(group);
+    if (dgc.by('id', group.id)) {
+      dgc.update(group);
+    } else {
+      dgc.insert(group);
+    }
   }
   docDb.saveDatabase();
 }
@@ -343,7 +346,7 @@ function docRepeatInquiry(event, doc) {
   const options = {
     type: 'info',
     title: 'EZtrans',
-    message: "The file already imported. open it now?",
+    message: "The file already imported. Open it now?",
     buttons: ['Yes', 'No']
   };
 
