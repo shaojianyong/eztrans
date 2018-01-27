@@ -14,7 +14,7 @@ const Menu = electron.Menu;
 const MenuItem = electron.MenuItem;
 
 // app-settings, app-status
-const appDb = new loki(path.join(__dirname, 'appdata', 'app.db'), {
+const appDb = new loki(path.join(__dirname, 'userdata', 'app.db'), {
   autoload: true,
   autosave: false
 });
