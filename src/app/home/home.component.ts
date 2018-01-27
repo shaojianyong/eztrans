@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import {Title} from '@angular/platform-browser';
 const moment = (<any>window).require('moment');
 const electron = (<any>window).require('electron');
 const ipc = electron.ipcRenderer;
@@ -20,10 +21,10 @@ export class HomeComponent implements OnInit {
   doc_groups = [];
   cache_docs = {};
   sel_doc = null;  // DocInfoModel
-  cur_doc = null;  // DocumentModel
+  cur_doc = new DocumentModel();  // 指向一个空文档
+  modified_flag = false;
 
-  constructor() { }
-
+  constructor(private title: Title) { }
 
   select(doc: DocInfoModel): void {
     if (this.sel_doc && this.sel_doc.id === doc.id) {
@@ -38,8 +39,11 @@ export class HomeComponent implements OnInit {
   }
 
   openDoc(): void {
-    this.cur_doc = this.cache_docs[this.sel_doc.id];
-    this.rerenderEvent.emit({forceShowSelected: false});
+    if (this.cur_doc.id !== this.sel_doc.id) {
+      this.cur_doc = this.cache_docs[this.sel_doc.id];
+      this.title.setTitle(`Eztrans - ${this.sel_doc.orig_file}`);  // TODO: 展示分组和文件名
+      this.rerenderEvent.emit({forceShowSelected: false, resetDocument: true});
+    }
   }
 
   onDocContextMenu(doc: DocInfoModel): void {
@@ -69,7 +73,13 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  addDocument(filePath: string): void {
+  addDocument(filePath: string): boolean {
+    const doc = this.findDocument(filePath);
+    if (doc) {
+      ipc.send('doc-repeat-inquiry', doc);
+      return false;
+    }
+
     const mm = moment();
     const docId = mm.format('YYYYMMDDHHmmssSSS');
 
@@ -78,11 +88,26 @@ export class HomeComponent implements OnInit {
       name: FunctionUtils.getFileName(filePath),
       group_id: this.doc_groups[0].id,
       orig_file: filePath
-    })
+    });
     this.doc_groups[0].documents.push(this.sel_doc);
 
     this.cur_doc = new DocumentModel({id: docId});
     this.cache_docs[docId] = this.cur_doc;
+    this.title.setTitle(`Eztrans - ${filePath}`);
+    this.modified_flag = true;
+    return true;
+  }
+
+  findDocument(filePath: string): DocInfoModel {
+    let res = null;
+    for (const group of this.doc_groups) {
+      for (const doc of group.documents) {
+        if (doc.orig_file.toLowerCase() === filePath.toLowerCase()) {
+          res = doc;
+        }
+      }
+    }
+    return res;
   }
 
   updateDocGroup(): void {
@@ -90,7 +115,10 @@ export class HomeComponent implements OnInit {
   }
 
   saveDocGroups(): void {
-    ipc.send('save-doc-groups', this.doc_groups);
+    if (this.modified_flag) {
+      ipc.send('save-doc-groups', this.doc_groups);
+      this.modified_flag = false;
+    }
   }
 
   ngOnInit() {
@@ -101,10 +129,21 @@ export class HomeComponent implements OnInit {
 
     ipc.on('rsp-doc-groups', (event, data) => {
       this.loadDocGroups(data);
+
+      setInterval(() => {
+        this.saveDocGroups();
+      }, 5000);
     });
 
     ipc.on('doc-open', (event) => {
       this.openDoc();
+    });
+
+    ipc.on('doc-repeat-reply', (event, index, doc) => {
+      if (index === 0) {  // yes
+        this.select(doc);
+        this.openDoc();
+      }
     });
   }
 

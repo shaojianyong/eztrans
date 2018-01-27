@@ -56,22 +56,22 @@
       <table id="table-{{idx}}" class="ui very basic table">
         <tbody>
         <tr>
-          <td [attr.rowspan]="(sentences[idx].target == -2 || sentences[idx].ignore) ? 1 : 2" class="collapsing">
+          <td [attr.rowspan]="(child_home.cur_doc.sentences[idx].target == -2 || child_home.cur_doc.sentences[idx].ignore) ? 1 : 2" class="collapsing">
             <a class="{{getStatusIcon(idx) === 'placeholder icon' ? 'ez-hide' : ''}}">
               <i id="state-{{idx}}" class="{{getStatusIcon(idx)}}"></i>
             </a>
           </td>
           <td class="source-cell">
-            {{sentences[idx].source}}
+            {{child_home.cur_doc.sentences[idx].source}}
           </td>
-          <td [attr.rowspan]="(sentences[idx].target == -2 || sentences[idx].ignore) ? 1 : 2" class="collapsing">
+          <td [attr.rowspan]="(child_home.cur_doc.sentences[idx].target == -2 || child_home.cur_doc.sentences[idx].ignore) ? 1 : 2" class="collapsing">
             <a id="mark-{{idx}}" class="{{getMarkVisibility(idx)}}" (click)="changeFlagIcon(idx)">
-              <i *ngIf="sentences[idx].marked" class="flag icon"></i>
-              <i *ngIf="!sentences[idx].marked" class="flag outline icon"></i>
+              <i *ngIf="child_home.cur_doc.sentences[idx].marked" class="flag icon"></i>
+              <i *ngIf="!child_home.cur_doc.sentences[idx].marked" class="flag outline icon"></i>
             </a>
           </td>
         </tr>
-        <tr *ngIf="sentences[idx].target != -2 && !sentences[idx].ignore">
+        <tr *ngIf="child_home.cur_doc.sentences[idx].target != -2 && !child_home.cur_doc.sentences[idx].ignore">
           <td class="target-cell">
             {{getTargetText(idx)}}
           </td>
@@ -81,7 +81,7 @@
     </div>
   </div>
 
-  <app-panel [sentence]="sentences[cur_index]"
+  <app-panel [sentence]="child_home.cur_doc.sentences[cur_index]"
              (rerenderEvent)="forceRerender($event)"
              (refreshEvent)="forceRefresh($event)"
              id="trans-side">
@@ -123,7 +123,7 @@
 </div>
 
 <!-- doc tree -->
-<app-home></app-home>
+<app-home (rerenderEvent)="forceRerender($event)"></app-home>
 
 <!-- Setting Dialog -->
 <app-settings></app-settings>

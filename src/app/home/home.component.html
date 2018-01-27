@@ -27,10 +27,12 @@
               <tr *ngFor="let doc of group.documents"
                   id="doc-{{doc.id}}"
                   (click)="select(doc)"
+                  (dblclick)="openDoc()"
                   (contextmenu)="onDocContextMenu(doc)"
                   class="{{(sel_doc && doc.id === sel_doc.id) ? 'selected_document' : ''}}">
                 <td class="collapsing left-mark">
-                  <i class="file text icon"></i>
+                  <i *ngIf="doc.id === cur_doc.id" class="file text icon"></i>
+                  <i *ngIf="doc.id !== cur_doc.id" class="file text outline icon"></i>
                 </td>
                 <td class="trans-data">
                   {{doc.name}}

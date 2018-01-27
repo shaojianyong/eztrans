@@ -27,7 +27,6 @@ import {StatisticsModel} from '../services/model/statistics.model';
   providers: [EngineManagerService, ParserManagerService]
 })
 export class MainComponent implements OnInit {
-  sentences = [];
   cur_index = -1;
   cur_page = 0;
   search_text = '';
@@ -38,19 +37,7 @@ export class MainComponent implements OnInit {
   @ViewChild(SettingsComponent) child_settings: SettingsComponent;
   @ViewChild(AboutComponent) child_about: AboutComponent;
 
-  /*
-  一段无解的代码，在ipcRenderer和ipcMain之间传递的userData不能承载this对象
-  static onFileRead(event, err, data, userData): void {
-    userData.reset();  // userData不可以是this
-    const lines = data.split(/\n|\r\n/g);
-    for (let line of lines) {
-      line = line.trim();
-      if (line) {
-        console.log(`${userData.sentences.length}: ${line}`);
-        userData.sentences[userData.sentences.length] = { source: line, target: '' };
-      }
-    }
-  }*/
+  // 一段无解的代码，在ipcRenderer和ipcMain之间传递的userData不能承载this对象
 
   constructor(private cdr: ChangeDetectorRef,
               private title: Title,
@@ -60,6 +47,9 @@ export class MainComponent implements OnInit {
 
   reset(): void {
     this.cur_page = 0;
+    if (this.cur_index !== -1) {
+      $(`#item-${this.cur_index}`).css('background-color', 'white');
+    }
     this.cur_index = -1;
     this.search_text = '';
     $('input').val('');
@@ -88,9 +78,9 @@ export class MainComponent implements OnInit {
   exportFile(): void {
     if (this.parser) {
       const segments = [];
-      for (let index = 0; index < this.sentences.length; ++index) {
+      for (let index = 0; index < this.child_home.cur_doc.sentences.length; ++index) {
         let target_text = '';
-        const current = this.sentences[index];
+        const current = this.child_home.cur_doc.sentences[index];
         if (!current.ignore) {
           if (current.target === -1) {
             target_text = current.custom.target_text;
@@ -119,35 +109,7 @@ export class MainComponent implements OnInit {
   }
 
   // ipcRenderer与ipcMain同步通信，在JavaScript中，同步代码好丑陋
-  /*openFileSync(): void {
-    const self = this;
-    dialog.showOpenDialog((files) => {
-      if (files) {
-        self.reset();
-      } else {
-        return;
-      }
-      // 同步通信，如果ipcMain没有返回，界面会僵住
-      const data = ipc.sendSync('read-file', files);
-      const lines = data.split(/\n|\r\n/g);
-      for (let line of lines) {
-        line = line.trim();
-        if (line) {
-          self.sentences[this.sentences.length] = {
-            source: line,
-            target: -2,
-            ignore: false,
-            status: 0,
-            marked: 0,
-            custom: null,
-            refers: []  // new Array<TranslateModel>()
-          };
-        }
-      }
-      self.title.setTitle(`Eztrans - ${files[0]}`);
-      self.rerender();
-    });
-  }*/
+  // 同步通信，如果ipcMain没有返回，界面会僵住
 
   onItemClick(index: number): void {
     if (index === this.cur_index) {
@@ -169,7 +131,7 @@ export class MainComponent implements OnInit {
   }
 
   onItemDblclick(index): void {
-    this.translate(index, this.sentences[index]);
+    this.translate(index, this.child_home.cur_doc.sentences[index]);
   }
 
   onItemContextMenu(index: number): void {
@@ -178,8 +140,8 @@ export class MainComponent implements OnInit {
   }
 
   autoTranslate(): void {
-    for (let index = 0; index < this.sentences.length; ++index) {
-      const sentence = this.sentences[index];
+    for (let index = 0; index < this.child_home.cur_doc.sentences.length; ++index) {
+      const sentence = this.child_home.cur_doc.sentences[index];
       if (sentence.ignore || (sentence.refers.length === this.ems.getEnabledEngineCount()
           && sentence.status in [1, 2, 3])) {  // 避免重复发送请求
         continue;
@@ -194,6 +156,10 @@ export class MainComponent implements OnInit {
   }
 
   forceRerender(event: any): void {
+    if (event.hasOwnProperty('resetDocument') && event.resetDocument) {
+      this.reset();
+    }
+
     if (event.forceShowSelected) {
       this.showSelectedItem();
     }
@@ -254,7 +220,7 @@ export class MainComponent implements OnInit {
   }
 
   getStatusIcon(index: number): string {
-    const sentence = this.sentences[index];
+    const sentence = this.child_home.cur_doc.sentences[index];
     let icon = 'placeholder icon';
     if (sentence.ignore) {
       icon = 'ban icon';
@@ -282,7 +248,7 @@ export class MainComponent implements OnInit {
   }
 
   getEngineIcon(index: number): string {
-    const sentence = this.sentences[index];
+    const sentence = this.child_home.cur_doc.sentences[index];
     let icon = '';
     if (sentence.target === -2) {
       icon = 'refresh icon';  // TODO: 手动点击翻译
@@ -295,7 +261,7 @@ export class MainComponent implements OnInit {
   }
 
   getTargetText(index: number): string {
-    const sentence = this.sentences[index];
+    const sentence = this.child_home.cur_doc.sentences[index];
     if (sentence.ignore) {
       return '';
     }
@@ -316,7 +282,7 @@ export class MainComponent implements OnInit {
     if (this.search_text) {
       count = this.search_result.length;
     } else {
-      count = this.sentences.length;
+      count = this.child_home.cur_doc.sentences.length;
     }
     return Math.floor(count / 100) + ((count % 100) ? 1 : 0);
   }
@@ -326,7 +292,7 @@ export class MainComponent implements OnInit {
     if (this.search_text) {
       indexArray = this.search_result;
     } else {
-      indexArray = Array.from(new Array(this.sentences.length), (x, i) => i);
+      indexArray = Array.from(new Array(this.child_home.cur_doc.sentences.length), (x, i) => i);
     }
     return indexArray.slice(this.cur_page * 100, (this.cur_page + 1) * 100);
   }
@@ -361,7 +327,7 @@ export class MainComponent implements OnInit {
     }
 
     const mark_element = $(`#mark-${index}`);
-    if (this.sentences[index].marked || index === this.cur_index) {
+    if (this.child_home.cur_doc.sentences[index].marked || index === this.cur_index) {
     } else {
       if (!mark_element.hasClass('ez-hide')) {
         mark_element.addClass('ez-hide');
@@ -371,15 +337,15 @@ export class MainComponent implements OnInit {
   }
 
   retranslate(): void {
-    if (this.sentences[this.cur_index].ignore) {
+    if (this.child_home.cur_doc.sentences[this.cur_index].ignore) {
       return;
     }
 
-    if (this.sentences[this.cur_index].target !== -1) {
-      this.sentences[this.cur_index].target = -2;
+    if (this.child_home.cur_doc.sentences[this.cur_index].target !== -1) {
+      this.child_home.cur_doc.sentences[this.cur_index].target = -2;
     }
-    this.sentences[this.cur_index].refers = [];
-    this.translate(this.cur_index, this.sentences[this.cur_index]);
+    this.child_home.cur_doc.sentences[this.cur_index].refers = [];
+    this.translate(this.cur_index, this.child_home.cur_doc.sentences[this.cur_index]);
   }
 
   forceRetranslate(event: any): void {
@@ -399,7 +365,7 @@ export class MainComponent implements OnInit {
 
   getMarkVisibility(index: number): string {
     let vz = 'ez-hide';
-    if (this.sentences[index].marked || index === this.cur_index) {
+    if (this.child_home.cur_doc.sentences[index].marked || index === this.cur_index) {
       $(`#mark-${index}`).removeClass('ez-hide');
       vz = '';
     }
@@ -407,7 +373,7 @@ export class MainComponent implements OnInit {
   }
 
   changeFlagIcon(): void {
-    const sentence = this.sentences[this.cur_index];
+    const sentence = this.child_home.cur_doc.sentences[this.cur_index];
     sentence.marked = !sentence.marked;
     this.rerender();
   }
@@ -490,13 +456,13 @@ export class MainComponent implements OnInit {
   }
 
   skipOver(): void {
-    this.sentences[this.cur_index].ignore = !this.sentences[this.cur_index].ignore;
+    this.child_home.cur_doc.sentences[this.cur_index].ignore = !this.child_home.cur_doc.sentences[this.cur_index].ignore;
     this.rerender();
   }
 
   getStatistics(): StatisticsModel {
     const stats = new StatisticsModel();
-    for (const sentence of this.sentences) {
+    for (const sentence of this.child_home.cur_doc.sentences) {
       if (sentence.ignore) {
         ++stats.skipped;
       } else if (sentence.target === -2) {
@@ -512,7 +478,7 @@ export class MainComponent implements OnInit {
 
   getStatInfo(): string {
     const stats = this.getStatistics();
-    return `t=${this.sentences.length} s=${stats.skipped} r=${stats.revised}`;
+    return `t=${this.child_home.cur_doc.sentences.length} s=${stats.skipped} r=${stats.revised}`;
   }
 
   // TODO: 添加在原文中搜索还是在译文中搜索选项；添加是否忽略大小写选项；添加是否搜索单词选项
@@ -525,9 +491,9 @@ export class MainComponent implements OnInit {
 
       this.cur_page = 0;
       this.search_result = [];
-      for (let index = 0; index < this.sentences.length; ++index) {
+      for (let index = 0; index < this.child_home.cur_doc.sentences.length; ++index) {
         const str = text.toLowerCase();
-        const source_text = this.sentences[index].source.toLowerCase();
+        const source_text = this.child_home.cur_doc.sentences[index].source.toLowerCase();
         const target_text = this.getTargetText(index).toLowerCase();
         if (source_text.indexOf(str) !== -1 || target_text.indexOf(str) !== -1) {
           this.search_result[this.search_result.length] = index;
@@ -626,23 +592,18 @@ export class MainComponent implements OnInit {
   }
 
   ngOnInit() {
-    // ipcMain异步读取文件，返回文件数据
-
-    // 这样传递函数是无解的，多么痛的领悟...如果不习惯异步编程，就告别JavaScript吧
-    // ipc.on('file-read', MainComponent.onFileRead);
-
     const self = this;
 
     ipc.on('file-read', (event, err, data, filePath) => {
+      if (!this.child_home.addDocument(filePath)) {
+        return;
+      }
       self.reset();
-      this.child_home.addDocument(filePath);
-      self.sentences = this.child_home.cur_doc.sentences;
       const ext_name = FunctionUtils.getExtName(filePath);
       self.parser = this.pms.getParser(ext_name);
       self.parser.parse(data).subscribe(
         res => {
           const sentence = new SentenceModel({source: res.source});
-
           if (res.target) {
             sentence.target = -1;
             sentence.custom = new TranslateModel({
@@ -653,7 +614,7 @@ export class MainComponent implements OnInit {
               engine_name: 'user'
             });
           }
-          self.sentences[self.sentences.length] = sentence;
+          self.child_home.cur_doc.sentences[self.child_home.cur_doc.sentences.length] = sentence;
         },
         error => {
           console.log(error);  // TODO: 提供错误信息展示方案
@@ -666,8 +627,6 @@ export class MainComponent implements OnInit {
           }
         }
       );
-
-      self.title.setTitle(`Eztrans - ${filePath}`);
       self.rerender();
     });
 

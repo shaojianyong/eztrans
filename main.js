@@ -20,7 +20,7 @@ const appDb = new loki(path.join(__dirname, 'appdata', 'app.db'), {
 });
 
 // doc-groups
-const docDb = new loki(path.join(__dirname, 'usrdata', 'doc.db'), {
+const docDb = new loki(path.join(__dirname, 'userdata', 'doc.db'), {
   autoload: true,
   autosave: false
 });
@@ -319,14 +319,37 @@ function showGroupContextMenu(event) {
 function reqDocGroups(event) {
   const docGroups = docDb.getCollection('docGroups');
   if (docGroups) {
-    event.sender.send('rsp-doc-groups', docGroups.data());
+    event.sender.send('rsp-doc-groups', docGroups.data);
   } else {
     event.sender.send('rsp-doc-groups', null);
   }
 }
 
 function saveDocGroups(event, docGroups) {
+  let dgc = docDb.getCollection('docGroups');
+  if (dgc) {
+    dgc.removeDataOnly();
+  } else {
+    dgc = docDb.addCollection('docGroups');
+  }
 
+  for(const group of docGroups) {
+    dgc.insert(group);
+  }
+  docDb.saveDatabase();
+}
+
+function docRepeatInquiry(event, doc) {
+  const options = {
+    type: 'info',
+    title: 'EZtrans',
+    message: "The file already imported. open it now?",
+    buttons: ['Yes', 'No']
+  };
+
+  dialog.showMessageBox(options, function(index) {
+    event.sender.send('doc-repeat-reply', index, doc)
+  });
 }
 
 // Handles reading the contents of a file
@@ -338,3 +361,4 @@ ipc.on('show-doc-context-menu', showDocContextMenu);
 ipc.on('show-group-context-menu', showGroupContextMenu);
 ipc.on('req-doc-groups', reqDocGroups);
 ipc.on('save-doc-groups', saveDocGroups);
+ipc.on('doc-repeat-inquiry', docRepeatInquiry);
