@@ -14,13 +14,13 @@ const Menu = electron.Menu;
 const MenuItem = electron.MenuItem;
 
 // app-settings, app-status
-const appDb = new loki(path.join(__dirname, 'userdata', 'app.db'), {
+const appDb = new loki(path.join(__dirname, 'database', 'app.db'), {
   autoload: true,
   autosave: false
 });
 
 // doc-groups
-const docDb = new loki(path.join(__dirname, 'userdata', 'doc.db'), {
+const docDb = new loki(path.join(__dirname, 'database', 'doc.db'), {
   autoload: true,
   autosave: false
 });
