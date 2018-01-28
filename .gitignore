@@ -7,7 +7,7 @@
 
 # dependencies
 /node_modules
-/userdata
+/database
 semantic-ui/
 
 # IDEs and editors

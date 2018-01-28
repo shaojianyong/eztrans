@@ -110,13 +110,20 @@ export class HomeComponent implements OnInit {
     return res;
   }
 
-  updateDocGroup(): void {
+  saveDocuments(): void {
 
   }
 
   saveDocGroups(): void {
     if (this.modified_flag) {
       ipc.send('save-doc-groups', this.doc_groups);
+      this.modified_flag = false;
+    }
+  }
+
+  saveAllDataSync(): void {
+    if (this.modified_flag) {
+      ipc.sendSync('save-doc-groups', this.doc_groups);
       this.modified_flag = false;
     }
   }
@@ -145,6 +152,11 @@ export class HomeComponent implements OnInit {
         this.openDoc();
       }
     });
+
+    const self = this;
+    window.onbeforeunload = function() {
+      self.saveAllDataSync();
+    };
   }
 
 }
