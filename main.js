@@ -25,6 +25,10 @@ const docDb = new loki(path.join(__dirname, 'database', 'doc.db'), {
   autosave: false
 });
 
+function sleep(msec) {
+  return new Promise(resolve => setTimeout(resolve, msec));
+}
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
@@ -41,16 +45,21 @@ function createWindow () {
     slashes: true
   }));
 
+  mainWindow.on('close', function () {
+    console.log('Main window close.');
+  });
+
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
+    console.log('Main window closed!');
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     mainWindow = null
-  })
+  });
 }
 
 // This method will be called when Electron has finished
@@ -325,21 +334,29 @@ function reqDocGroups(event) {
   }
 }
 
-function saveDocGroups(event, docGroups) {
+function saveDocGroups(event, params) {
   let dgc = docDb.getCollection('docGroups');
   if (!dgc) {
     dgc = docDb.addCollection('docGroups', {indices: ['id']});
     dgc.ensureUniqueIndex('id');
   }
 
-  for(const group of docGroups) {
+  for(const group of params.data) {
     if (dgc.by('id', group.id)) {
       dgc.update(group);
     } else {
       dgc.insert(group);
     }
   }
+  dgc.flushChanges();
+  docDb.serializeChanges();
   docDb.saveDatabase();
+
+  if (params.sync) {
+    docDb.close();
+    console.log('Sync saveDocGroups ...');
+    event.returnValue = 'ok';
+  }
 }
 
 function docRepeatInquiry(event, doc) {

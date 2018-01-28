@@ -116,15 +116,23 @@ export class HomeComponent implements OnInit {
 
   saveDocGroups(): void {
     if (this.modified_flag) {
-      ipc.send('save-doc-groups', this.doc_groups);
+      ipc.send('save-doc-groups', {
+        data: this.doc_groups,
+        sync: false
+      });
       this.modified_flag = false;
     }
   }
 
   saveAllDataSync(): void {
     if (this.modified_flag) {
-      ipc.sendSync('save-doc-groups', this.doc_groups);
-      this.modified_flag = false;
+      const res = ipc.sendSync('save-doc-groups', {
+        data: this.doc_groups,
+        sync: true
+      });
+      if (res === 'ok') {
+        this.modified_flag = false;
+      }
     }
   }
 
@@ -137,9 +145,10 @@ export class HomeComponent implements OnInit {
     ipc.on('rsp-doc-groups', (event, data) => {
       this.loadDocGroups(data);
 
+      // auto save
       setInterval(() => {
         this.saveDocGroups();
-      }, 5000);
+      }, 1000 * 5);
     });
 
     ipc.on('doc-open', (event) => {

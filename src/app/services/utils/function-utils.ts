@@ -22,4 +22,10 @@ export class FunctionUtils {
     }
     return res;
   }
+
+  // stackoverflow.com/questions/951021/what-is-the-javascript-version-of-sleep
+  static sleep(msec) {
+    return new Promise(resolve => setTimeout(resolve, msec));
+  }
+
 }
