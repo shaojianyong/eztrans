@@ -143,7 +143,7 @@ export class MainComponent implements OnInit {
     for (let index = 0; index < this.child_home.cur_doc.sentences.length; ++index) {
       const sentence = this.child_home.cur_doc.sentences[index];
       if (sentence.ignore || (sentence.refers.length === this.ems.getEnabledEngineCount()
-          && sentence.status in [1, 2, 3])) {  // 避免重复发送请求
+          && [1, 2, 3].indexOf(sentence.status) !== -1)) {  // 避免重复发送请求
         continue;
       }
       this.translate(index, sentence);
@@ -174,7 +174,7 @@ export class MainComponent implements OnInit {
 
     this.ems.translate(sentence.source).subscribe(
       res => {
-        if (res.target_text.length > 0) {
+        if (res.target_text && res.target_text.length > 0) {
           sentence.status = 2;  // 返回响应
           state_element.attr('class', 'notched circle loading icon');
         } else {
@@ -203,7 +203,7 @@ export class MainComponent implements OnInit {
         }
 
         if (sentence.refers.length === this.ems.getEnabledEngineCount()) {
-          if (!(state_element.attr('class') in ['warning circle icon', 'remove circle icon'])) {
+          if (['warning circle icon', 'remove circle icon'].indexOf(state_element.attr('class')) === -1) {
             sentence.status = 3;  // 翻译完成
             state_element.parent().toggleClass('ez-hide');
           }

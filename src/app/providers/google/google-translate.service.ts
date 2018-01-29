@@ -32,7 +32,7 @@ export class GoogleTranslateService extends TranslateService {
           tm.target_lang = target_lang;
           tm.source_text = source_text;
           tm.target_text = result.translation;
-          if (tm.target_lang in ['zh-cn', 'zh-tw']) {
+          if (['zh-cn', 'zh-tw'].indexOf(tm.target_lang) !== -1 && result.sentences) {
             tm.hz_translit = result.sentences[result.sentences.length - 1].translit;  // 中文拼音
           }
           observer.next(tm);
