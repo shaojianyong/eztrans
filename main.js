@@ -45,16 +45,17 @@ function createWindow () {
     slashes: true
   }));
 
+  /*
   mainWindow.on('close', function () {
     console.log('Main window close.');
   });
+  */
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
-    console.log('Main window closed!');
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
@@ -348,15 +349,21 @@ function saveDocGroups(event, params) {
       dgc.insert(group);
     }
   }
-  dgc.flushChanges();
-  docDb.serializeChanges();
-  docDb.saveDatabase();
 
+  docDb.saveDatabase(() => {
+    if (params.sync) {
+      event.returnValue = 'ok';
+      docDb.close();
+    }
+  });
+
+  /* event.returnValue 放这里不行，文件保存可能不完全，进程就退出了
   if (params.sync) {
     docDb.close();
     console.log('Sync saveDocGroups ...');
     event.returnValue = 'ok';
   }
+  */
 }
 
 function docRepeatInquiry(event, doc) {
