@@ -381,14 +381,24 @@ function docRepeatInquiry(event, doc) {
 
 // 文档作为单个元素保存，Collection中只有一个元素
 function reqDocument(event, docId) {
-  const docDb = new loki(path.join(__dirname, 'database', docId + '.db'), {
-    autoload: true,
-    autosave: false
+  let docDb = null;
+  if (docId in openedDocs) {
+    docDb = openedDocs[docId];
+  } else {
+    docDb = new loki(path.join(__dirname, 'database', docId + '.db'), {
+      autoload: false,
+      autosave: false
+    });
+    openedDocs[docId] = docDb;
+  }
+
+  docDb.loadDatabase({}, () => {
+    const dsc = docDb.getCollection('documents');
+    event.returnValue = dsc ? dsc.data[0] : {id: docId, sentences: []};
   });
 
-  openedDocs[docId] = docDb;
-  const dsc = docDb.getCollection('documents');
-  event.returnValue = dsc ? dsc.data[0] : {id: '', sentences: []};
+  // const dsc = docDb.getCollection('documents');
+  // event.returnValue = dsc ? dsc.data[0] : {id: docId, sentences: []};
 }
 
 function saveDocument(event, params) {
