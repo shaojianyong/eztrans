@@ -614,6 +614,8 @@ export class MainComponent implements OnInit {
               engine_name: 'user'
             });
           }
+
+          // TODO: 返回时，携带文档ID
           self.child_home.cur_doc.sentences[self.child_home.cur_doc.sentences.length] = sentence;
         },
         error => {

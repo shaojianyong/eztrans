@@ -20,10 +20,13 @@ const appDb = new loki(path.join(__dirname, 'database', 'app.db'), {
 });
 
 // doc-groups
-const docDb = new loki(path.join(__dirname, 'database', 'doc.db'), {
+const dgsDb = new loki(path.join(__dirname, 'database', 'dgs.db'), {
   autoload: true,
   autosave: false
 });
+
+// opened documents
+let openedDocs = {};
 
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -324,7 +327,7 @@ function showGroupContextMenu(event) {
 }
 
 function reqDocGroups(event) {
-  const docGroups = docDb.getCollection('docGroups');
+  const docGroups = dgsDb.getCollection('docGroups');
   if (docGroups) {
     event.sender.send('rsp-doc-groups', docGroups.data);
   } else {
@@ -333,9 +336,9 @@ function reqDocGroups(event) {
 }
 
 function saveDocGroups(event, params) {
-  let dgc = docDb.getCollection('docGroups');
+  let dgc = dgsDb.getCollection('docGroups');
   if (!dgc) {
-    dgc = docDb.addCollection('docGroups', {indices: ['id']});
+    dgc = dgsDb.addCollection('docGroups', {indices: ['id']});
     dgc.ensureUniqueIndex('id');
   }
 
@@ -347,16 +350,16 @@ function saveDocGroups(event, params) {
     }
   }
 
-  docDb.saveDatabase(() => {
+  dgsDb.saveDatabase(() => {
     if (params.sync) {
       event.returnValue = 'ok';
-      docDb.close();
+      dgsDb.close();
     }
   });
 
   /* event.returnValue 放这里不行，文件保存可能不完全，进程就退出了
   if (params.sync) {
-    docDb.close();
+    dgsDb.close();
     console.log('Sync saveDocGroups ...');
     event.returnValue = 'ok';
   }
@@ -376,6 +379,53 @@ function docRepeatInquiry(event, doc) {
   });
 }
 
+// 文档作为单个元素保存，Collection中只有一个元素
+function reqDocument(event, docId) {
+  const docDb = new loki(path.join(__dirname, 'database', docId + '.db'), {
+    autoload: true,
+    autosave: false
+  });
+
+  openedDocs[docId] = docDb;
+  const dsc = docDb.getCollection('documents');
+  event.returnValue = dsc ? dsc.data[0] : {id: '', sentences: []};
+}
+
+function saveDocument(event, params) {
+  let docDb = null;
+  const doc = params.data;
+
+  if (doc.id in openedDocs) {
+    docDb = openedDocs[doc.id];
+  } else {
+    docDb = new loki(path.join(__dirname, 'database', doc.id + '.db'), {
+      autoload: true,
+      autosave: false
+    });
+    openedDocs[doc.id] = docDb;
+  }
+
+  let dsc = docDb.getCollection('documents');
+  if (!dsc) {
+    dsc = docDb.addCollection('documents', {indices: ['id']});
+    dsc.ensureUniqueIndex('id');
+  }
+
+  if (dsc.by('id', doc.id)) {
+    dsc.update(doc);
+  } else {
+    dsc.insert(doc);
+  }
+
+  docDb.saveDatabase(() => {
+    if (params.sync) {
+    event.returnValue = 'ok';
+    docDb.close();
+    }
+  });
+}
+
+
 // Handles reading the contents of a file
 ipc.on('read-file', readFile);
 ipc.on('read-file-sync', readFileSync);
@@ -386,3 +436,5 @@ ipc.on('show-group-context-menu', showGroupContextMenu);
 ipc.on('req-doc-groups', reqDocGroups);
 ipc.on('save-doc-groups', saveDocGroups);
 ipc.on('doc-repeat-inquiry', docRepeatInquiry);
+ipc.on('req-document', reqDocument);
+ipc.on('save-document', saveDocument);

@@ -26,6 +26,7 @@ export class HomeComponent implements OnInit {
 
   constructor(private title: Title) { }
 
+
   select(doc: DocInfoModel): void {
     if (this.sel_doc && this.sel_doc.id === doc.id) {
       return;
@@ -38,12 +39,25 @@ export class HomeComponent implements OnInit {
     this.sel_doc = doc;
   }
 
+  // 切换当前打开文档前，要先保存
   openDoc(): void {
-    if (this.cur_doc.id !== this.sel_doc.id) {
-      this.cur_doc = this.cache_docs[this.sel_doc.id];
-      this.title.setTitle(`Eztrans - ${this.sel_doc.orig_file}`);  // TODO: 展示分组和文件名
-      this.rerenderEvent.emit({forceShowSelected: false, resetDocument: true});
+    if (this.cur_doc.id === this.sel_doc.id) {
+      return;
     }
+
+    if (!(this.sel_doc.id in this.cache_docs)) {
+      const doc = ipc.sendSync('req-document', this.sel_doc.id);
+      this.cache_docs[this.sel_doc.id] = doc;
+    }
+
+    if (this.cur_doc && this.cur_doc.id) {
+      this.saveCurDocument(false);
+      console.log('Save current document before switch!');
+    }
+
+    this.cur_doc = this.cache_docs[this.sel_doc.id];
+    this.title.setTitle(`Eztrans - ${this.sel_doc.orig_file}`);  // TODO: 展示分组和文件名
+    this.rerenderEvent.emit({forceShowSelected: false, resetDocument: true});
   }
 
   onDocContextMenu(doc: DocInfoModel): void {
@@ -74,7 +88,7 @@ export class HomeComponent implements OnInit {
   }
 
   addDocument(filePath: string): boolean {
-    const doc = this.findDocument(filePath);
+    const doc = this.findDocInfo(filePath);
     if (doc) {
       ipc.send('doc-repeat-inquiry', doc);
       return false;
@@ -98,7 +112,7 @@ export class HomeComponent implements OnInit {
     return true;
   }
 
-  findDocument(filePath: string): DocInfoModel {
+  findDocInfo(filePath: string): DocInfoModel {
     let res = null;
     for (const group of this.doc_groups) {
       for (const doc of group.documents) {
@@ -110,27 +124,39 @@ export class HomeComponent implements OnInit {
     return res;
   }
 
-  saveDocuments(): void {
-
-  }
-
-  saveDocGroups(): void {
-    if (this.modified_flag) {
-      ipc.send('save-doc-groups', {
-        data: this.doc_groups,
-        sync: false
-      });
-      this.modified_flag = false;
+  // save current document
+  saveCurDocument(sync: boolean) {
+    if (this.cur_doc) {
+      if (sync) {
+        ipc.sendSync('save-document', {
+          data: this.cur_doc,
+          sync: true
+        });
+      } else {
+        ipc.send('save-document', {
+          data: this.cur_doc,
+          sync: false
+        });
+      }
     }
   }
 
-  saveAllDataSync(): void {
+  // save doc-groups
+  saveDocGroups(sync: boolean): void {
     if (this.modified_flag) {
-      const res = ipc.sendSync('save-doc-groups', {
-        data: this.doc_groups,
-        sync: true
-      });
-      if (res === 'ok') {
+      if (sync) {
+        const res = ipc.sendSync('save-doc-groups', {
+          data: this.doc_groups,
+          sync: true
+        });
+        if (res === 'ok') {
+          this.modified_flag = false;
+        }
+      } else {
+        ipc.send('save-doc-groups', {
+          data: this.doc_groups,
+          sync: false
+        });
         this.modified_flag = false;
       }
     }
@@ -144,11 +170,6 @@ export class HomeComponent implements OnInit {
 
     ipc.on('rsp-doc-groups', (event, data) => {
       this.loadDocGroups(data);
-
-      // auto save
-      setInterval(() => {
-        this.saveDocGroups();
-      }, 1000 * 5);
     });
 
     ipc.on('doc-open', (event) => {
@@ -162,9 +183,16 @@ export class HomeComponent implements OnInit {
       }
     });
 
-    const self = this;
-    window.onbeforeunload = function() {
-      self.saveAllDataSync();
+    // auto save all user data
+    setInterval(() => {
+      this.saveCurDocument(false);
+      this.saveDocGroups(false);
+    }, 1000 * 5);
+
+
+    window.onbeforeunload = () => {
+      this.saveCurDocument(true);
+      this.saveDocGroups(true);
     };
   }
 
