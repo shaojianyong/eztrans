@@ -25,9 +25,6 @@ const docDb = new loki(path.join(__dirname, 'database', 'doc.db'), {
   autosave: false
 });
 
-function sleep(msec) {
-  return new Promise(resolve => setTimeout(resolve, msec));
-}
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
