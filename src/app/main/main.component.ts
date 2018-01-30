@@ -172,25 +172,26 @@ export class MainComponent implements OnInit {
     sentence.status = 1;  // 发起请求
     state_element.attr('class', 'spinner loading icon');
 
-    this.ems.translate(sentence.source).subscribe(
+    this.ems.translate(sentence.source, this.child_home.cur_doc.id).subscribe(
       res => {
-        if (res.target_text && res.target_text.length > 0) {
+        const tm = res.trans;
+        if (tm.target_text && tm.target_text.length > 0) {
           sentence.status = 2;  // 返回响应
-          state_element.attr('class', 'notched circle loading icon');
+          // state_element.attr('class', 'notched circle loading icon');
         } else {
           sentence.status = 4;  // 告警
-          state_element.attr('class', 'warning circle icon');
+          // state_element.attr('class', 'warning circle icon');
         }
 
         let exist = false;
         for (let idx = 0; idx < sentence.refers.length; ++idx) {
-          if (res.engine_name === sentence.refers[idx].engine_name) {
-            sentence.refers[idx] = res;  // 覆盖
+          if (tm.engine_name === sentence.refers[idx].engine_name) {
+            sentence.refers[idx] = tm;  // 覆盖
             exist = true;
           }
         }
         if (!exist) {
-          sentence.refers[sentence.refers.length] = res;
+          sentence.refers[sentence.refers.length] = tm;
           if (sentence.target === -2) {
             sentence.target = 0;
           } else if (sentence.target >= 0 && sentence.target !== sentence.refers.length - 1) {
@@ -203,40 +204,48 @@ export class MainComponent implements OnInit {
         }
 
         if (sentence.refers.length === this.ems.getEnabledEngineCount()) {
-          if (['warning circle icon', 'remove circle icon'].indexOf(state_element.attr('class')) === -1) {
+          if (sentence.status === 2) {
             sentence.status = 3;  // 翻译完成
-            state_element.parent().toggleClass('ez-hide');
+            // state_element.parent().toggleClass('ez-hide');
           }
         }
-        this.rerender();
+
+        if (res.docId === this.child_home.cur_doc.id) {
+          this.rerender();
+        }
       },
       err => {
-        console.log(err);  // TODO: 提供错误信息展示方案
+        console.log(err.trans);  // TODO: 提供错误信息展示方案
         sentence.status = 5;  // 错误
-        state_element.attr('class', 'remove circle icon');
-        this.rerender();
+        // state_element.attr('class', 'remove circle icon');
+        if (err.docId === this.child_home.cur_doc.id) {
+          this.rerender();
+        }
       }
     );
   }
 
   getStatusIcon(index: number): string {
     const sentence = this.child_home.cur_doc.sentences[index];
-    let icon = 'placeholder icon';
+    let icon = 'placeholder icon';  // 占位符
     if (sentence.ignore) {
       icon = 'ban icon';
+    } else if (sentence.target === -1 && sentence.custom.target_text) {
+      icon = 'placeholder icon';  // 占位符
     } else if (sentence.status === 0) {
-      icon = 'placeholder icon';
+      icon = 'placeholder icon';  // 占位符
     } else if (sentence.status === 1) {
       icon = 'spinner loading icon';
     } else if (sentence.status === 2) {
       icon = 'notched circle loading icon';
     } else if (sentence.status === 3) {
-      icon = 'placeholder icon';
+      icon = 'placeholder icon';  // 占位符
     } else if (sentence.status === 4) {
       icon = 'warning circle icon';
     } else if (sentence.status === 5) {
       icon = 'remove circle icon';
     }
+
     return icon;
   }
 

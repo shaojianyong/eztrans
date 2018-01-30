@@ -7,6 +7,17 @@ import { BaiduFanyiService } from '../baidu/baidu-fanyi.service';
 import { BaiduVipfyService } from '../baidu/baidu-vipfy.service';
 import { IcibaTransService } from '../iciba/iciba-trans.service';
 
+export class TransResult {
+  trans: TranslateModel;
+  docId: string;
+
+  constructor(obj?: any) {
+    this.trans = obj && obj.trans || null;
+    this.docId = obj && obj.docId || null;
+  }
+}
+
+
 @Injectable()
 export class EngineManagerService {
   source_lang = 'auto';
@@ -43,14 +54,14 @@ export class EngineManagerService {
   }
 
   // engine_filter: all, google, -google
-  translate(source_text: string, engine_filter = 'all'): Observable<TranslateModel> {
+  translate(source_text: string, doc_id = '', engine_filter = 'all'): Observable<TransResult> {
     return Observable.create(observer => {
       for (const ts of this.engine_list) {
         if ((engine_filter === 'all' || engine_filter === ts.getEngineName()) ||
           (engine_filter[0] === '-' && engine_filter.slice(1) !== ts.getEngineName())) {
           ts.translate(source_text, this.source_lang, this.target_lang).subscribe(
-            res => observer.next(res),
-            err => observer.error(err)
+            res => observer.next(new TransResult({trans: res, docId: doc_id})),
+            err => observer.error(new TransResult({trans: err, docId: doc_id}))
           );
         }
       }
