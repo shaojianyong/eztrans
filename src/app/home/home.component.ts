@@ -47,7 +47,6 @@ export class HomeComponent implements OnInit {
 
     if (!(this.sel_doc.id in this.cache_docs)) {
       const doc = ipc.sendSync('req-document', this.sel_doc.id);
-      console.log(doc.id, doc.sentences.length);
       this.cache_docs[this.sel_doc.id] = doc;
     }
 

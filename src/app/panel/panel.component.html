@@ -17,7 +17,7 @@
   <div *ngIf="!sentence.ignore">
     <div *ngIf="sentence.custom" class="ui segment">
       <div id="custom-editor" contenteditable="true" [textContent]="sentence.custom.target_text"
-           (input)="onEditInput()"></div>
+           (input)="onEditInput()" (focus)="onEditFocus()" (blur)="onEditBlur()"></div>
       <div class="ui small icon secondary menu">
         <a class="item" (click)="selectTranslation(-1)">
           <i class="{{getHeartIcon(-1)}}"></i>

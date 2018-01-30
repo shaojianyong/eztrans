@@ -81,7 +81,9 @@
     </div>
   </div>
 
-  <app-panel [sentence]="child_home.cur_doc.sentences[cur_index]"
+  <app-panel [index]="cur_index"
+             [search]="search_text"
+             [sentence]="child_home.cur_doc.sentences[cur_index]"
              (rerenderEvent)="forceRerender($event)"
              (refreshEvent)="forceRefresh($event)"
              id="trans-side">

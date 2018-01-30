@@ -11,6 +11,8 @@ import engines from '../providers/manager/engines';
   styleUrls: ['./panel.component.scss']
 })
 export class PanelComponent implements OnInit {
+  @Input() index: number;
+  @Input() search: string;
   @Input() sentence: SentenceModel;
   @Output() rerenderEvent = new EventEmitter<any>();
   @Output() refreshEvent = new EventEmitter<any>();
@@ -93,6 +95,18 @@ export class PanelComponent implements OnInit {
   onEditInput(): void {
     this.sentence.custom.target_text = $('#custom-editor').text();
     this.rerenderEvent.emit({forceShowSelected: true});
+  }
+
+  onEditFocus(): void {
+    if (this.search && this.sentence.target === -1) {
+      $(`#table-${this.index}>tbody>tr>td.target-cell`).unhighlight();
+    }
+  }
+
+  onEditBlur(): void {
+    if (this.search && this.sentence.target === -1) {
+      $(`#table-${this.index}>tbody>tr>td.target-cell`).highlight(this.search);
+    }
   }
 
   refresh(): void {
