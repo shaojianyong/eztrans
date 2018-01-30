@@ -345,6 +345,7 @@ function saveDocGroups(event, params) {
   for(const group of params.data) {
     let obj = dgc.findObject({'id': group.id});
     if (obj) {
+      // https://github.com/techfort/LokiJS/issues/297
       group['$loki'] = obj['$loki'];
       group['meta'] = obj['meta'];
       dgc.update(group);
