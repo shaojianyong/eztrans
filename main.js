@@ -343,7 +343,10 @@ function saveDocGroups(event, params) {
   }
 
   for(const group of params.data) {
-    if (dgc.findObject({'id': group.id})) {
+    let obj = dgc.findObject({'id': group.id});
+    if (obj) {
+      group['$loki'] = obj['$loki'];
+      group['meta'] = obj['meta'];
       dgc.update(group);
     } else {
       dgc.insert(group);
@@ -421,7 +424,10 @@ function saveDocument(event, params) {
     dsc.ensureUniqueIndex('id');
   }
 
-  if (dsc.findObject({'id': doc.id})) {
+  const obj = dsc.findObject({'id': doc.id});
+  if (obj) {
+    doc['$loki'] = obj['$loki'];
+    doc['meta'] = obj['meta'];
     dsc.update(doc);
   } else {
     dsc.insert(doc);
