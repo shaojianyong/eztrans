@@ -109,8 +109,15 @@ export class HomeComponent implements OnInit {
   }
 
   onGroupContextMenu(group: GroupModel): void {
-
     ipc.send('show-group-context-menu');
+  }
+
+  onRecycleBinContextMenu(): void {
+    ipc.send('show-recycle-bin-context-menu');
+  }
+
+  onRecycleDocContextMenu(doc: DocInfoModel): void {
+    ipc.send('show-recycle-doc-context-menu');
   }
 
   loadDocGroups(docGroups: any): void {
@@ -213,6 +220,11 @@ export class HomeComponent implements OnInit {
     ipc.on('doc-remove', (event) => {
       this.removeDoc();
     });
+
+    ipc.on('empty-recycle-bin', (event) => {
+      console.log('empty-recycle-bin');
+    });
+
 
     ipc.on('doc-repeat-reply', (event, index, doc) => {
       if (index === 0) {  // yes

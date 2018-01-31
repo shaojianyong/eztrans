@@ -178,6 +178,10 @@ function importDoc(menuItem, browserWindow) {
   browserWindow.send('import-doc');
 }
 
+function emptyRecycleBin(menuItem, browserWindow) {
+  browserWindow.send('empty-recycle-bin');
+}
+
 function showItemContextMenu(event, page_count, cur_page) {
   const contextMenu = new Menu();
   contextMenu.append(new MenuItem({
@@ -287,6 +291,27 @@ function showDocContextMenu(event, moveTo) {
   contextMenu.popup(win);
 }
 
+function showRecycleDocContextMenu(event) {
+  const contextMenu = new Menu();
+
+  contextMenu.append(new MenuItem({
+    label: 'Restore',
+    click: docRestore,
+    icon: './dist/assets/images/icons/restore.png'
+  }));
+
+  contextMenu.append(new MenuItem({type: 'separator'}));
+
+  contextMenu.append(new MenuItem({
+    label: 'Delete',
+    click: docDelete,
+    icon: './dist/assets/images/icons/delete.png'
+  }));
+
+  const win = BrowserWindow.fromWebContents(event.sender);
+  contextMenu.popup(win);
+}
+
 function showGroupContextMenu(event) {
   const contextMenu = new Menu();
 
@@ -325,6 +350,19 @@ function showGroupContextMenu(event) {
   const win = BrowserWindow.fromWebContents(event.sender);
   contextMenu.popup(win);
 }
+
+function showRecycleBinContextMenu(event) {
+  const contextMenu = new Menu();
+  contextMenu.append(new MenuItem({
+    label: 'Empty Recycle Bin',
+    click: emptyRecycleBin,
+    icon: './dist/assets/images/icons/brush.png'
+  }));
+
+  const win = BrowserWindow.fromWebContents(event.sender);
+  contextMenu.popup(win);
+}
+
 
 function reqDocGroups(event) {
   const docGroups = dgsDb.getCollection('docGroups');
@@ -450,6 +488,8 @@ ipc.on('save-file', saveFile);
 ipc.on('show-item-context-menu', showItemContextMenu);
 ipc.on('show-doc-context-menu', showDocContextMenu);
 ipc.on('show-group-context-menu', showGroupContextMenu);
+ipc.on('show-recycle-bin-context-menu', showRecycleBinContextMenu);
+ipc.on('show-recycle-doc-context-menu', showRecycleDocContextMenu);
 ipc.on('req-doc-groups', reqDocGroups);
 ipc.on('save-doc-groups', saveDocGroups);
 ipc.on('doc-repeat-inquiry', docRepeatInquiry);
