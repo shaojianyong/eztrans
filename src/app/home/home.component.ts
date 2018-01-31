@@ -97,6 +97,15 @@ export class HomeComponent implements OnInit {
   }
 
   moveTo(group_id: string): void {
+    let tgt_group = null;
+    for (const group of this.doc_groups) {
+      if (group.id === group_id) {
+        tgt_group = group;
+        break;
+      }
+    }
+
+    
 
     this.modified_flag = true;
   }
