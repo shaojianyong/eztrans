@@ -61,7 +61,7 @@ export class HomeComponent implements OnInit {
   }
 
   removeDoc(): void {
-    this.sel_doc.state = 3;  // 标记删除，实现逻辑：切换到已删除分组
+    this.sel_doc.x_state = 1;  // 标记删除，实现逻辑：切换到已删除分组
     if (this.sel_doc.id === this.cur_doc.id) {
       this.cur_doc = new DocumentModel();  // 指向一个空文档
       this.title.setTitle('Eztrans');
@@ -72,10 +72,15 @@ export class HomeComponent implements OnInit {
     this.modified_flag = true;
   }
 
+  restoreDoc(): void {
+    this.sel_doc.x_state = 0;
+    this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+  }
+
   getNormalDocs(group: GroupModel): Array<DocInfoModel> {
     const res = [];
     for (const doc of group.documents) {
-      if (doc.state < 3) {
+      if (doc.x_state === 0) {
         res.push(doc);
       }
     }
@@ -86,7 +91,7 @@ export class HomeComponent implements OnInit {
     const res = [];
     for (const group of this.doc_groups) {
       for (const doc of group.documents) {
-        if (doc.state === 3) {
+        if (doc.x_state === 1) {
           res.push(doc);
         }
       }
@@ -227,7 +232,7 @@ export class HomeComponent implements OnInit {
     });
 
     ipc.on('doc-restore', (event) => {
-      console.log('doc-restore');
+      this.restoreDoc();
     });
 
     ipc.on('doc-delete', (event) => {

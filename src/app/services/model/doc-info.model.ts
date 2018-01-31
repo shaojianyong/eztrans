@@ -5,7 +5,7 @@ export class DocInfoModel {
   name: string;  // 文档名称，可重命名
   group_id: string;  // 所在组
   orig_file: string;  // 原文档名称
-  state: number;  // 0-初始状态 1-翻译中 2-翻译完成 3-标记删除 4-彻底删除
+  x_state: number;  // 0-正常状态 1-标记删除 2-彻底删除前
   create_time: string;  // 创建时间
   modify_time: string;  // 修改时间
 
@@ -14,7 +14,7 @@ export class DocInfoModel {
     this.name = obj && obj.name || '';
     this.group_id = obj && obj.group_id || '';
     this.orig_file = obj && obj.orig_file || '';
-    this.state = obj && obj.state || 0;
+    this.x_state = obj && obj.x_state || 0;
     this.create_time = obj && obj.create_time || moment().format('YYYY-MM-DD HH:mm:ss');
     this.modify_time = obj && obj.modify_time || this.create_time;
   }
