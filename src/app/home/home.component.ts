@@ -20,14 +20,16 @@ export class HomeComponent implements OnInit {
 
   doc_groups = [];
   cache_docs = {};
-  sel_doc = null;  // DocInfoModel
+  sel_group: GroupModel = null;
+  sel_doc: DocInfoModel = null;
   cur_doc = new DocumentModel();  // 指向一个空文档
   modified_flag = false;
 
   constructor(private title: Title) { }
 
 
-  select(doc: DocInfoModel): void {
+  select(doc: DocInfoModel, group: GroupModel): void {
+    this.sel_group = group;
     if (this.sel_doc && this.sel_doc.id === doc.id) {
       return;
     }
@@ -72,9 +74,37 @@ export class HomeComponent implements OnInit {
     this.modified_flag = true;
   }
 
+  moveUpDoc(): void {
+    const index = this.sel_group.documents.indexOf(this.sel_doc);
+    if (index > 0) {
+      const temp = this.sel_group.documents[index];
+      this.sel_group.documents[index] = this.sel_group.documents[index - 1];
+      this.sel_group.documents[index - 1] = temp;
+    }
+    this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+    this.modified_flag = true;
+  }
+
+  moveDownDoc(): void {
+    const index = this.sel_group.documents.indexOf(this.sel_doc);
+    if (index < this.sel_group.documents.length - 1) {
+      const temp = this.sel_group.documents[index];
+      this.sel_group.documents[index] = this.sel_group.documents[index + 1];
+      this.sel_group.documents[index + 1] = temp;
+    }
+    this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+    this.modified_flag = true;
+  }
+
+  moveTo(group_id: string): void {
+
+    this.modified_flag = true;
+  }
+
   restoreDoc(): void {
     this.sel_doc.x_state = 0;
     this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+    this.modified_flag = true;
   }
 
   getNormalDocs(group: GroupModel): Array<DocInfoModel> {
@@ -99,8 +129,8 @@ export class HomeComponent implements OnInit {
     return res;
   }
 
-  onDocContextMenu(doc: DocInfoModel): void {
-    this.select(doc);
+  onDocContextMenu(doc: DocInfoModel, group: GroupModel): void {
+    this.select(doc, group);
     const moveTo = [];
     for (const group of this.doc_groups) {
       if (group.id !== doc.group_id) {
@@ -122,7 +152,7 @@ export class HomeComponent implements OnInit {
   }
 
   onRecycleDocContextMenu(doc: DocInfoModel): void {
-    this.select(doc);
+    this.select(doc, null);
     ipc.send('show-recycle-doc-context-menu');
   }
 
@@ -135,9 +165,9 @@ export class HomeComponent implements OnInit {
   }
 
   addDocument(filePath: string): boolean {
-    const doc = this.findDocInfo(filePath);
-    if (doc) {
-      ipc.send('doc-repeat-inquiry', doc);
+    const doc_group = this.findDocInfo(filePath);
+    if (doc_group) {
+      ipc.send('doc-repeat-inquiry', doc_group);
       return false;
     }
 
@@ -159,12 +189,12 @@ export class HomeComponent implements OnInit {
     return true;
   }
 
-  findDocInfo(filePath: string): DocInfoModel {
+  findDocInfo(filePath: string): any {
     let res = null;
     for (const group of this.doc_groups) {
       for (const doc of group.documents) {
         if (doc.orig_file.toLowerCase() === filePath.toLowerCase()) {
-          res = doc;
+          res = {doc: doc, group: group};
         }
       }
     }
@@ -227,6 +257,18 @@ export class HomeComponent implements OnInit {
       this.removeDoc();
     });
 
+    ipc.on('doc-move-up', (event) => {
+      this.moveUpDoc();
+    });
+
+    ipc.on('doc-move-down', (event) => {
+      this.moveDownDoc();
+    });
+
+    ipc.on('doc-move-to', (event, group_id) => {
+      this.moveTo(group_id);
+    });
+
     ipc.on('empty-recycle-bin', (event) => {
       console.log('empty-recycle-bin');
     });
@@ -239,9 +281,9 @@ export class HomeComponent implements OnInit {
       console.log('doc-delete');
     });
 
-    ipc.on('doc-repeat-reply', (event, index, doc) => {
+    ipc.on('doc-repeat-reply', (event, index, doc_group) => {
       if (index === 0) {  // yes
-        this.select(doc);
+        this.select(doc_group.doc, doc_group.group);
         this.openDoc();
       }
     });
