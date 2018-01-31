@@ -186,6 +186,10 @@ function docRestore(menuItem, browserWindow) {
   browserWindow.send('doc-restore');
 }
 
+function docDelete(menuItem, browserWindow) {
+  browserWindow.send('doc-delete');
+}
+
 function showItemContextMenu(event, page_count, cur_page) {
   const contextMenu = new Menu();
   contextMenu.append(new MenuItem({

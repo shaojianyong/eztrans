@@ -229,6 +229,10 @@ export class HomeComponent implements OnInit {
       console.log('doc-restore');
     });
 
+    ipc.on('doc-delete', (event) => {
+      console.log('doc-delete');
+    });
+
     ipc.on('doc-repeat-reply', (event, index, doc) => {
       if (index === 0) {  // yes
         this.select(doc);
