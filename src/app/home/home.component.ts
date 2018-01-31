@@ -117,6 +117,7 @@ export class HomeComponent implements OnInit {
   }
 
   onRecycleDocContextMenu(doc: DocInfoModel): void {
+    this.select(doc);
     ipc.send('show-recycle-doc-context-menu');
   }
 
