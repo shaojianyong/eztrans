@@ -21,11 +21,14 @@ export class PanelComponent implements OnInit {
   }
 
   selectTranslation(refer_index: number): void {
+    this.disableHighlight();
     this.sentence.target = refer_index;
     this.rerenderEvent.emit({forceShowSelected: true});
+    this.enableHighlight();
   }
 
   clone(refer_index: number): void {
+    this.disableHighlight();
     const orig = this.sentence.refers[refer_index];
 
     if (this.sentence.custom) {
@@ -51,6 +54,7 @@ export class PanelComponent implements OnInit {
     ce.text(this.sentence.custom.target_text);
     ce.attr('contenteditable', 'true');
     ce.focus();
+    // this.enableHighlight();  不需要重复，onEditBlur将做这个事情
   }
 
   onExLink(engine_name: string): void {
@@ -70,6 +74,7 @@ export class PanelComponent implements OnInit {
   }
 
   removeCustom(): void {
+    this.disableHighlight();
     this.sentence.custom = null;
     if (this.sentence.refers && this.sentence.refers.length > 0) {
       this.sentence.target = 0;  // TODO: 选中第一个，还是默认引擎？
@@ -77,6 +82,7 @@ export class PanelComponent implements OnInit {
       this.sentence.target = -2;
     }
     this.rerenderEvent.emit({forceShowSelected: true});
+    this.enableHighlight();
   }
 
   getFlagIcon(sentence: SentenceModel): string {
@@ -98,15 +104,11 @@ export class PanelComponent implements OnInit {
   }
 
   onEditFocus(): void {
-    if (this.search && this.sentence.target === -1) {
-      $(`#table-${this.index}>tbody>tr>td.target-cell`).unhighlight();
-    }
+    this.disableHighlight();
   }
 
   onEditBlur(): void {
-    if (this.search && this.sentence.target === -1) {
-      $(`#table-${this.index}>tbody>tr>td.target-cell`).highlight(this.search);
-    }
+    this.enableHighlight();
   }
 
   refresh(): void {
@@ -116,6 +118,18 @@ export class PanelComponent implements OnInit {
   ignore(): void {
     this.sentence.ignore = !this.sentence.ignore;
     this.rerenderEvent.emit({forceShowSelected: true});
+  }
+
+  enableHighlight(): void {
+    if (this.search && this.sentence.target === -1) {
+      $(`#table-${this.index}>tbody>tr>td.target-cell`).highlight(this.search);
+    }
+  }
+
+  disableHighlight(): void {
+    if (this.search && this.sentence.target === -1) {
+      $(`#table-${this.index}>tbody>tr>td.target-cell`).unhighlight();
+    }
   }
 
   ngOnInit() {
