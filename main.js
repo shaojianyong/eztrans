@@ -182,6 +182,10 @@ function emptyRecycleBin(menuItem, browserWindow) {
   browserWindow.send('empty-recycle-bin');
 }
 
+function docRestore(menuItem, browserWindow) {
+  browserWindow.send('doc-restore');
+}
+
 function showItemContextMenu(event, page_count, cur_page) {
   const contextMenu = new Menu();
   contextMenu.append(new MenuItem({

@@ -225,6 +225,9 @@ export class HomeComponent implements OnInit {
       console.log('empty-recycle-bin');
     });
 
+    ipc.on('doc-restore', (event) => {
+      console.log('doc-restore');
+    });
 
     ipc.on('doc-repeat-reply', (event, index, doc) => {
       if (index === 0) {  // yes
