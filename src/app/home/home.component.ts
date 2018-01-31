@@ -60,7 +60,7 @@ export class HomeComponent implements OnInit {
     this.rerenderEvent.emit({forceShowSelected: false, resetDocument: true});
   }
 
-  deleteDoc(): void {
+  removeDoc(): void {
     this.sel_doc.state = 3;  // 标记删除，实现逻辑：切换到已删除分组
     if (this.sel_doc.id === this.cur_doc.id) {
       this.cur_doc = new DocumentModel();  // 指向一个空文档
@@ -72,11 +72,23 @@ export class HomeComponent implements OnInit {
     this.modified_flag = true;
   }
 
-  getNormalDocs(group: GroupModel) {
+  getNormalDocs(group: GroupModel): Array<DocInfoModel> {
     const res = [];
     for (const doc of group.documents) {
       if (doc.state < 3) {
         res.push(doc);
+      }
+    }
+    return res;
+  }
+
+  getRemovedDocs(): Array<DocInfoModel> {
+    const res = [];
+    for (const group of this.doc_groups) {
+      for (const doc of group.documents) {
+        if (doc.state === 3) {
+          res.push(doc);
+        }
       }
     }
     return res;
@@ -198,8 +210,8 @@ export class HomeComponent implements OnInit {
       this.openDoc();
     });
 
-    ipc.on('doc-delete', (event) => {
-      this.deleteDoc();
+    ipc.on('doc-remove', (event) => {
+      this.removeDoc();
     });
 
     ipc.on('doc-repeat-reply', (event, index, doc) => {

@@ -48,6 +48,34 @@
             </table>
           </div>
         </div>
+
+        <div class="item">
+          <div class="title" (contextmenu)="onRecycleBinContextMenu(group)" id="recycle-bin">
+            <i class="dropdown icon"></i>
+            Recycle Bin
+          </div>
+          <div class="content">
+            <table class="ui inverted small very basic table">
+              <tbody>
+              <tr *ngFor="let doc of getRemovedDocs()"
+                  id="doc-{{doc.id}}"
+                  (click)="select(doc)"
+                  (contextmenu)="onRecycleDocContextMenu(doc)"
+                  class="{{(sel_doc && doc.id === sel_doc.id) ? 'selected_document' : ''}}">
+                <td class="collapsing left-mark">
+                  <i class="file text outline icon"></i>
+                </td>
+                <td class="trans-data">
+                  {{doc.name}}
+                </td>
+                <td class="collapsing right-mark">
+                  <i class="placeholder icon"></i>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
 

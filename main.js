@@ -141,8 +141,8 @@ function docRename(menuItem, browserWindow) {
   browserWindow.send('doc-rename');
 }
 
-function docDelete(menuItem, browserWindow) {
-  browserWindow.send('doc-delete');
+function docRemove(menuItem, browserWindow) {
+  browserWindow.send('doc-remove');
 }
 
 function docMoveUp(menuItem, browserWindow) {
@@ -251,9 +251,9 @@ function showDocContextMenu(event, moveTo) {
   }));
 
   contextMenu.append(new MenuItem({
-    label: 'Delete',
-    click: docDelete,
-    icon: './dist/assets/images/icons/delete.png'
+    label: 'Remove',
+    click: docRemove,
+    icon: './dist/assets/images/icons/trash.png'
   }));
 
   contextMenu.append(new MenuItem({type: 'separator'}));
