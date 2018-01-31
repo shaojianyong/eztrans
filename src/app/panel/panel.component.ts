@@ -104,11 +104,15 @@ export class PanelComponent implements OnInit {
   }
 
   onEditFocus(): void {
-    this.disableHighlight();
+    if (this.search && this.sentence.target === -1) {
+      this.disableHighlight();
+    }
   }
 
   onEditBlur(): void {
-    this.enableHighlight();
+    if (this.search && this.sentence.target === -1) {
+      this.enableHighlight();
+    }
   }
 
   refresh(): void {
@@ -121,15 +125,11 @@ export class PanelComponent implements OnInit {
   }
 
   enableHighlight(): void {
-    if (this.search && this.sentence.target === -1) {
-      $(`#table-${this.index}>tbody>tr>td.target-cell`).highlight(this.search);
-    }
+    $(`#table-${this.index}>tbody>tr>td.target-cell`).highlight(this.search);
   }
 
   disableHighlight(): void {
-    if (this.search && this.sentence.target === -1) {
-      $(`#table-${this.index}>tbody>tr>td.target-cell`).unhighlight();
-    }
+    $(`#table-${this.index}>tbody>tr>td.target-cell`).unhighlight();
   }
 
   ngOnInit() {
