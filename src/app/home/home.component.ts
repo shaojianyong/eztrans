@@ -60,6 +60,28 @@ export class HomeComponent implements OnInit {
     this.rerenderEvent.emit({forceShowSelected: false, resetDocument: true});
   }
 
+  deleteDoc(): void {
+    this.sel_doc.state = 3;  // 标记删除，实现逻辑：切换到已删除分组
+    if (this.sel_doc.id === this.cur_doc.id) {
+      this.cur_doc = new DocumentModel();  // 指向一个空文档
+      this.title.setTitle('Eztrans');
+      this.rerenderEvent.emit({forceShowSelected: false, resetDocument: true});
+    } else {
+      this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+    }
+    this.modified_flag = true;
+  }
+
+  getNormalDocs(group: GroupModel) {
+    const res = [];
+    for (const doc of group.documents) {
+      if (doc.state < 3) {
+        res.push(doc);
+      }
+    }
+    return res;
+  }
+
   onDocContextMenu(doc: DocInfoModel): void {
     this.select(doc);
     const moveTo = [];
@@ -174,6 +196,10 @@ export class HomeComponent implements OnInit {
 
     ipc.on('doc-open', (event) => {
       this.openDoc();
+    });
+
+    ipc.on('doc-delete', (event) => {
+      this.deleteDoc();
     });
 
     ipc.on('doc-repeat-reply', (event, index, doc) => {

@@ -24,7 +24,7 @@
           <div class="content">  <!--active content-->
             <table class="ui inverted small very basic table">  <!--selectable-->
               <tbody>
-              <tr *ngFor="let doc of group.documents"
+              <tr *ngFor="let doc of getNormalDocs(group)"
                   id="doc-{{doc.id}}"
                   (click)="select(doc)"
                   (dblclick)="openDoc()"
@@ -37,9 +37,11 @@
                 <td class="trans-data">
                   {{doc.name}}
                 </td>
-                <td class="collapsing right-mark">
-                  <i *ngIf="doc.doc_state === 1" class="edit icon"></i>
-                  <i *ngIf="doc.doc_state === 2" class="checkmark icon"></i>
+                <td class="collapsing right-mark" [ngSwitch]="doc.state">
+                  <i *ngSwitchCase="0" class="placeholder icon"></i>
+                  <i *ngSwitchCase="1" class="edit icon"></i>
+                  <i *ngSwitchCase="2" class="checkmark icon"></i>
+                  <i *ngSwitchDefault class="placeholder icon"></i>
                 </td>
               </tr>
               </tbody>
