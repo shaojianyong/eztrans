@@ -70,6 +70,7 @@ export class HomeComponent implements OnInit {
     console.log('endDocRename');
     const doc_name = $(`#doc-${this.sel_doc.id}>td.doc-name`);
     doc_name.attr('contenteditable', 'false');
+    this.sel_doc.name = doc_name.text();
 
     event.preventDefault();
     this.modified_flag = true;
