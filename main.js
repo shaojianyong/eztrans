@@ -408,7 +408,21 @@ function saveDocGroups(event, params) {
     dgc.ensureUniqueIndex('id');
   }
 
-  for(const group of params.data) {
+  for (const g1 of dgc.data) {
+    let exists = false;
+    for (const g2 of params.data) {
+      if (g1.id === g2.id) {
+        exists = true;
+        break;
+      }
+    }
+
+    if (!exists) {
+      dgc.remove(g1);
+    }
+  }
+
+  for (const group of params.data) {
     let obj = dgc.findObject({'id': group.id});
     if (obj) {
       // https://github.com/techfort/LokiJS/issues/297
@@ -493,6 +507,7 @@ function saveDocument(event, params) {
 
   const obj = dsc.findObject({'id': doc.id});
   if (obj) {
+    // https://github.com/techfort/LokiJS/issues/297
     doc['$loki'] = obj['$loki'];
     doc['meta'] = obj['meta'];
     dsc.update(doc);
