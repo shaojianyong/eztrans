@@ -210,6 +210,12 @@ export class HomeComponent implements OnInit {
     this.modified_flag = true;
   }
 
+  deleteDoc(): void {
+    this.sel_doc.x_state = 2;  // 彻底删除前
+    this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+    this.modified_flag = true;
+  }
+
   getNormalDocs(group: GroupModel): Array<DocInfoModel> {
     const res = [];
     for (const doc of group.documents) {
@@ -402,7 +408,7 @@ export class HomeComponent implements OnInit {
     });
 
     ipc.on('doc-delete', (event) => {
-      console.log('doc-delete');
+      this.deleteDoc();
     });
 
     ipc.on('doc-repeat-reply', (event, index, doc) => {
