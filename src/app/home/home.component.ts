@@ -259,7 +259,7 @@ export class HomeComponent implements OnInit {
     const ts = moment().format('YYYYMMDDHHmmssSSS');
     this.doc_groups.push(new GroupModel({
       id: 'g' + ts,
-      name: 'NewGroup - ' + ts.substr(2)
+      name: 'Group-' + ts.substr(2)
     }));
 
     this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});

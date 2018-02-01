@@ -19,7 +19,7 @@
         <div *ngFor="let group of doc_groups" class="item">
           <div class="title" (contextmenu)="onGroupContextMenu(group)" id="group-{{group.id}}">  <!--active-->
             <i class="dropdown icon"></i>
-            {{group.name}}
+            {{group.name}} ({{group.documents.length}})
           </div>
           <div class="content">  <!--active content-->
             <table class="ui inverted small very basic table">  <!--selectable-->
@@ -52,7 +52,7 @@
         <div class="item">
           <div class="title" (contextmenu)="onRecycleBinContextMenu()" id="recycle-bin">
             <i class="dropdown icon"></i>
-            Recycle Bin
+            Recycle Bin ({{getRemovedDocs().length}})
           </div>
           <div class="content">
             <table class="ui inverted small very basic table">
