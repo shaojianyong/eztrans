@@ -3,7 +3,7 @@
   <div class="ui items">
     <div id="left-side-menu" class="ui item">
       <div class="ui top attached inverted secondary icon menu">
-        <a class="item">
+        <a class="item" (click)="addGroup()">
           <i class="plus icon"></i>
         </a>
         <div class="right menu">
@@ -26,7 +26,7 @@
               <tbody>
               <tr *ngFor="let doc of getNormalDocs(group)"
                   id="doc-{{doc.id}}"
-                  (click)="select(doc, group)"
+                  (click)="select(doc)"
                   (dblclick)="openDoc()"
                   (contextmenu)="onDocContextMenu(doc, group)"
                   class="{{(sel_doc && doc.id === sel_doc.id) ? 'selected_document' : ''}}">
@@ -37,7 +37,7 @@
                 <td class="trans-data">
                   {{doc.name}}
                 </td>
-                <td class="collapsing right-mark" [ngSwitch]="doc.state">
+                <td class="collapsing right-mark" [ngSwitch]="doc.x_state">  <!--TODO: x_state?-->
                   <i *ngSwitchCase="0" class="placeholder icon"></i>
                   <i *ngSwitchCase="1" class="edit icon"></i>
                   <i *ngSwitchCase="2" class="checkmark icon"></i>
@@ -59,7 +59,7 @@
               <tbody>
               <tr *ngFor="let doc of getRemovedDocs()"
                   id="doc-{{doc.id}}"
-                  (click)="select(doc, null)"
+                  (click)="select(doc)"
                   (contextmenu)="onRecycleDocContextMenu(doc)"
                   class="{{(sel_doc && doc.id === sel_doc.id) ? 'selected_document' : ''}}">
                 <td class="collapsing left-mark">

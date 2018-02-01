@@ -154,7 +154,6 @@ function docMoveDown(menuItem, browserWindow) {
 }
 
 function docMoveTo(menuItem, browserWindow) {
-  console.log(menuItem.group_id);
   browserWindow.send('doc-move-to', menuItem.group_id);
 }
 
@@ -236,9 +235,12 @@ function showItemContextMenu(event, page_count, cur_page) {
   contextMenu.popup(win);
 }
 
-function showDocContextMenu(event, moveTo) {
+function showDocContextMenu(event, curGroup, allGroup) {
   const subMenuItems = [];
-  for (const group of moveTo) {
+  for (const group of allGroup) {
+    if (group.id === curGroup.id) {
+      continue;
+    }
     subMenuItems.push({
       label: group.name,
       click: docMoveTo,

@@ -20,7 +20,6 @@ export class HomeComponent implements OnInit {
 
   doc_groups = [];
   cache_docs = {};
-  sel_group: GroupModel = null;
   sel_doc: DocInfoModel = null;
   cur_doc = new DocumentModel();  // 指向一个空文档
   modified_flag = false;
@@ -28,8 +27,7 @@ export class HomeComponent implements OnInit {
   constructor(private title: Title) { }
 
 
-  select(doc: DocInfoModel, group: GroupModel): void {
-    this.sel_group = group;
+  select(doc: DocInfoModel): void {
     if (this.sel_doc && this.sel_doc.id === doc.id) {
       return;
     }
@@ -54,7 +52,6 @@ export class HomeComponent implements OnInit {
 
     if (this.cur_doc && this.cur_doc.id) {
       this.saveCurDocument(false);
-      console.log('Save current document before switch!');
     }
 
     this.cur_doc = this.cache_docs[this.sel_doc.id];
@@ -75,39 +72,60 @@ export class HomeComponent implements OnInit {
   }
 
   moveUpDoc(): void {
-    const index = this.sel_group.documents.indexOf(this.sel_doc);
+    const group = this.getCurSelGroup();
+    const index = group.documents.indexOf(this.sel_doc);
     if (index > 0) {
-      const temp = this.sel_group.documents[index];
-      this.sel_group.documents[index] = this.sel_group.documents[index - 1];
-      this.sel_group.documents[index - 1] = temp;
+      const temp = group.documents[index];
+      group.documents[index] = group.documents[index - 1];
+      group.documents[index - 1] = temp;
+
+      this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+      this.modified_flag = true;
     }
-    this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
-    this.modified_flag = true;
   }
 
   moveDownDoc(): void {
-    const index = this.sel_group.documents.indexOf(this.sel_doc);
-    if (index < this.sel_group.documents.length - 1) {
-      const temp = this.sel_group.documents[index];
-      this.sel_group.documents[index] = this.sel_group.documents[index + 1];
-      this.sel_group.documents[index + 1] = temp;
+    const group = this.getCurSelGroup();
+    const index = group.documents.indexOf(this.sel_doc);
+    if (index < group.documents.length - 1) {
+      const temp = group.documents[index];
+      group.documents[index] = group.documents[index + 1];
+      group.documents[index + 1] = temp;
+
+      this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+      this.modified_flag = true;
     }
-    this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
-    this.modified_flag = true;
+
   }
 
   moveTo(group_id: string): void {
-    let tgt_group = null;
+    let toGroup = null;
+    const frGroup = this.getCurSelGroup();
+    const index = frGroup.documents.indexOf(this.sel_doc);
     for (const group of this.doc_groups) {
       if (group.id === group_id) {
-        tgt_group = group;
+        toGroup = group;
         break;
       }
     }
 
-    
+    toGroup.documents.push(this.sel_doc);
+    frGroup.documents.splice(index, 1);
+    this.sel_doc.group_id = toGroup.id;
 
+    this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
     this.modified_flag = true;
+  }
+
+  getCurSelGroup(): GroupModel {
+    let res = null;
+    for (const group of this.doc_groups) {
+      if (group.id === this.sel_doc.group_id) {
+        res = group;
+        break;
+      }
+    }
+    return res;
   }
 
   restoreDoc(): void {
@@ -139,17 +157,8 @@ export class HomeComponent implements OnInit {
   }
 
   onDocContextMenu(doc: DocInfoModel, group: GroupModel): void {
-    this.select(doc, group);
-    const moveTo = [];
-    for (const group of this.doc_groups) {
-      if (group.id !== doc.group_id) {
-        moveTo.push({
-          id: group.id,
-          name: group.name
-        });
-      }
-    }
-    ipc.send('show-doc-context-menu', moveTo);
+    this.select(doc);
+    ipc.send('show-doc-context-menu', group, this.doc_groups);
   }
 
   onGroupContextMenu(group: GroupModel): void {
@@ -161,7 +170,7 @@ export class HomeComponent implements OnInit {
   }
 
   onRecycleDocContextMenu(doc: DocInfoModel): void {
-    this.select(doc, null);
+    this.select(doc);
     ipc.send('show-recycle-doc-context-menu');
   }
 
@@ -174,15 +183,13 @@ export class HomeComponent implements OnInit {
   }
 
   addDocument(filePath: string): boolean {
-    const doc_group = this.findDocInfo(filePath);
-    if (doc_group) {
-      ipc.send('doc-repeat-inquiry', doc_group);
+    const doc = this.findDocInfo(filePath);
+    if (doc) {
+      ipc.send('doc-repeat-inquiry', doc);
       return false;
     }
 
-    const mm = moment();
-    const docId = mm.format('YYYYMMDDHHmmssSSS');
-
+    const docId = 'd' + moment().format('YYYYMMDDHHmmssSSS');
     this.sel_doc = new DocInfoModel({
       id: docId,
       name: FunctionUtils.getFileName(filePath),
@@ -198,12 +205,12 @@ export class HomeComponent implements OnInit {
     return true;
   }
 
-  findDocInfo(filePath: string): any {
+  findDocInfo(filePath: string): DocInfoModel {
     let res = null;
     for (const group of this.doc_groups) {
       for (const doc of group.documents) {
         if (doc.orig_file.toLowerCase() === filePath.toLowerCase()) {
-          res = {doc: doc, group: group};
+          res = doc;
         }
       }
     }
@@ -248,6 +255,17 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  addGroup(): void {
+    const ts = moment().format('YYYYMMDDHHmmssSSS');
+    this.doc_groups.push(new GroupModel({
+      id: 'g' + ts,
+      name: 'NewGroup - ' + ts.substr(2)
+    }));
+
+    this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+    this.modified_flag = true;
+  }
+
   ngOnInit() {
     $('.ui.accordion')
       .accordion();
@@ -290,9 +308,9 @@ export class HomeComponent implements OnInit {
       console.log('doc-delete');
     });
 
-    ipc.on('doc-repeat-reply', (event, index, doc_group) => {
+    ipc.on('doc-repeat-reply', (event, index, doc) => {
       if (index === 0) {  // yes
-        this.select(doc_group.doc, doc_group.group);
+        this.select(doc);
         this.openDoc();
       }
     });
