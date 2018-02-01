@@ -19,7 +19,7 @@
         <div *ngFor="let group of doc_groups" class="item">
           <div class="title" (contextmenu)="onGroupContextMenu(group)" id="group-{{group.id}}">  <!--active-->
             <i class="dropdown icon"></i>
-            {{group.name}} ({{group.documents.length}})
+            {{group.name}} ({{getNormalDocs(group).length}})
           </div>
           <div class="content">  <!--active content-->
             <table class="ui inverted small very basic table">  <!--selectable-->
