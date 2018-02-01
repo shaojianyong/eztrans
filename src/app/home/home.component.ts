@@ -136,6 +136,21 @@ export class HomeComponent implements OnInit {
     this.importEvent.emit({group_id: group_id});
   }
 
+  renameGroup(group_id: string): void {
+    const group_name = $(`#group-${group_id}>span.group-name`);
+    group_name.attr('contenteditable', 'true');
+    group_name.focus();
+  }
+
+  endGroupRename(event: any, group_id: string): void {
+    const group_name = $(`#group-${group_id}>span.group-name`);
+    group_name.attr('contenteditable', 'false');
+    this.getGroup(group_id).name = group_name.text();
+
+    event.preventDefault();
+    this.modified_flag = true;
+  }
+
   getCurSelGroup(): GroupModel {
     let res = null;
     if (this.sel_doc) {
