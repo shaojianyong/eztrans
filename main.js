@@ -235,7 +235,7 @@ function showItemContextMenu(event, page_count, cur_page) {
   contextMenu.popup(win);
 }
 
-function showDocContextMenu(event, curGroup, allGroup) {
+function showDocContextMenu(event, curGroup, allGroup, opened) {
   const subMenuItems = [];
   for (const group of allGroup) {
     if (group.id === curGroup.id) {
@@ -271,6 +271,14 @@ function showDocContextMenu(event, curGroup, allGroup) {
   }));
 
   contextMenu.append(new MenuItem({type: 'separator'}));
+  if (subMenuItems.length) {
+    contextMenu.append(new MenuItem({
+      label: 'Move To',
+      icon: './dist/assets/images/icons/moveto.png',
+      submenu: subMenuItems
+    }));
+  }
+
   contextMenu.append(new MenuItem({
     label: 'Move Up',
     click: docMoveUp,
@@ -283,40 +291,14 @@ function showDocContextMenu(event, curGroup, allGroup) {
     icon: './dist/assets/images/icons/arrowdown.png'
   }));
 
-  if (subMenuItems.length) {
+  if (opened) {
+    contextMenu.append(new MenuItem({type: 'separator'}));
     contextMenu.append(new MenuItem({
-      label: 'Move To',
-      icon: './dist/assets/images/icons/moveto.png',
-      submenu: subMenuItems
+      label: 'Export',
+      click: docExport,
+      icon: './dist/assets/images/icons/export.png'
     }));
   }
-  contextMenu.append(new MenuItem({type: 'separator'}));
-  contextMenu.append(new MenuItem({
-    label: 'Export',
-    click: docExport,
-    icon: './dist/assets/images/icons/export.png'
-  }));
-
-  const win = BrowserWindow.fromWebContents(event.sender);
-  contextMenu.popup(win);
-}
-
-function showRecycleDocContextMenu(event) {
-  const contextMenu = new Menu();
-
-  contextMenu.append(new MenuItem({
-    label: 'Restore',
-    click: docRestore,
-    icon: './dist/assets/images/icons/restore.png'
-  }));
-
-  contextMenu.append(new MenuItem({type: 'separator'}));
-
-  contextMenu.append(new MenuItem({
-    label: 'Delete',
-    click: docDelete,
-    icon: './dist/assets/images/icons/delete.png'
-  }));
 
   const win = BrowserWindow.fromWebContents(event.sender);
   contextMenu.popup(win);
@@ -355,6 +337,27 @@ function showGroupContextMenu(event) {
     label: 'Move Down',
     click: docMoveTo,
     icon: './dist/assets/images/icons/arrowdown.png'
+  }));
+
+  const win = BrowserWindow.fromWebContents(event.sender);
+  contextMenu.popup(win);
+}
+
+function showRecycleDocContextMenu(event) {
+  const contextMenu = new Menu();
+
+  contextMenu.append(new MenuItem({
+    label: 'Restore',
+    click: docRestore,
+    icon: './dist/assets/images/icons/restore.png'
+  }));
+
+  contextMenu.append(new MenuItem({type: 'separator'}));
+
+  contextMenu.append(new MenuItem({
+    label: 'Delete',
+    click: docDelete,
+    icon: './dist/assets/images/icons/delete.png'
   }));
 
   const win = BrowserWindow.fromWebContents(event.sender);

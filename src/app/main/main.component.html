@@ -125,7 +125,9 @@
 </div>
 
 <!-- doc tree -->
-<app-home (rerenderEvent)="forceRerender($event)"></app-home>
+<app-home (rerenderEvent)="forceRerender($event)"
+          (exportEvent)="exportFile()">
+</app-home>
 
 <!-- Setting Dialog -->
 <app-settings></app-settings>

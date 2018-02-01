@@ -17,6 +17,7 @@ import { DocInfoModel } from '../services/model/doc-info.model';
 })
 export class HomeComponent implements OnInit {
   @Output() rerenderEvent = new EventEmitter<any>();
+  @Output() exportEvent = new EventEmitter<any>();
 
   doc_groups = [];
   cache_docs = {};
@@ -134,6 +135,10 @@ export class HomeComponent implements OnInit {
     this.modified_flag = true;
   }
 
+  exportDoc(): void {
+    this.exportEvent.emit();
+  }
+
   getCurSelGroup(): GroupModel {
     let res = null;
     for (const group of this.doc_groups) {
@@ -175,7 +180,8 @@ export class HomeComponent implements OnInit {
 
   onDocContextMenu(doc: DocInfoModel, group: GroupModel): void {
     this.select(doc);
-    ipc.send('show-doc-context-menu', group, this.doc_groups);
+    const opened = (doc.id === this.cur_doc.id);
+    ipc.send('show-doc-context-menu', group, this.doc_groups, opened);
   }
 
   onGroupContextMenu(group: GroupModel): void {
@@ -315,6 +321,10 @@ export class HomeComponent implements OnInit {
 
     ipc.on('doc-move-to', (event, group_id) => {
       this.moveTo(group_id);
+    });
+
+    ipc.on('doc-export', (event) => {
+      this.exportDoc();
     });
 
     ipc.on('empty-recycle-bin', (event) => {
