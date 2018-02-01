@@ -59,6 +59,22 @@ export class HomeComponent implements OnInit {
     this.rerenderEvent.emit({forceShowSelected: false, resetDocument: true});
   }
 
+  renameDoc(): void {
+    console.log('renameDoc');
+    const doc_name = $(`#doc-${this.sel_doc.id}>td.doc-name`);
+    doc_name.attr('contenteditable', 'true');
+    doc_name.focus();
+  }
+
+  endDocRename(event: KeyboardEvent): void {
+    console.log('endDocRename');
+    const doc_name = $(`#doc-${this.sel_doc.id}>td.doc-name`);
+    doc_name.attr('contenteditable', 'false');
+
+    event.preventDefault();
+    this.modified_flag = true;
+  }
+
   removeDoc(): void {
     this.sel_doc.x_state = 1;  // 标记删除，实现逻辑：切换到已删除分组
     if (this.sel_doc.id === this.cur_doc.id) {
@@ -278,6 +294,10 @@ export class HomeComponent implements OnInit {
 
     ipc.on('doc-open', (event) => {
       this.openDoc();
+    });
+
+    ipc.on('doc-rename', (event) => {
+      this.renameDoc();
     });
 
     ipc.on('doc-remove', (event) => {

@@ -34,7 +34,8 @@
                   <i *ngIf="doc.id === cur_doc.id" class="file text icon"></i>
                   <i *ngIf="doc.id !== cur_doc.id" class="file text outline icon"></i>
                 </td>
-                <td class="trans-data">
+                <td class="doc-name" contenteditable="false" [textContent]="doc.name"
+                    (blur)="endDocRename($event)" (keydown.enter)="endDocRename($event)">
                   {{doc.name}}
                 </td>
                 <td class="collapsing right-mark" [ngSwitch]="doc.x_state">  <!--TODO: x_state?-->
@@ -65,7 +66,7 @@
                 <td class="collapsing left-mark">
                   <i class="file text outline icon"></i>
                 </td>
-                <td class="trans-data">
+                <td class="doc-name">
                   {{doc.name}}
                 </td>
                 <td class="collapsing right-mark">
