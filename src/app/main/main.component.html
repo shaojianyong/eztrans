@@ -3,7 +3,7 @@
   <a class="ui icon item" (click)="toggle()">
     <i class="sidebar icon"></i>
   </a>
-  <a class="item" (click)="openFile()">
+  <a class="item" (click)="importFile(null)">
     <i class="sign in icon"></i> Import
   </a>
   <a class="item" (click)="autoTranslate()">
@@ -126,7 +126,8 @@
 
 <!-- doc tree -->
 <app-home (rerenderEvent)="forceRerender($event)"
-          (exportEvent)="exportFile()">
+          (exportEvent)="exportFile()"
+          (importEvent)="importFile($event)">
 </app-home>
 
 <!-- Setting Dialog -->

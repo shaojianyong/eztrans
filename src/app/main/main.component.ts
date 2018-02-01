@@ -57,8 +57,17 @@ export class MainComponent implements OnInit {
   }
 
   // ipcRenderer与ipcMain同步通信
-  openFile(): void {
-    const self = this;
+  importFile(event: any): void {
+    let group_id = null;
+    const group = this.child_home.getCurSelGroup();
+    if (event) {
+      group_id = event.group_id;
+    } else if (group) {
+      group_id = group.id;
+    } else {
+      group_id = 'my-translations';
+    }
+
 
     const options = {
       title: 'Open a Structured Text File',
@@ -69,8 +78,8 @@ export class MainComponent implements OnInit {
 
     dialog.showOpenDialog(options, (files) => {
       if (files) {
-        self.reset();
-        ipc.send('read-file', files);  // ('read-file', files, self);  进程之间不能传递对象
+        this.reset();
+        ipc.send('read-file', files, group_id);  // ('read-file', files, this);  进程之间不能传递对象
       }
     });
   }
@@ -603,8 +612,8 @@ export class MainComponent implements OnInit {
   ngOnInit() {
     const self = this;
 
-    ipc.on('file-read', (event, err, data, filePath) => {
-      if (!this.child_home.addDocument(filePath)) {
+    ipc.on('file-read', (event, err, data, filePath, group_id) => {
+      if (!this.child_home.addDocument(filePath, group_id)) {
         return;
       }
       self.reset();

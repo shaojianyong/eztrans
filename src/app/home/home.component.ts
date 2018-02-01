@@ -18,6 +18,7 @@ import { DocInfoModel } from '../services/model/doc-info.model';
 export class HomeComponent implements OnInit {
   @Output() rerenderEvent = new EventEmitter<any>();
   @Output() exportEvent = new EventEmitter<any>();
+  @Output() importEvent = new EventEmitter<any>();
 
   doc_groups = [];
   cache_docs = {};
@@ -117,15 +118,9 @@ export class HomeComponent implements OnInit {
   }
 
   moveTo(group_id: string): void {
-    let toGroup = null;
+    const toGroup = this.getGroup(group_id);
     const frGroup = this.getCurSelGroup();
     const index = frGroup.documents.indexOf(this.sel_doc);
-    for (const group of this.doc_groups) {
-      if (group.id === group_id) {
-        toGroup = group;
-        break;
-      }
-    }
 
     toGroup.documents.push(this.sel_doc);
     frGroup.documents.splice(index, 1);
@@ -139,13 +134,14 @@ export class HomeComponent implements OnInit {
     this.exportEvent.emit();
   }
 
+  importDoc(group_id: string): void {
+    this.importEvent.emit({group_id: group_id});
+  }
+
   getCurSelGroup(): GroupModel {
     let res = null;
-    for (const group of this.doc_groups) {
-      if (group.id === this.sel_doc.group_id) {
-        res = group;
-        break;
-      }
+    if (this.sel_doc) {
+      res = this.getGroup(this.sel_doc.group_id);
     }
     return res;
   }
@@ -185,7 +181,7 @@ export class HomeComponent implements OnInit {
   }
 
   onGroupContextMenu(group: GroupModel): void {
-    ipc.send('show-group-context-menu');
+    ipc.send('show-group-context-menu', group.id);
   }
 
   onRecycleBinContextMenu(): void {
@@ -205,7 +201,7 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  addDocument(filePath: string): boolean {
+  addDocument(filePath: string, group_id: string): boolean {
     const doc = this.findDocInfo(filePath);
     if (doc) {
       ipc.send('doc-repeat-inquiry', doc);
@@ -219,7 +215,7 @@ export class HomeComponent implements OnInit {
       group_id: this.doc_groups[0].id,
       orig_file: filePath
     });
-    this.doc_groups[0].documents.push(this.sel_doc);
+    this.getGroup(group_id).documents.push(this.sel_doc);
 
     this.cur_doc = new DocumentModel({id: docId});
     this.cache_docs[docId] = this.cur_doc;
@@ -289,6 +285,18 @@ export class HomeComponent implements OnInit {
     this.modified_flag = true;
   }
 
+  getGroup(group_id: string): GroupModel {
+    let res = null;
+    for (const group of this.doc_groups) {
+      if (group.id === group_id) {
+        res = group;
+        break;
+      }
+    }
+    return res;
+  }
+
+
   ngOnInit() {
     $('.ui.accordion')
       .accordion();
@@ -345,6 +353,11 @@ export class HomeComponent implements OnInit {
         this.openDoc();
       }
     });
+
+    ipc.on('import-doc', (event, group_id) => {
+      this.importDoc(group_id);
+    });
+
 
     // auto save all user data
     setInterval(() => {
