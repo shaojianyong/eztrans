@@ -170,7 +170,15 @@ function groupRename(menuItem, browserWindow) {
 }
 
 function groupDelete(menuItem, browserWindow) {
-  browserWindow.send('group-delete');
+  browserWindow.send('group-delete', menuItem.group_id);
+}
+
+function groupMoveUp(menuItem, browserWindow) {
+  browserWindow.send('group-move-up', menuItem.group_id);
+}
+
+function groupMoveDown(menuItem, browserWindow) {
+  browserWindow.send('group-move-down', menuItem.group_id);
 }
 
 function importDoc(menuItem, browserWindow) {
@@ -322,23 +330,28 @@ function showGroupContextMenu(event, group_id) {
     group_id: group_id
   }));
 
-  contextMenu.append(new MenuItem({
-    label: 'Delete',
-    click: groupDelete,
-    icon: './dist/assets/images/icons/delete.png'
-  }));
+  if (group_id !== 'my-translations') {
+    contextMenu.append(new MenuItem({
+      label: 'Delete',
+      click: groupDelete,
+      icon: './dist/assets/images/icons/delete.png',
+      group_id: group_id
+    }));
+  }
 
   contextMenu.append(new MenuItem({type: 'separator'}));
   contextMenu.append(new MenuItem({
     label: 'Move Up',
-    click: docMoveTo,
-    icon: './dist/assets/images/icons/arrowup.png'
+    click: groupMoveUp,
+    icon: './dist/assets/images/icons/arrowup.png',
+    group_id: group_id
   }));
 
   contextMenu.append(new MenuItem({
     label: 'Move Down',
-    click: docMoveTo,
-    icon: './dist/assets/images/icons/arrowdown.png'
+    click: groupMoveDown,
+    icon: './dist/assets/images/icons/arrowdown.png',
+    group_id: group_id
   }));
 
   const win = BrowserWindow.fromWebContents(event.sender);

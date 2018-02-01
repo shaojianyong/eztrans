@@ -112,7 +112,6 @@ export class HomeComponent implements OnInit {
       this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
       this.modified_flag = true;
     }
-
   }
 
   moveTo(group_id: string): void {
@@ -149,6 +148,52 @@ export class HomeComponent implements OnInit {
 
     event.preventDefault();
     this.modified_flag = true;
+  }
+
+  deleteGroup(group_id: string): void {
+    let frIndex = 0;
+    for (const group of this.doc_groups) {
+      if (group.id === group_id) {
+        frIndex++;
+        break;
+      }
+    }
+
+    const toGroup = this.getGroup('my-translations');
+    for (const doc of this.doc_groups[frIndex].documents) {
+      doc.group_id = toGroup.id;
+      toGroup.documents.push(doc);
+    }
+
+    this.doc_groups.splice(frIndex, 1);
+    this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+    this.modified_flag = true;
+  }
+
+  moveUpGroup(group_id: string): void {
+    const group = this.getGroup(group_id);
+    const index = this.doc_groups.indexOf(group);
+    if (index > 0) {
+      const temp = this.doc_groups[index];
+      this.doc_groups[index] = this.doc_groups[index - 1];
+      this.doc_groups[index - 1] = temp;
+
+      this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+      this.modified_flag = true;
+    }
+  }
+
+  moveDownGroup(group_id: string): void {
+    const group = this.getGroup(group_id);
+    const index = this.doc_groups.indexOf(group);
+    if (index < this.doc_groups.length - 1) {
+      const temp = this.doc_groups[index];
+      this.doc_groups[index] = this.doc_groups[index + 1];
+      this.doc_groups[index + 1] = temp;
+
+      this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+      this.modified_flag = true;
+    }
   }
 
   getCurSelGroup(): GroupModel {
@@ -373,6 +418,18 @@ export class HomeComponent implements OnInit {
 
     ipc.on('group-rename', (event, group_id) => {
       this.renameGroup(group_id);
+    });
+
+    ipc.on('group-delete', (event, group_id) => {
+      this.deleteGroup(group_id);
+    });
+
+    ipc.on('group-move-up', (event, group_id) => {
+      this.moveUpGroup(group_id);
+    });
+
+    ipc.on('group-move-down', (event, group_id) => {
+      this.moveDownGroup(group_id);
     });
 
     // auto save all user data
