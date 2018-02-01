@@ -166,7 +166,7 @@ function docOpen(menuItem, browserWindow) {
 }
 
 function groupRename(menuItem, browserWindow) {
-  browserWindow.send('group-rename');
+  browserWindow.send('group-rename', menuItem.group_id);
 }
 
 function groupDelete(menuItem, browserWindow) {
@@ -318,7 +318,8 @@ function showGroupContextMenu(event, group_id) {
   contextMenu.append(new MenuItem({
     label: 'Rename',
     click: groupRename,
-    icon: './dist/assets/images/icons/rename.png'
+    icon: './dist/assets/images/icons/rename.png',
+    group_id: group_id
   }));
 
   contextMenu.append(new MenuItem({

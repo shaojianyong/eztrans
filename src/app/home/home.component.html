@@ -19,7 +19,10 @@
         <div *ngFor="let group of doc_groups" class="item">
           <div class="title" (contextmenu)="onGroupContextMenu(group)" id="group-{{group.id}}">  <!--active-->
             <i class="dropdown icon"></i>
-            {{group.name}} ({{getNormalDocs(group).length}})
+            <span class="group-name" contenteditable="false" [textContent]="group.name"
+                  (blur)="endGroupRename($event, group.id)"
+                  (keydown.enter)="endGroupRename($event, group.id)">{{group.name}}</span>
+            <span>({{getNormalDocs(group).length}})</span>
           </div>
           <div class="content">  <!--active content-->
             <table class="ui inverted small very basic table">  <!--selectable-->

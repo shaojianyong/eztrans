@@ -62,14 +62,12 @@ export class HomeComponent implements OnInit {
   }
 
   renameDoc(): void {
-    console.log('renameDoc');
     const doc_name = $(`#doc-${this.sel_doc.id}>td.doc-name`);
     doc_name.attr('contenteditable', 'true');
     doc_name.focus();
   }
 
-  endDocRename(event: KeyboardEvent): void {
-    console.log('endDocRename');
+  endDocRename(event: any): void {
     const doc_name = $(`#doc-${this.sel_doc.id}>td.doc-name`);
     doc_name.attr('contenteditable', 'false');
     this.sel_doc.name = doc_name.text();
@@ -358,6 +356,9 @@ export class HomeComponent implements OnInit {
       this.importDoc(group_id);
     });
 
+    ipc.on('group-rename', (event, group_id) => {
+      this.renameGroup(group_id);
+    });
 
     // auto save all user data
     setInterval(() => {
