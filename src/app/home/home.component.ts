@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ViewChild } from '@angular/core';
 import {Title} from '@angular/platform-browser';
 const moment = (<any>window).require('moment');
 const electron = (<any>window).require('electron');
@@ -8,6 +8,7 @@ import { FunctionUtils } from '../services/utils/function-utils';
 import { DocumentModel } from '../services/model/document.model';
 import { GroupModel } from '../services/model/group.model';
 import { DocInfoModel } from '../services/model/doc-info.model';
+import {MsgboxComponent} from '../msgbox/msgbox.component';
 
 
 @Component({
@@ -19,6 +20,8 @@ export class HomeComponent implements OnInit {
   @Output() rerenderEvent = new EventEmitter<any>();
   @Output() exportEvent = new EventEmitter<any>();
   @Output() importEvent = new EventEmitter<any>();
+
+  // @ViewChild(MsgboxComponent) child_msgbox: MsgboxComponent;
 
   doc_groups = [];
   cache_docs = {};
@@ -273,6 +276,12 @@ export class HomeComponent implements OnInit {
     ipc.send('show-recycle-doc-context-menu');
   }
 
+  emptyRecycleBin(): void {
+    // this.child_msgbox.show(0, 'Eztrans', 'Are you sure ...');
+    const mb = new MsgboxComponent(0, 'Eztrans', 'Are you sure ...');
+    mb.show();
+  }
+
   loadDocGroups(docGroups: any): void {
     if (docGroups && docGroups.length) {
       this.doc_groups = docGroups;
@@ -416,7 +425,7 @@ export class HomeComponent implements OnInit {
     });
 
     ipc.on('empty-recycle-bin', (event) => {
-      console.log('empty-recycle-bin');
+      this.emptyRecycleBin();
     });
 
     ipc.on('doc-restore', (event) => {
