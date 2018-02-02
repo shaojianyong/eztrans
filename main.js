@@ -525,7 +525,7 @@ function saveDocument(event, params) {
 
 function docDeleteRequest(event, doc_id) {
   const options = {
-    type: 'warning',
+    type: 'question',
     title: 'EZtrans',
     message: "Are you sure you want to delete this document?",
     buttons: ['Yes', 'No']
