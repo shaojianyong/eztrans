@@ -211,13 +211,23 @@ export class HomeComponent implements OnInit {
   }
 
   deleteDocRequest(): void {
-    ipc.send('doc-delete-request');
+    ipc.send('doc-delete-request', this.sel_doc.id);
   }
 
-  deleteDoc(): void {
-    this.sel_doc.x_state = 2;  // 彻底删除前
-    this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
-    this.modified_flag = true;
+  deleteDoc(doc_id: string): void {
+    let xdoc = null;
+    for (const doc of this.getRemovedDocs()) {
+      if (doc.id === doc_id) {
+        xdoc = doc;
+        break;
+      }
+    }
+
+    if (xdoc) {
+      xdoc.x_state = 2;  // 彻底删除前
+      this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+      this.modified_flag = true;
+    }
   }
 
   getNormalDocs(group: GroupModel): Array<DocInfoModel> {
@@ -413,9 +423,9 @@ export class HomeComponent implements OnInit {
       this.deleteDocRequest();
     });
 
-    ipc.on('doc-delete-confirm', (event, index) => {
+    ipc.on('doc-delete-confirm', (event, index, doc_id) => {
       if (index === 0) {  // yes
-        this.deleteDoc();
+        this.deleteDoc(doc_id);
       }
     });
 

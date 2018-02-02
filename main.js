@@ -452,7 +452,7 @@ function saveDocGroups(event, params) {
 
 function docRepeatInquiry(event, doc) {
   const options = {
-    type: 'info',
+    type: 'question',
     title: 'EZtrans',
     message: "The file already imported. Open it now?",
     buttons: ['Yes', 'No']
@@ -523,16 +523,16 @@ function saveDocument(event, params) {
   });
 }
 
-function docDeleteRequest(event) {
+function docDeleteRequest(event, doc_id) {
   const options = {
-    type: 'info',
+    type: 'warning',
     title: 'EZtrans',
     message: "Are you sure you want to delete this document?",
     buttons: ['Yes', 'No']
   };
 
   dialog.showMessageBox(options, function(index) {
-    event.sender.send('doc-delete-confirm', index)
+    event.sender.send('doc-delete-confirm', index, doc_id)
   });
 }
 
