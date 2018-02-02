@@ -276,15 +276,13 @@ export class HomeComponent implements OnInit {
     this.sel_doc = new DocInfoModel({
       id: docId,
       name: FunctionUtils.getFileName(filePath),
-      group_id: this.doc_groups[0].id,
+      group_id: group_id,
       orig_file: filePath
     });
     this.getGroup(group_id).documents.push(this.sel_doc);
+    this.cache_docs[docId] = new DocumentModel({id: docId});
 
-    this.cur_doc = new DocumentModel({id: docId});
-    this.cache_docs[docId] = this.cur_doc;
-    this.title.setTitle(`Eztrans - ${filePath}`);
-    this.modified_flag = true;
+    this.openDoc();
     return true;
   }
 
@@ -439,13 +437,14 @@ export class HomeComponent implements OnInit {
     });
 
     // auto save all user data
-    setInterval(() => {
+    const autoSave = setInterval(() => {
       this.saveCurDocument(false);
       this.saveDocGroups(false);
     }, 1000 * 5);
 
 
     window.onbeforeunload = () => {
+      clearInterval(autoSave);
       this.saveCurDocument(true);
       this.saveDocGroups(true);
     };
