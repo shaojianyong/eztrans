@@ -304,8 +304,9 @@ export class HomeComponent implements OnInit {
     let res = null;
     for (const group of this.doc_groups) {
       for (const doc of group.documents) {
-        if (doc.orig_file.toLowerCase() === filePath.toLowerCase()) {
+        if (doc.orig_file.toLowerCase() === filePath.toLowerCase() && doc.x_state === 0) {
           res = doc;
+          break;
         }
       }
     }
