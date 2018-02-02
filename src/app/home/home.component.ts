@@ -210,6 +210,10 @@ export class HomeComponent implements OnInit {
     this.modified_flag = true;
   }
 
+  deleteDocRequest(): void {
+    ipc.send('doc-delete-request');
+  }
+
   deleteDoc(): void {
     this.sel_doc.x_state = 2;  // 彻底删除前
     this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
@@ -406,7 +410,13 @@ export class HomeComponent implements OnInit {
     });
 
     ipc.on('doc-delete', (event) => {
-      this.deleteDoc();
+      this.deleteDocRequest();
+    });
+
+    ipc.on('doc-delete-confirm', (event, index) => {
+      if (index === 0) {  // yes
+        this.deleteDoc();
+      }
     });
 
     ipc.on('doc-repeat-reply', (event, index, doc) => {
