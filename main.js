@@ -536,6 +536,19 @@ function docDeleteRequest(event, doc_id) {
   });
 }
 
+function deleteDocFile(event, doc_id) {
+  // close database
+  const docDb = openedDocs[doc_id];
+  if (docDb) {
+    docDb.close();
+  }
+
+  // delete db-file
+  const filePath = path.join(__dirname, 'database', doc_id + '.db');
+  if (fs.existsSync(filePath)) {
+    fs.unlink(filePath);
+  }
+}
 
 // Handles reading the contents of a file
 ipc.on('read-file', readFile);
@@ -552,3 +565,4 @@ ipc.on('doc-repeat-inquiry', docRepeatInquiry);
 ipc.on('req-document', reqDocument);
 ipc.on('save-document', saveDocument);
 ipc.on('doc-delete-request', docDeleteRequest);
+ipc.on('delete-document-file', deleteDocFile);

@@ -227,6 +227,8 @@ export class HomeComponent implements OnInit {
       xdoc.x_state = 2;  // 彻底删除前
       this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
       this.modified_flag = true;
+
+      ipc.send('delete-document-file', xdoc.id);
     }
   }
 
@@ -297,6 +299,7 @@ export class HomeComponent implements OnInit {
     this.cache_docs[docId] = new DocumentModel({id: docId});
 
     this.openDoc();
+    this.modified_flag = true;
     return true;
   }
 
