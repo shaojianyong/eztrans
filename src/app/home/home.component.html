@@ -17,14 +17,14 @@
     <div id="left-side-list" class="ui item">
       <div class="ui inverted fluid vertical accordion">
         <div *ngFor="let group of doc_groups" class="item">
-          <div class="title" (contextmenu)="onGroupContextMenu(group)" id="group-{{group.id}}">  <!--active-->
+          <div class="ui title" (contextmenu)="onGroupContextMenu(group)" id="group-{{group.id}}">  <!--active-->
             <i class="dropdown icon"></i>
             <span class="group-name" contenteditable="false" [textContent]="group.name"
                   (blur)="endGroupRename($event, group.id)"
                   (keydown.enter)="endGroupRename($event, group.id)">{{group.name}}</span>
             <span>({{getNormalDocs(group).length}})</span>
           </div>
-          <div class="content">  <!--active content-->
+          <div class="ui content">  <!--active content-->
             <table class="ui inverted small very basic table">  <!--selectable-->
               <tbody>
               <tr *ngFor="let doc of getNormalDocs(group)"
@@ -54,11 +54,11 @@
         </div>
 
         <div class="item">
-          <div class="title" (contextmenu)="onRecycleBinContextMenu()" id="group-recycle">
+          <div class="ui title" (contextmenu)="onRecycleBinContextMenu()" id="group-recycle">
             <i class="dropdown icon"></i>
             Recycle Bin ({{getRemovedDocs().length}})
           </div>
-          <div class="content">
+          <div class="ui content">
             <table class="ui inverted small very basic table">
               <tbody>
               <tr *ngFor="let doc of getRemovedDocs()"
