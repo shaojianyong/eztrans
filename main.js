@@ -450,19 +450,6 @@ function saveDocGroups(event, params) {
   */
 }
 
-function docRepeatInquiry(event, doc) {
-  const options = {
-    type: 'question',
-    title: 'EZtrans',
-    message: "The file already imported. Open it now?",
-    buttons: ['Yes', 'No']
-  };
-
-  dialog.showMessageBox(options, function(index) {
-    event.sender.send('doc-repeat-reply', index, doc)
-  });
-}
-
 // 文档作为单个元素保存，Collection中只有一个元素
 function reqDocument(event, docId) {
   let docDb = null;
@@ -548,7 +535,6 @@ ipc.on('show-recycle-bin-context-menu', showRecycleBinContextMenu);
 ipc.on('show-recycle-doc-context-menu', showRecycleDocContextMenu);
 ipc.on('req-doc-groups', reqDocGroups);
 ipc.on('save-doc-groups', saveDocGroups);
-ipc.on('doc-repeat-inquiry', docRepeatInquiry);
 ipc.on('req-document', reqDocument);
 ipc.on('save-document', saveDocument);
 ipc.on('delete-document-file', deleteDocFile);

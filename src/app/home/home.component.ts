@@ -214,6 +214,7 @@ export class HomeComponent implements OnInit {
   }
 
   deleteDoc(): void {
+    this.child_msgbox.setType(0);
     this.child_msgbox.setHead('Delete Document');
     this.child_msgbox.setBody('Are you sure you want to delete the document permanently?');
     this.child_msgbox.setButtonStyle('approve', 'Delete', 'red');
@@ -285,6 +286,7 @@ export class HomeComponent implements OnInit {
   }
 
   emptyRecycleBin(): void {
+    this.child_msgbox.setType(0);
     this.child_msgbox.setHead('Empty Recycle Bin');
     this.child_msgbox.setBody('Are you sure you want to empty the recycle bin?');
     this.child_msgbox.setButtonStyle('approve', 'Empty Recycle Bin', 'red');
@@ -311,8 +313,27 @@ export class HomeComponent implements OnInit {
 
   addDocument(filePath: string, group_id: string): boolean {
     const doc = this.findDocInfo(filePath);
-    if (doc) {
-      ipc.send('doc-repeat-inquiry', doc);
+    const fileName = FunctionUtils.getFileName(filePath);
+    if (doc && doc.name.toLowerCase() === fileName.toLowerCase()) {  // 已导入，并且没有重命名
+      if (doc.id === this.cur_doc.id) {
+        this.child_msgbox.setType(1);  // info
+        this.child_msgbox.setHead('Duplicate Documents');
+        this.child_msgbox.setBody(`The file ${fileName} has been imported. It's the current document.`);
+        this.child_msgbox.setButtonStyle('close', 'Close', 'violet');
+        this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+        this.child_msgbox.show();
+      } else {
+        this.child_msgbox.setType(0);
+        this.child_msgbox.setHead('Duplicate Documents');
+        this.child_msgbox.setBody(`The file ${fileName} has been imported. Open it now?`);
+        this.child_msgbox.setButtonStyle('approve', 'Yes', 'violet');
+        this.child_msgbox.setButtonStyle('deny', 'No', 'green');
+        this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+        this.child_msgbox.show(() => {
+          this.select(doc);
+          this.openDoc();
+        });
+      }
       return false;
     }
 
@@ -453,13 +474,6 @@ export class HomeComponent implements OnInit {
 
     ipc.on('doc-delete', (event) => {
       this.deleteDoc();
-    });
-
-    ipc.on('doc-repeat-reply', (event, index, doc) => {
-      if (index === 0) {  // yes
-        this.select(doc);
-        this.openDoc();
-      }
     });
 
     ipc.on('import-doc', (event, group_id) => {
