@@ -22,7 +22,7 @@
             <span class="group-name" contenteditable="false" [textContent]="group.name"
                   (blur)="endGroupRename($event, group.id)"
                   (keydown.enter)="endGroupRename($event, group.id)">{{group.name}}</span>
-            <span>({{getNormalDocs(group).length}})</span>
+            <span class="doc-count">({{getNormalDocs(group).length}})</span>
           </div>
           <div class="ui content">  <!--active content-->
             <table class="ui inverted fluid small very basic table">  <!--selectable-->
@@ -56,7 +56,7 @@
         <div class="item">
           <div class="ui title" (contextmenu)="onRecycleBinContextMenu()" id="group-recycle">
             <i class="dropdown icon"></i>
-            Recycle Bin ({{getRemovedDocs().length}})
+            Recycle Bin <span class="doc-count">({{getRemovedDocs().length}})</span>
           </div>
           <div class="ui content">
             <table class="ui inverted small very basic table">

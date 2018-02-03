@@ -15,34 +15,52 @@
 
     .ui.accordion {
       .title {
-        padding: 6px;
+        padding-top: 6px;
+        padding-bottom: 6px;
+        padding-left: 8px;
+        padding-right: 8px;
         color: lightgray;
       }
 
       .active.title {
-        padding: 6px;
+        padding-top: 6px;
+        padding-bottom: 6px;
+        padding-left: 8px;
+        padding-right: 8px;
         color: white;
       }
 
       td.collapsing.left-mark {
         margin-left: 2px;
         margin-right: 2px;
-        padding-left: 18px;
+        margin-top: 4px;
+        margin-bottom: 4px;
+        padding-left: 22px;
         padding-right: 2px;
-      }
-
-      td.collapsing.right-mark {
-        margin-left: 2px;
-        margin-right: 2px;
-        padding-left: 2px;
-        padding-right: 6px;
+        padding-top: 4px;
+        padding-bottom: 4px;
       }
 
       td.doc-name {
         margin-left: 2px;
         margin-right: 2px;
+        margin-top: 4px;
+        margin-bottom: 4px;
         padding-left: 2px;
         padding-right: 2px;
+        padding-top: 4px;
+        padding-bottom: 4px;
+      }
+
+      td.collapsing.right-mark {
+        margin-left: 2px;
+        margin-right: 2px;
+        margin-top: 4px;
+        margin-bottom: 4px;
+        padding-left: 2px;
+        padding-right: 6px;
+        padding-top: 4px;
+        padding-bottom: 4px;
       }
     }
   }
@@ -50,4 +68,8 @@
 
 .selected_document {
   background-color: gray;
+}
+
+.doc-count {
+  float: right;
 }
