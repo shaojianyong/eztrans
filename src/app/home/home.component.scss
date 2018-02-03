@@ -17,17 +17,11 @@
       .title {
         padding: 6px;
         color: lightgray;
-        border-bottom: 1px solid #b2b2b2;
       }
 
       .active.title {
         padding: 6px;
         color: white;
-        border-bottom: 1px solid #545454;
-      }
-
-      .content>table {
-        border-bottom: 1px solid #b2b2b2;
       }
 
       td.collapsing.left-mark {
