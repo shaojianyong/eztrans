@@ -428,7 +428,9 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     $('.ui.accordion')
-      .accordion();
+      .accordion({
+        exclusive: false
+      });
 
     ipc.send('req-doc-groups');
 
