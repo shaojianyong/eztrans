@@ -1,32 +1,35 @@
-<div id="message-box" class="ui small modal">
-  <!--div class="ui header">
-    {{msg_head}}
-  </div-->
+<div id="message-box" class="ui tiny modal">
+  <div class="ui header">
+    {{head}}
+  </div>
   <div class="content">
     <table class="ui very basic table">
       <tbody>
       <tr>
-        <td class="collapsing" [ngSwitch]="msg_type">
-          <i *ngSwitchCase="0" class="ui blue huge help circle icon"></i>
+        <td class="collapsing" [ngSwitch]="type">
+          <i *ngSwitchCase="0" class="ui violet huge help circle icon"></i>
           <i *ngSwitchCase="1" class="ui green huge info circle icon"></i>
           <i *ngSwitchCase="2" class="ui orange huge warning circle icon"></i>
-          <i *ngSwitchCase="3" class="ui red huge remove circle icon"></i>
+          <i *ngSwitchCase="3" clbass="ui red huge remove circle icon"></i>
         </td>
         <td>
-          {{msg_body}}
+          {{body}}
         </td>
       </tr>
       </tbody>
     </table>
   </div>
-  <div class="actions">
-    <div class="ui cancel button">
-      <i class="remove icon"></i>
-      No
+  <div *ngIf="type === 0" class="actions">
+    <div class="ui {{style.approve.color}} ok button">
+      {{style.approve.text}}
     </div>
-    <div class="ui ok button">
-      <i class="checkmark icon"></i>
-      Yes
+    <div class="ui {{style.deny.color}} cancel button">
+      {{style.deny.text}}
+    </div>
+  </div>
+  <div *ngIf="type !== 0" class="actions">
+    <div class="ui {{style.close.color}} ok button">
+      {{style.close.text}}
     </div>
   </div>
 </div>

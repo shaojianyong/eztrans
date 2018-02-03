@@ -523,19 +523,6 @@ function saveDocument(event, params) {
   });
 }
 
-function docDeleteRequest(event, doc_id) {
-  const options = {
-    type: 'question',
-    title: 'EZtrans',
-    message: "Are you sure you want to delete this document?",
-    buttons: ['Yes', 'No']
-  };
-
-  dialog.showMessageBox(options, function(index) {
-    event.sender.send('doc-delete-confirm', index, doc_id)
-  });
-}
-
 function deleteDocFile(event, doc_id) {
   // close database
   const docDb = openedDocs[doc_id];
@@ -564,5 +551,4 @@ ipc.on('save-doc-groups', saveDocGroups);
 ipc.on('doc-repeat-inquiry', docRepeatInquiry);
 ipc.on('req-document', reqDocument);
 ipc.on('save-document', saveDocument);
-ipc.on('doc-delete-request', docDeleteRequest);
 ipc.on('delete-document-file', deleteDocFile);

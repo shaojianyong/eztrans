@@ -21,7 +21,7 @@ export class HomeComponent implements OnInit {
   @Output() exportEvent = new EventEmitter<any>();
   @Output() importEvent = new EventEmitter<any>();
 
-  // @ViewChild(MsgboxComponent) child_msgbox: MsgboxComponent;
+  @ViewChild(MsgboxComponent) child_msgbox: MsgboxComponent;
 
   doc_groups = [];
   cache_docs = {};
@@ -213,26 +213,19 @@ export class HomeComponent implements OnInit {
     this.modified_flag = true;
   }
 
-  deleteDocRequest(): void {
-    ipc.send('doc-delete-request', this.sel_doc.id);
-  }
+  deleteDoc(): void {
+    this.child_msgbox.setHead('Delete Document');
+    this.child_msgbox.setBody('Are you sure you want to delete the document permanently?');
+    this.child_msgbox.setButtonStyle('approve', 'Delete', 'red');
+    this.child_msgbox.setButtonStyle('deny', 'Cancel', 'green');
+    this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
 
-  deleteDoc(doc_id: string): void {
-    let xdoc = null;
-    for (const doc of this.getRemovedDocs()) {
-      if (doc.id === doc_id) {
-        xdoc = doc;
-        break;
-      }
-    }
-
-    if (xdoc) {
-      xdoc.x_state = 2;  // 彻底删除前
+    this.child_msgbox.show(() => {
+      this.sel_doc.x_state = 2;  // 彻底删除
+      ipc.send('delete-document-file', this.sel_doc.id);
       this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
       this.modified_flag = true;
-
-      ipc.send('delete-document-file', xdoc.id);
-    }
+    });
   }
 
   getNormalDocs(group: GroupModel): Array<DocInfoModel> {
@@ -257,6 +250,19 @@ export class HomeComponent implements OnInit {
     return res;
   }
 
+  hasRemovedDocs(): boolean {
+    let res = false;
+    for (const group of this.doc_groups) {
+      for (const doc of group.documents) {
+        if (doc.x_state === 1) {
+          res = true;
+          break;
+        }
+      }
+    }
+    return res;
+  }
+
   onDocContextMenu(doc: DocInfoModel, group: GroupModel): void {
     this.select(doc);
     const opened = (doc.id === this.cur_doc.id);
@@ -268,7 +274,9 @@ export class HomeComponent implements OnInit {
   }
 
   onRecycleBinContextMenu(): void {
-    ipc.send('show-recycle-bin-context-menu');
+    if (this.hasRemovedDocs()) {
+      ipc.send('show-recycle-bin-context-menu');
+    }
   }
 
   onRecycleDocContextMenu(doc: DocInfoModel): void {
@@ -277,9 +285,20 @@ export class HomeComponent implements OnInit {
   }
 
   emptyRecycleBin(): void {
-    // this.child_msgbox.show(0, 'Eztrans', 'Are you sure ...');
-    const mb = new MsgboxComponent(0, 'Eztrans', 'Are you sure ...');
-    mb.show();
+    this.child_msgbox.setHead('Empty Recycle Bin');
+    this.child_msgbox.setBody('Are you sure you want to empty the recycle bin?');
+    this.child_msgbox.setButtonStyle('approve', 'Empty Recycle Bin', 'red');
+    this.child_msgbox.setButtonStyle('deny', 'Cancel', 'green');
+    this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+
+    this.child_msgbox.show(() => {
+      for (const doc of this.getRemovedDocs()) {
+        doc.x_state = 2;  // 彻底删除
+        ipc.send('delete-document-file', doc.id);
+      }
+      this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+      this.modified_flag = true;
+    });
   }
 
   loadDocGroups(docGroups: any): void {
@@ -433,13 +452,7 @@ export class HomeComponent implements OnInit {
     });
 
     ipc.on('doc-delete', (event) => {
-      this.deleteDocRequest();
-    });
-
-    ipc.on('doc-delete-confirm', (event, index, doc_id) => {
-      if (index === 0) {  // yes
-        this.deleteDoc(doc_id);
-      }
+      this.deleteDoc();
     });
 
     ipc.on('doc-repeat-reply', (event, index, doc) => {
