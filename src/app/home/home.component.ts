@@ -180,16 +180,26 @@ export class HomeComponent implements OnInit {
         break;
       }
     }
-
-    const toGroup = this.getGroup('my-translations');
-    for (const doc of this.doc_groups[frIndex].documents) {
-      doc.group_id = toGroup.id;
-      toGroup.documents.push(doc);
-    }
-
-    this.doc_groups.splice(frIndex, 1);
+    
+    this.child_msgbox.setType(0);
+    this.child_msgbox.setHead('Delete Group');
+    this.child_msgbox.setBody('Are you sure you want to delete the group permanently?');
+    this.child_msgbox.setButtonStyle('approve', 'Delete', 'red');
+    this.child_msgbox.setButtonStyle('deny', 'Cancel', 'green');
     this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
-    this.modified_flag = true;
+
+    this.child_msgbox.show(() => {
+      // 文档的组织关系挂到默认分组中，同时把文档放入回收站(从回收站撤回时，返回到默认分组中)
+      const toGroup = this.getGroup('my-translations');
+      for (const doc of this.doc_groups[frIndex].documents) {
+        doc.x_state = 1;  // 小组中的文档放入回收站，对于已放入回收站的文档没有影响
+        doc.group_id = toGroup.id;
+        toGroup.documents.push(doc);
+      }
+      this.doc_groups.splice(frIndex, 1);
+      this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+      this.modified_flag = true;
+    });
   }
 
   moveUpGroup(group_id: string): void {
