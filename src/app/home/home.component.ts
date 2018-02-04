@@ -290,10 +290,12 @@ export class HomeComponent implements OnInit {
   }
 
   onGroupContextMenu(group: GroupModel): void {
+    this.onClickGroup(group.id);
     ipc.send('show-group-context-menu', group.id);
   }
 
   onRecycleBinContextMenu(): void {
+    this.onClickGroup('recycle');
     if (this.hasRemovedDocs()) {
       ipc.send('show-recycle-bin-context-menu');
     }
