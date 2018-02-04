@@ -28,20 +28,39 @@ export class HomeComponent implements OnInit {
   sel_doc: DocInfoModel = null;
   cur_doc = new DocumentModel();  // 指向一个空文档
   modified_flag = false;
+  sel_eid = '';  // 当前选中html元素的id
 
   constructor(private title: Title) { }
 
 
   select(doc: DocInfoModel): void {
-    if (this.sel_doc && this.sel_doc.id === doc.id) {
+    const new_sel = `#doc-${doc.id}`;
+    if (new_sel === this.sel_eid) {
       return;
     }
 
-    if (this.sel_doc) {
-      $(`#doc-${this.sel_doc.id}`).toggleClass('selected_document');
+    if (this.sel_eid) {
+      $(this.sel_eid).toggleClass('selected_document');
     }
-    $(`#doc-${doc.id}`).toggleClass('selected_document');
-    this.sel_doc = doc;
+    this.sel_eid = new_sel;
+    $(this.sel_eid).toggleClass('selected_document');
+
+    if (!this.sel_doc || this.sel_doc.id !== doc.id) {
+      this.sel_doc = doc;
+    }
+  }
+
+  onClickGroup(group_id: string) {
+    const new_sel = `#group-${group_id}`;
+    if (new_sel === this.sel_eid) {
+      return;
+    }
+
+    if (this.sel_eid) {
+      $(this.sel_eid).toggleClass('selected_document');
+    }
+    this.sel_eid = new_sel;
+    $(this.sel_eid).toggleClass('selected_document');
   }
 
   // 切换当前打开文档前，要先保存

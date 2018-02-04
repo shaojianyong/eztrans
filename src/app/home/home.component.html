@@ -17,7 +17,10 @@
     <div id="left-side-list" class="ui item">
       <div class="ui inverted fluid vertical accordion">
         <div *ngFor="let group of doc_groups" class="item">
-          <div class="ui title" (contextmenu)="onGroupContextMenu(group)" id="group-{{group.id}}">  <!--active-->
+          <div class="ui title"
+               (click)="onClickGroup(group.id)"
+               (contextmenu)="onGroupContextMenu(group)"
+               id="group-{{group.id}}">  <!--active-->
             <i class="dropdown icon"></i>
             <span class="group-name" contenteditable="false" [textContent]="group.name"
                   (blur)="endGroupRename($event, group.id)"
@@ -54,7 +57,10 @@
         </div>
 
         <div class="item">
-          <div class="ui title" (contextmenu)="onRecycleBinContextMenu()" id="group-recycle">
+          <div class="ui title"
+               (click)="onClickGroup('recycle')"
+               (contextmenu)="onRecycleBinContextMenu()"
+               id="group-recycle">
             <i class="dropdown icon"></i>
             Recycle Bin <span class="doc-count">({{getRemovedDocs().length}})</span>
           </div>
