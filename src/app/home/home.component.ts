@@ -372,16 +372,17 @@ export class HomeComponent implements OnInit {
     }
 
     const docId = 'd' + moment().format('YYYYMMDDHHmmssSSS');
-    this.sel_doc = new DocInfoModel({
+    const diNew = new DocInfoModel({
       id: docId,
       name: FunctionUtils.getFileName(filePath),
       group_id: group_id,
       file_path: filePath
     });
-    this.getGroup(group_id).documents.push(this.sel_doc);
+    this.getGroup(group_id).documents.push(diNew);
     const dataType = FunctionUtils.getExtName(fileName).toLowerCase();
     this.cache_docs[docId] = new DocumentModel({id: docId, file_data: fileData, data_type: dataType});
 
+    this.select(diNew);
     this.openDoc();
     this.modified_flag = true;
     return true;
