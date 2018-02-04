@@ -52,7 +52,8 @@ export class MainComponent implements OnInit {
     }
     this.cur_index = -1;
     this.search_text = '';
-    $('input').val('');
+    $('#main-search').val('');
+    $('#trans-list').unhighlight();
     this.search_result = [];
   }
 

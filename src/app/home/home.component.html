@@ -10,9 +10,9 @@
         <div class="right menu">
           <div class="ui borderless item">
             <div class="ui inverted transparent icon input">
-              <input #searchtext type="text" placeholder="Search..." (input)="onSearchInput(searchtext)">
-              <i *ngIf="!searchtext.value" class="search link icon" (click)="showSearchOptions()"></i>
-              <i *ngIf="searchtext.value" class="remove link icon" (click)="onCloseSearch(searchtext)"></i>
+              <input #searchInput type="text" placeholder="Search..." (input)="onSearchInput(searchInput)">
+              <i *ngIf="!searchInput.value" class="search icon"></i>
+              <i *ngIf="searchInput.value" class="remove link icon" (click)="onCloseSearch(searchInput)"></i>
             </div>
           </div>
         </div>

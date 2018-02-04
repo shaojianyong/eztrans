@@ -29,6 +29,7 @@ export class HomeComponent implements OnInit {
   cur_doc = new DocumentModel();  // 指向一个空文档
   modified_flag = false;
   sel_eid = '';  // 当前选中html元素的id
+  search_text = '';
 
   constructor(private title: Title) { }
 
@@ -180,7 +181,7 @@ export class HomeComponent implements OnInit {
         break;
       }
     }
-    
+
     this.child_msgbox.setType(0);
     this.child_msgbox.setHead('Delete Group');
     this.child_msgbox.setBody('Are you sure you want to delete the group permanently?');
@@ -261,7 +262,8 @@ export class HomeComponent implements OnInit {
   getNormalDocs(group: GroupModel): Array<DocInfoModel> {
     const res = [];
     for (const doc of group.documents) {
-      if (doc.x_state === 0) {
+      if (doc.x_state === 0
+        && (!this.search_text || doc.name.toLowerCase().indexOf(this.search_text.toLowerCase()) !== -1)) {
         res.push(doc);
       }
     }
@@ -272,7 +274,8 @@ export class HomeComponent implements OnInit {
     const res = [];
     for (const group of this.doc_groups) {
       for (const doc of group.documents) {
-        if (doc.x_state === 1) {
+        if (doc.x_state === 1
+          && (!this.search_text || doc.name.toLowerCase().indexOf(this.search_text.toLowerCase()) !== -1)) {
           res.push(doc);
         }
       }
@@ -456,6 +459,30 @@ export class HomeComponent implements OnInit {
     return res;
   }
 
+  onSearchInput(inputBox: HTMLInputElement): void {
+    const text = inputBox.value.trim();
+    if (text) {
+      if (text === this.search_text) {
+        return;
+      }
+
+      this.search_text = text;
+      this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+      const tables = $('#left-side-list').find('table');
+      tables.unhighlight();
+      tables.highlight(this.search_text);
+    } else {
+      this.onCloseSearch(inputBox);
+    }
+  }
+
+  onCloseSearch(inputBox: HTMLInputElement): void {
+    inputBox.value = '';
+    this.search_text = '';
+    this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+    const tables = $('#left-side-list').find('table');
+    tables.unhighlight();
+  }
 
   ngOnInit() {
     $('.ui.accordion')
