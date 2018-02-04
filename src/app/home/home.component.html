@@ -2,14 +2,19 @@
 
   <div class="ui items">
     <div id="left-side-menu" class="ui item">
-      <div class="ui top attached inverted secondary icon menu">
-        <a class="item" (click)="addGroup()">
-          <i class="plus icon"></i>
+      <div class="ui inverted fluid attached secondary menu">
+        <a class="ui icon item" (click)="addGroup()">
+          <i class="ui plus icon"></i>
         </a>
+
         <div class="right menu">
-          <a class="ui item">
-            <i class="trash icon"></i>
-          </a>
+          <div class="ui borderless item">
+            <div class="ui inverted transparent icon input">
+              <input #searchtext type="text" placeholder="Search..." (input)="onSearchInput(searchtext)">
+              <i *ngIf="!searchtext.value" class="search link icon" (click)="showSearchOptions()"></i>
+              <i *ngIf="searchtext.value" class="remove link icon" (click)="onCloseSearch(searchtext)"></i>
+            </div>
+          </div>
         </div>
       </div>
     </div>
