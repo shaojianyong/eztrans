@@ -11,10 +11,13 @@ const SKIP_ELEMENTS = ['script', 'pre', 'code'];
 export class HtmlParserService extends ParserService {
   dom: any;
 
-  parse(data: string): Observable<any> {
+  load(data: string): void {
+    this.dom = new JSDOM(data);
+  }
+
+  parse(): Observable<any> {
     return Observable.create(observer => {
       try {
-        this.dom = new JSDOM(data);
         this.traverseR(this.dom.window.document.body, observer);
         observer.complete();
       } catch (e) {

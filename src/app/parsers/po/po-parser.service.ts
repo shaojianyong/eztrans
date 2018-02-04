@@ -10,10 +10,13 @@ import {ParserService} from '../base/parser.service';
 export class PoParserService extends ParserService {
   po: any;
 
-  parse(data: string): Observable<any> {
+  load(data: string): void {
+    this.po = gettextParser.po.parse(data);  // defaultCharset
+  }
+
+  parse(): Observable<any> {
     return Observable.create(observer => {
       try {
-        this.po = gettextParser.po.parse(data);  // defaultCharset
         for (const group in this.po.translations) {
           if (this.po.translations.hasOwnProperty(group)) {
             for (const msgKey in this.po.translations[group]) {

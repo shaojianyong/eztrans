@@ -80,7 +80,7 @@ export class HomeComponent implements OnInit {
     }
 
     this.cur_doc = this.cache_docs[this.sel_doc.id];
-    this.title.setTitle(`Eztrans - ${this.sel_doc.orig_file}`);  // TODO: 展示分组和文件名
+    this.title.setTitle(`Eztrans - ${this.sel_doc.file_path}`);  // TODO: 展示分组和文件名
     this.rerenderEvent.emit({forceShowSelected: false, resetDocument: true});
   }
 
@@ -345,7 +345,7 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  addDocument(filePath: string, group_id: string): boolean {
+  addDocument(filePath: string, fileData, group_id: string): boolean {
     const doc = this.findDocInfo(filePath);
     const fileName = FunctionUtils.getFileName(filePath);
     if (doc && doc.name.toLowerCase() === fileName.toLowerCase()) {  // 已导入，并且没有重命名
@@ -376,10 +376,11 @@ export class HomeComponent implements OnInit {
       id: docId,
       name: FunctionUtils.getFileName(filePath),
       group_id: group_id,
-      orig_file: filePath
+      file_path: filePath
     });
     this.getGroup(group_id).documents.push(this.sel_doc);
-    this.cache_docs[docId] = new DocumentModel({id: docId});
+    const dataType = FunctionUtils.getExtName(fileName).toLowerCase();
+    this.cache_docs[docId] = new DocumentModel({id: docId, file_data: fileData, data_type: dataType});
 
     this.openDoc();
     this.modified_flag = true;
@@ -390,7 +391,7 @@ export class HomeComponent implements OnInit {
     let res = null;
     for (const group of this.doc_groups) {
       for (const doc of group.documents) {
-        if (doc.orig_file.toLowerCase() === filePath.toLowerCase() && doc.x_state === 0) {
+        if (doc.file_path.toLowerCase() === filePath.toLowerCase() && doc.x_state === 0) {
           res = doc;
           break;
         }

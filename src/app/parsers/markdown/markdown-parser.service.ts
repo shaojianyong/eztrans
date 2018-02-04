@@ -9,13 +9,9 @@ import { HtmlParserService } from '../html/html-parser.service';
 @Injectable()
 export class MarkdownParserService extends HtmlParserService {
 
-  parse(data: string): Observable<any> {
+  load(data: string): void {
     const htmlText = (new Converter()).makeHtml(data);
-    return super.parse(htmlText);
-  }
-
-  update(segments: Array<string>): void {
-    super.update(segments);
+    super.load(htmlText);
   }
 
   getLastData(dataType: string): string {

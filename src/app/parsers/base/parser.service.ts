@@ -2,7 +2,9 @@ import {Observable} from 'rxjs/Observable';
 
 export abstract class ParserService {
 
-  abstract parse(data: string): Observable<any>;
+  abstract load(data: string): void;
+
+  abstract parse(): Observable<any>;
 
   abstract update(segments: Array<string>): void;
 

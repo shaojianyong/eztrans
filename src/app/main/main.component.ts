@@ -31,7 +31,6 @@ export class MainComponent implements OnInit {
   cur_page = 0;
   search_text = '';
   search_result = [];
-  parser: ParserService;
 
   @ViewChild(HomeComponent) child_home: HomeComponent;
   @ViewChild(SettingsComponent) child_settings: SettingsComponent;
@@ -86,36 +85,39 @@ export class MainComponent implements OnInit {
   }
 
   exportFile(): void {
-    if (this.parser) {
-      const segments = [];
-      for (let index = 0; index < this.child_home.cur_doc.sentences.length; ++index) {
-        let target_text = '';
-        const current = this.child_home.cur_doc.sentences[index];
-        if (!current.ignore) {
-          if (current.target === -1) {
-            target_text = current.custom.target_text;
-          } else if (current.target > -1) {
-            target_text = current.refers[current.target].target_text;
-          }
-        }
-        segments[index] = target_text;
-      }
-      this.parser.update(segments);
-
-      const extName = FunctionUtils.getExtName(this.title.getTitle()).toLowerCase();
-      const expInfo = this.pms.getExportInfo(extName);
-      const options = {
-        title: expInfo.title,
-        filters: expInfo.filters
-      };
-
-      dialog.showSaveDialog(options, (filename) => {
-        if (filename) {
-          const fileExt = FunctionUtils.getExtName(filename).toLowerCase();
-          ipc.send('save-file', filename, this.parser.getLastData(fileExt));
-        }
-      });
+    if (!this.child_home.cur_doc) {
+      return;
     }
+
+    const segments = [];
+    const parser = this.pms.getParser(this.child_home.cur_doc.data_type);
+    parser.load(this.child_home.cur_doc.file_data);
+
+    for (let index = 0; index < this.child_home.cur_doc.sentences.length; ++index) {
+      let target_text = '';
+      const current = this.child_home.cur_doc.sentences[index];
+      if (!current.ignore) {
+        if (current.target === -1) {
+          target_text = current.custom.target_text;
+        } else if (current.target > -1) {
+          target_text = current.refers[current.target].target_text;
+        }
+      }
+      segments[index] = target_text;
+    }
+    parser.update(segments);
+
+    const expInfo = this.pms.getExportInfo(this.child_home.cur_doc.data_type);
+    const options = {
+      title: expInfo.title,
+      filters: expInfo.filters
+    };
+    dialog.showSaveDialog(options, (filename) => {
+      if (filename) {
+        const fileExt = FunctionUtils.getExtName(filename).toLowerCase();
+        ipc.send('save-file', filename, parser.getLastData(fileExt));
+      }
+    });
   }
 
   // ipcRenderer与ipcMain同步通信，在JavaScript中，同步代码好丑陋
@@ -614,13 +616,14 @@ export class MainComponent implements OnInit {
     const self = this;
 
     ipc.on('file-read', (event, err, data, filePath, group_id) => {
-      if (!this.child_home.addDocument(filePath, group_id)) {
+      if (!this.child_home.addDocument(filePath, data, group_id)) {
         return;
       }
       self.reset();
       const ext_name = FunctionUtils.getExtName(filePath);
-      self.parser = this.pms.getParser(ext_name);
-      self.parser.parse(data).subscribe(
+      const parser = this.pms.getParser(ext_name);
+      parser.load(data);
+      parser.parse().subscribe(
         res => {
           const sentence = new SentenceModel({source: res.source});
           if (res.target) {

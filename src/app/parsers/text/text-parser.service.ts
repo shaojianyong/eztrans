@@ -7,10 +7,13 @@ import {ParserService} from '../base/parser.service';
 export class TextParserService extends ParserService {
   lines: Array<string>;
 
-  parse(data: string): Observable<any> {
+  load(data: string): void {
+    this.lines = data.split(/\n|\r\n/g);
+  }
+
+  parse(): Observable<any> {
     return Observable.create(observer => {
       try {
-        this.lines = data.split(/\n|\r\n/g);
         for (let line of this.lines) {
           line = line.trim();
           if (line) {
