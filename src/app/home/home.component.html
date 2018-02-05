@@ -33,7 +33,7 @@
             <span class="doc-count">({{getNormalDocs(group).length}})</span>
           </div>
           <div class="ui content">  <!--active content-->
-            <table class="ui inverted fluid very basic table">  <!--selectable-->
+            <table class="ui inverted small very basic table">  <!--selectable-->
               <tbody>
               <tr *ngFor="let doc of getNormalDocs(group)"
                   id="doc-{{doc.id}}"
@@ -70,7 +70,7 @@
             Recycle Bin <span class="doc-count">({{getRemovedDocs().length}})</span>
           </div>
           <div class="ui content">
-            <table class="ui inverted very basic table">
+            <table class="ui inverted small very basic table">
               <tbody>
               <tr *ngFor="let doc of getRemovedDocs()"
                   id="doc-{{doc.id}}"
