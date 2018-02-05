@@ -441,13 +441,15 @@ export class HomeComponent implements OnInit {
 
   addGroup(): void {
     const ts = moment().format('YYYYMMDDHHmmssSSS');
+    const group_id = 'g' + ts;
     this.doc_groups.push(new GroupModel({
-      id: 'g' + ts,
+      id: group_id,
       name: 'Group-' + ts.substr(2)
     }));
 
     this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
     this.modified_flag = true;
+    this.renameGroup(group_id);
   }
 
   getGroup(group_id: string): GroupModel {
