@@ -6,10 +6,10 @@
 #trans-container {
   #trans-list {
     position: absolute;
-    top: 49px;
+    top: 41px;
     left: 0;
     right: auto;
-    bottom: 42px;
+    bottom: 41px;
     width: 62%;
     height: auto;
     margin: 0;
@@ -46,10 +46,10 @@
 
   #trans-side {
     position: absolute;
-    top: 48px;
+    top: 41px;
     left: auto;
     right: 0;
-    bottom: 42px;
+    bottom: 41px;
     width: 38%;
     height: auto;
     margin: 0;
@@ -63,7 +63,6 @@
   top: auto;
   bottom: 0;
   // width: 100%;  不能加这个，否则右边有空隙！！
-  height: 42px;
 }
 
 .ez-hide {
