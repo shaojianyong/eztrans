@@ -1,15 +1,15 @@
 #tool-bar {
   // width: 100%;  不能加这个，否则右边有空隙！！
-  // height: 48px;
+  height: 44px;
 }
 
 #trans-container {
   #trans-list {
     position: absolute;
-    top: 40px;
+    top: 44px;
     left: 0;
     right: auto;
-    bottom: 40px;
+    bottom: 44px;
     width: 62%;
     height: auto;
     margin: 0;
@@ -44,12 +44,12 @@
     }
   }
 
-  #trans-side {
+  #trans-panel {
     position: absolute;
-    top: 40px;
+    top: 44px;
     left: auto;
     right: 0;
-    bottom: 40px;
+    bottom: 44px;
     width: 38%;
     height: auto;
     margin: 0;
@@ -60,6 +60,7 @@
 
 #status-bar {
   position: absolute;
+  height: 44px;
   top: auto;
   bottom: 0;
   // width: 100%;  不能加这个，否则右边有空隙！！

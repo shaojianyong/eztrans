@@ -16,11 +16,7 @@
     <i class="refresh icon"></i>
   </a>
 
-  <!--a class="item" (click)="test()">
-    <i class="umbrella icon"></i> Test
-  </a-->
-
-  <div class="ui simple dropdown item"> More
+  <!--div class="ui simple dropdown item"> More
     <i class="dropdown icon"></i>
     <div class="ui menu">
       <a class="item"><i class="edit icon"></i> 术语库</a>
@@ -29,7 +25,7 @@
       <div class="divider"></div>
       <a class="item"><i class="settings icon"></i> Check for Update</a>
     </div>
-  </div>
+  </div-->
 
   <div class="right menu">
     <div class="item">
@@ -89,12 +85,12 @@
              [sentence]="child_home.cur_doc.sentences[cur_index]"
              (rerenderEvent)="forceRerender($event)"
              (refreshEvent)="forceRefresh($event)"
-             id="trans-side">
+             id="trans-panel">
   </app-panel>
 </div>
 
 <!-- Status Bar -->
-<div id="status-bar" class="ui violet inverted attached menu">
+<div id="status-bar" class="ui attached menu">
 
   <a class="item" data-content="No. / PageSize" data-variation="tiny">
     <i class="caret right icon"></i> {{getPageRange().indexOf(cur_index) + 1}} / {{getPageRange().length}}
