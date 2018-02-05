@@ -80,7 +80,7 @@ export class HomeComponent implements OnInit {
     }
 
     this.cur_doc = this.cache_docs[this.sel_doc.id];
-    this.title.setTitle(`Eztrans - ${this.sel_doc.file_path}`);  // TODO: 展示分组和文件名
+    this.title.setTitle(`Eztrans - [${this.getGroup(this.sel_doc.group_id).name}] ${this.sel_doc.name}`);
     this.rerenderEvent.emit({forceShowSelected: false, resetDocument: true});
   }
 
