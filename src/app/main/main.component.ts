@@ -153,8 +153,7 @@ export class MainComponent implements OnInit {
     for (let index = 0; index < this.child_home.cur_doc.sentences.length; ++index) {
       const sentence = this.child_home.cur_doc.sentences[index];
       if (sentence.status === SentenceStatus.NEEDLESS
-        || sentence.status === SentenceStatus.CHECKED
-        || sentence.refers.length === this.ems.getEnabledEngineCount()) {  // 避免重复发送请求
+        || sentence.status === SentenceStatus.CHECKED) {  // 避免重复发送请求
         continue;
       }
       this.translate(index, sentence);
@@ -180,72 +179,77 @@ export class MainComponent implements OnInit {
   translate(index: number, sentence: SentenceModel): void {
     const state_element = $(`#state-${index}`);
     state_element.parent().removeClass('ez-hide');
-    sentence.status = 1;  // 发起请求
-    state_element.attr('class', 'spinner loading icon');
 
-    this.ems.translate(sentence.source, this.child_home.cur_doc.id).subscribe(
-      res => {
-        const tm = res.trans;
-        if (tm.target_text && tm.target_text.length > 0) {
-          sentence.status = 2;  // 返回响应
-          // state_element.attr('class', 'notched circle loading icon');
-        } else {
-          sentence.status = 4;  // 告警
-          // state_element.attr('class', 'warning circle icon');
-        }
-
-        let exist = false;
-        for (let idx = 0; idx < sentence.refers.length; ++idx) {
-          if (tm.engine_name === sentence.refers[idx].engine_name) {
-            sentence.refers[idx] = tm;  // 覆盖
-            exist = true;
+    // TODO: 创建TranslateModel对象，并将其直接传送给翻译引擎
+    for (const engine of this.ems.engine_list) {
+      this.ems.translate(engine, sentence.source, this.child_home.cur_doc.id).subscribe(
+        res => {
+          const tm = res.trans;
+          if (tm.target_text && tm.target_text.length > 0) {
+            sentence.status = 2;  // 返回响应
+            // state_element.attr('class', 'notched circle loading icon');
+          } else {
+            sentence.status = 4;  // 告警
+            // state_element.attr('class', 'warning circle icon');
           }
-        }
-        if (!exist) {
-          sentence.refers[sentence.refers.length] = tm;
-          if (sentence.target === -2) {
-            sentence.target = 0;
-          } else if (sentence.target >= 0 && sentence.target !== sentence.refers.length - 1) {
-            const cur_state = sentence.refers[sentence.target].trans_state;
-            const new_state = sentence.refers[sentence.refers.length - 1].trans_state;
-            if (cur_state < new_state) {
-              sentence.target = sentence.refers.length - 1;
+
+          let exist = false;
+          for (let idx = 0; idx < sentence.refers.length; ++idx) {
+            if (tm.engine_name === sentence.refers[idx].engine_name) {
+              sentence.refers[idx] = tm;  // 覆盖
+              exist = true;
             }
           }
-        }
+          if (!exist) {
+            sentence.refers[sentence.refers.length] = tm;
+            if (sentence.target === -2) {
+              sentence.target = 0;
+            } else if (sentence.target >= 0 && sentence.target !== sentence.refers.length - 1) {
+              const cur_state = sentence.refers[sentence.target].trans_state;
+              const new_state = sentence.refers[sentence.refers.length - 1].trans_state;
+              if (cur_state < new_state) {
+                sentence.target = sentence.refers.length - 1;
+              }
+            }
+          }
 
-        if (sentence.refers.length === this.ems.getEnabledEngineCount()) {
-          if (sentence.status === 2) {
-            sentence.status = 3;  // 翻译完成
-            // state_element.parent().toggleClass('ez-hide');
+          if (sentence.refers.length === this.ems.getEnabledEngineCount()) {
+            if (sentence.status === 2) {
+              sentence.status = 3;  // 翻译完成
+              // state_element.parent().toggleClass('ez-hide');
+            }
+          }
+
+          if (res.docId === this.child_home.cur_doc.id) {
+            this.rerender();
+          }
+        },
+        err => {
+          console.log(err.trans);  // TODO: 提供错误信息展示方案
+          sentence.status = 5;  // 错误
+          // state_element.attr('class', 'remove circle icon');
+          if (err.docId === this.child_home.cur_doc.id) {
+            this.rerender();
           }
         }
+      );
+    }
 
-        if (res.docId === this.child_home.cur_doc.id) {
-          this.rerender();
-        }
-      },
-      err => {
-        console.log(err.trans);  // TODO: 提供错误信息展示方案
-        sentence.status = 5;  // 错误
-        // state_element.attr('class', 'remove circle icon');
-        if (err.docId === this.child_home.cur_doc.id) {
-          this.rerender();
-        }
-      }
-    );
+
+    // sentence.status = 1;  // 发起请求
+    // state_element.attr('class', 'spinner loading icon');
   }
 
   getStatusIcon(index: number): string {
     const sentence = this.child_home.cur_doc.sentences[index];
     let icon = 'placeholder icon';  // 占位符
-    if (sentence.ignore) {
+    if (sentence.status === SentenceStatus.NEEDLESS) {
       icon = 'ban icon';
     } else if (sentence.target === -1 && sentence.custom.target_text) {
       icon = 'placeholder icon';  // 占位符
-    } else if (sentence.status === 0) {
+    } else if (sentence.status === SentenceStatus.INITIAL) {
       icon = 'placeholder icon';  // 占位符
-    } else if (sentence.status === 1) {
+    } else if (sentence.status === SentenceStatus.) {
       icon = 'spinner loading icon';
     } else if (sentence.status === 2) {
       icon = 'notched circle loading icon';

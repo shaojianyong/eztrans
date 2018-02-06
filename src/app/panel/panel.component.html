@@ -14,7 +14,7 @@
     </div>
   </div>
 
-  <div *ngIf="!sentence.ignore">
+  <div *ngIf="sentence.status !== SentenceStatus.NEEDLESS">
     <div *ngIf="sentence.custom" class="ui vertical segment">
       <div id="custom-editor" contenteditable="true" [textContent]="sentence.custom.target_text"
            (input)="onEditInput()" (focus)="onEditFocus()" (blur)="onEditBlur()"></div>
