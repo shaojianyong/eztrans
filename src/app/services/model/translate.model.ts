@@ -14,6 +14,7 @@ export const TranslateGrade = Object.freeze({
   HIGH: 1   // 优质翻译(人翻/机翻)
 });
 
+// 翻译模型
 export class TranslateModel {
   source_lang: string;
   target_lang: string;
