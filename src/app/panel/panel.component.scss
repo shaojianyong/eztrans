@@ -1,5 +1,14 @@
 #panel-container {
-  padding: 4px;
+  .ui.vertical.segment {
+    padding-top: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    p {
+      text-align: justify;
+      text-justify: distribute-all-lines;
+      text-align-last: left;
+    }
+  }
 
   p {
     margin: 0;
