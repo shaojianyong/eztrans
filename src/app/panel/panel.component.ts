@@ -86,16 +86,18 @@ export class PanelComponent implements OnInit {
   }
 
   getFlagIcon(sentence: SentenceModel): string {
-    let icon = 'flag outline icon';
+    let icon = 'checkmark icon';
     if (sentence.marked) {
-      icon = 'flag icon';
+      icon = 'green checkmark icon';
     }
     return icon;
   }
 
   changeFlagIcon(): void {
-    this.sentence.marked = !this.sentence.marked;
-    this.rerenderEvent.emit({forceShowSelected: true});
+    if (this.sentence.target !== -2 && !this.sentence.ignore) {
+      this.sentence.marked = !this.sentence.marked;
+      this.rerenderEvent.emit({forceShowSelected: true});
+    }
   }
 
   onEditInput(): void {

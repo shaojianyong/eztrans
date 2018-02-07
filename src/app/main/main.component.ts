@@ -396,8 +396,10 @@ export class MainComponent implements OnInit {
 
   changeFlagIcon(index: number): void {
     const sentence = this.child_home.cur_doc.sentences[index];
-    sentence.marked = !sentence.marked;
-    this.rerender();
+    if (sentence.target !== -2 && !sentence.ignore) {
+      sentence.marked = !sentence.marked;
+      this.rerender();
+    }
   }
 
   @HostListener('window:keydown.arrowright', ['$event'])
