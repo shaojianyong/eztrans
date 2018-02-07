@@ -148,7 +148,14 @@ export class MainComponent implements OnInit {
 
   onItemContextMenu(index: number): void {
     this.onItemClick(index);
-    ipc.send('show-item-context-menu', this.getPageCount(), this.cur_page, this.cur_index);
+    const sentence = this.child_home.cur_doc.sentences[index];
+    ipc.send('show-item-context-menu', {
+      page_count: this.getPageCount(),
+      cur_page: this.cur_page,
+      cur_index: this.cur_index,
+      target: sentence.target,
+      skipped: sentence.ignore
+    });
   }
 
   autoTranslate(): void {

@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-const { shell } = (<any>window).require('electron');
+const { shell, ipcRenderer } = (<any>window).require('electron');
 import { SentenceModel } from '../services/model/sentence.model';
 import { TranslateModel } from '../services/model/translate.model';
 import {EngineManagerService} from '../providers/manager/engine-manager.service';
@@ -156,6 +156,9 @@ export class PanelComponent implements OnInit {
   }
 
   ngOnInit() {
+    ipcRenderer.on('trans-in-flight', (event) => {
+      this.emptyHandTrans();
+    });
   }
 
 }

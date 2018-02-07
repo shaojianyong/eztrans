@@ -137,6 +137,10 @@ function toggleFlag(menuItem, browserWindow) {
   browserWindow.send('toggle-flag', menuItem.index);
 }
 
+function transInFlight(menuItem, browserWindow) {
+  browserWindow.send('trans-in-flight');
+}
+
 function docRename(menuItem, browserWindow) {
   browserWindow.send('doc-rename');
 }
@@ -197,40 +201,56 @@ function docDelete(menuItem, browserWindow) {
   browserWindow.send('doc-delete');
 }
 
-function showItemContextMenu(event, page_count, cur_page, cur_index) {
+// target, skipped
+function showItemContextMenu(event, params) {
   const contextMenu = new Menu();
   contextMenu.append(new MenuItem({
-    label: 'Re-translate',
-    click: retranslate,
-    icon: './dist/assets/images/icons/repeat.png'
-  }));
-  contextMenu.append(new MenuItem({
-    label: 'Toggle Skip',
+    label: 'Toggle Skip Over',  // keep original text
     click: skipOver,
-    icon: './dist/assets/images/icons/ban.png'
+    icon: './dist/assets/images/icons/quoteleft.png'
   }));
-  if (page_count > 1) {
+
+  if (!params.skipped) {
+    contextMenu.append(new MenuItem({
+      label: 'Re-translate',
+      click: retranslate,
+      icon: './dist/assets/images/icons/repeat.png'
+    }));
+  }
+
+  if (params.target !== -2 && !params.skipped) {
+    contextMenu.append(new MenuItem({
+      label: 'Toggle Check Mark',
+      click: toggleFlag,
+      icon: './dist/assets/images/icons/checkmark.png',
+      index: params.cur_index
+    }));
+  }
+
+  if (params.target === -2 && !params.skipped) {
+    contextMenu.append(new MenuItem({
+      label: 'Translate in Flight',
+      click: transInFlight,
+      icon: './dist/assets/images/icons/plane.png'
+    }));
+  }
+
+  if (params.page_count > 1) {
     contextMenu.append(new MenuItem({type: 'separator'}));
     contextMenu.append(new MenuItem({
       label: 'Next Page',
       click: nextPage,
-      enabled: cur_page + 1 < page_count,
-      icon: './dist/assets/images/icons/' + (cur_page + 1 < page_count ? 'arrowright.png' : 'arrowright0.png')
+      enabled: params.cur_page + 1 < params.page_count,
+      icon: './dist/assets/images/icons/' + (params.cur_page + 1 < params.page_count ? 'arrowright.png' : 'arrowright0.png')
     }));
     contextMenu.append(new MenuItem({
       label: 'Previous Page',
       click: prevPage,
-      enabled: cur_page > 0,
-      icon: './dist/assets/images/icons/' + (cur_page > 0 ? 'arrowleft.png' : 'arrowleft0.png')
+      enabled: params.cur_page > 0,
+      icon: './dist/assets/images/icons/' + (params.cur_page > 0 ? 'arrowleft.png' : 'arrowleft0.png')
     }));
   }
-  contextMenu.append(new MenuItem({ type: 'separator' }));
-  contextMenu.append(new MenuItem({
-    label: 'Toggle Mark',
-    click: toggleFlag,
-    icon: './dist/assets/images/icons/flag.png',
-    index: cur_index
-  }));
+
 
   /*
   contextMenu.append(new MenuItem({ type: 'separator' }));
