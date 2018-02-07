@@ -96,10 +96,10 @@ export class MainComponent implements OnInit {
     for (let index = 0; index < this.child_home.cur_doc.sentences.length; ++index) {
       let target_text = '';
       const current = this.child_home.cur_doc.sentences[index];
-      if (!current.ignore) {
+      if (!current.ignore && current.target !== -2) {
         if (current.target === -1) {
           target_text = current.custom.target_text;
-        } else if (current.target > -1) {
+        } else {
           target_text = current.refers[current.target].target_text;
         }
       }
@@ -358,15 +358,16 @@ export class MainComponent implements OnInit {
   }
 
   retranslate(): void {
-    if (this.child_home.cur_doc.sentences[this.cur_index].ignore) {
+    const sentence = this.child_home.cur_doc.sentences[this.cur_index];
+    if (sentence.ignore || sentence.marked) {
       return;
     }
 
-    if (this.child_home.cur_doc.sentences[this.cur_index].target !== -1) {
-      this.child_home.cur_doc.sentences[this.cur_index].target = -2;
+    if (sentence.target !== -1) {
+      sentence.target = -2;
     }
-    this.child_home.cur_doc.sentences[this.cur_index].refers = [];
-    this.translate(this.cur_index, this.child_home.cur_doc.sentences[this.cur_index]);
+    sentence.refers = [];
+    this.translate(this.cur_index, sentence);
   }
 
   forceRetranslate(event: any): void {
@@ -477,7 +478,8 @@ export class MainComponent implements OnInit {
   }
 
   skipOver(): void {
-    this.child_home.cur_doc.sentences[this.cur_index].ignore = !this.child_home.cur_doc.sentences[this.cur_index].ignore;
+    const sentence = this.child_home.cur_doc.sentences[this.cur_index];
+    sentence.ignore = !sentence.ignore;
     this.rerender();
   }
 
@@ -606,6 +608,10 @@ export class MainComponent implements OnInit {
         on: 'hover',
         position: 'top center'
       });
+  }
+
+  isTargetHidden(index: number) {
+    return this.child_home.cur_doc.sentences[index].target === -2 || this.child_home.cur_doc.sentences[index].ignore;
   }
 
   sync(): void {

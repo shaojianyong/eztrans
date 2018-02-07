@@ -1,5 +1,6 @@
 import { DocInfoModel } from './doc-info.model';
 
+// 文档分组
 export class GroupModel {
   id: string;     // 分组标识
   name: string;   // 分组名称
