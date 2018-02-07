@@ -134,7 +134,7 @@ function prevPage(menuItem, browserWindow) {
 }
 
 function toggleFlag(menuItem, browserWindow) {
-  browserWindow.send('toggle-flag');
+  browserWindow.send('toggle-flag', menuItem.index);
 }
 
 function docRename(menuItem, browserWindow) {
@@ -197,7 +197,7 @@ function docDelete(menuItem, browserWindow) {
   browserWindow.send('doc-delete');
 }
 
-function showItemContextMenu(event, page_count, cur_page) {
+function showItemContextMenu(event, page_count, cur_page, cur_index) {
   const contextMenu = new Menu();
   contextMenu.append(new MenuItem({
     label: 'Re-translate',
@@ -228,7 +228,8 @@ function showItemContextMenu(event, page_count, cur_page) {
   contextMenu.append(new MenuItem({
     label: 'Toggle Mark',
     click: toggleFlag,
-    icon: './dist/assets/images/icons/flag.png'
+    icon: './dist/assets/images/icons/flag.png',
+    index: cur_index
   }));
 
   /*

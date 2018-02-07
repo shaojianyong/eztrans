@@ -3,9 +3,9 @@ import { TranslateModel } from './translate.model';
 export class SentenceModel {
   source: string;
   target: number;
-  ignore: boolean;  // 跳过
+  ignore: boolean;  // 不需要翻译
   status: number;   // 0-初始状态 1-发起请求 2-返回响应 3-翻译完成 4-告警 5-错误
-  marked: boolean;
+  marked: boolean;  // 翻译完成标记
   custom: TranslateModel;
   refers: Array<TranslateModel>;
 

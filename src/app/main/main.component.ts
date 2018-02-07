@@ -148,7 +148,7 @@ export class MainComponent implements OnInit {
 
   onItemContextMenu(index: number): void {
     this.onItemClick(index);
-    ipc.send('show-item-context-menu', this.getPageCount(), this.cur_page);
+    ipc.send('show-item-context-menu', this.getPageCount(), this.cur_page, this.cur_index);
   }
 
   autoTranslate(): void {
@@ -394,8 +394,8 @@ export class MainComponent implements OnInit {
     return vz;
   }
 
-  changeFlagIcon(): void {
-    const sentence = this.child_home.cur_doc.sentences[this.cur_index];
+  changeFlagIcon(index: number): void {
+    const sentence = this.child_home.cur_doc.sentences[index];
     sentence.marked = !sentence.marked;
     this.rerender();
   }
@@ -489,11 +489,17 @@ export class MainComponent implements OnInit {
       if (sentence.ignore) {
         ++stats.skipped;
       } else if (sentence.target === -2) {
-        ++stats.undealt;
-      } else if (sentence.target === -1) {
-        ++stats.revised;
+        ++stats.initial;
       } else {
-        ++stats.directs;
+        ++stats.transed;
+        if (sentence.marked) {
+          ++stats.checked;
+        }
+        if (sentence.target === -1) {
+          ++stats.revised;
+        } else {
+          ++stats.directs;
+        }
       }
     }
     return stats;
@@ -680,8 +686,8 @@ export class MainComponent implements OnInit {
       self.prevPage();
     });
 
-    ipc.on('toggle-flag', (event) => {
-      self.changeFlagIcon();
+    ipc.on('toggle-flag', (event, index) => {
+      self.changeFlagIcon(index);
     });
 
     // 安装外部链接
