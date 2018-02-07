@@ -1,4 +1,3 @@
-// 应用数据
 export class AppdataModel {
   source_lang: string;
   target_lang: string;

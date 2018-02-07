@@ -1,6 +1,6 @@
 import { SentenceModel } from './sentence.model';
 
-// 文档模型
+// local_file: string;  本地文件
 export class DocumentModel {
   id: string;  // 文档标识
   file_data: string;  // 文档原始数据

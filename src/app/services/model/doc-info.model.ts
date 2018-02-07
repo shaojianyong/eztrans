@@ -1,6 +1,5 @@
 const moment = (<any>window).require('moment');
 
-// 文档信息
 export class DocInfoModel {
   id: string;    // 文档标识
   name: string;  // 文档名称，可重命名

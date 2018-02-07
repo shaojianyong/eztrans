@@ -8,7 +8,7 @@ export const SentenceStatus = Object.freeze({
   NEEDLESS: 3     // 不需要翻译
 });
 
-// 句段模型
+
 export class SentenceModel {
   source: string;
   target: number;
@@ -22,20 +22,5 @@ export class SentenceModel {
     this.status = obj && obj.status || 0;
     this.custom = obj && obj.custom || null;
     this.refers = obj && obj.refers || [];
-  }
-}
-
-// 统计信息
-export class StatisticsModel {
-  initial: number;
-  translated: number;
-  checked: number;
-  needless: number;
-
-  constructor(obj?: any) {
-    this.initial = obj && obj.initial || 0;
-    this.translated = obj && obj.translated || 0;
-    this.checked = obj && obj.checked || 0;
-    this.needless = obj && obj.needless || 0;
   }
 }
