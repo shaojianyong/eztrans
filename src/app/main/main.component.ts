@@ -241,7 +241,7 @@ export class MainComponent implements OnInit {
     const sentence = this.child_home.cur_doc.sentences[index];
     let icon = 'placeholder icon';  // 占位符
     if (sentence.ignore) {
-      icon = 'quote left icon';
+      icon = 'blue quote left icon';
     } else if (sentence.target === -1 && sentence.custom.target_text) {
       icon = 'placeholder icon';  // 占位符
     } else if (sentence.status === 0) {
