@@ -52,27 +52,37 @@
          (mouseleave)="onMouseLeave(idx)"
          class="item">
 
-      <table id="table-{{idx}}" class="ui very basic structured table">
+      <table id="table-{{idx}}" class="ui very basic table">
         <tbody>
         <tr>
-          <td [attr.rowspan]="isTargetHidden(idx) ? 1 : 2" class="collapsing">
-            <a class="{{getStatusIcon(idx) === 'placeholder icon' ? 'ez-hide' : ''}}">
-              <i id="state-{{idx}}" class="{{getStatusIcon(idx)}}"></i>
-            </a>
+          <td class="collapsing">
+            <div class="{{getStatusIcon(idx) === 'placeholder icon' ? 'ez-hide' : ''}} trans-flag-icon">
+              <i id="state-{{idx}}" class="large {{getStatusIcon(idx)}}"></i>
+            </div>
           </td>
-          <td class="source-cell">
+          <td class="{{isTargetVisible(idx) ? 'source-cell' : 'source-alone'}}">
             {{child_home.cur_doc.sentences[idx].source}}
           </td>
-          <td [attr.rowspan]="isTargetHidden(idx) ? 1 : 2" class="collapsing">
-            <a id="mark-{{idx}}" class="{{getMarkVisibility(idx)}}" (click)="changeFlagIcon(idx)">
-              <i *ngIf="child_home.cur_doc.sentences[idx].marked" class="flag icon"></i>
-              <i *ngIf="!child_home.cur_doc.sentences[idx].marked" class="flag outline icon"></i>
-            </a>
+          <td class="collapsing">
+            <div class="ez-hide trans-flag-icon">
+              <i class="large placeholder icon"></i>
+            </div>
           </td>
         </tr>
-        <tr *ngIf="!isTargetHidden(idx)">
+        <tr *ngIf="isTargetVisible(idx)">
+          <td class="collapsing">
+            <div class="ez-hide trans-flag-icon">
+              <i class="large placeholder icon"></i>
+            </div>
+          </td>
           <td class="target-cell">
             {{getTargetText(idx)}}
+          </td>
+          <td class="collapsing">
+            <div id="mark-{{idx}}" class="{{getMarkVisibility(idx)}} trans-flag-icon">
+              <i *ngIf="child_home.cur_doc.sentences[idx].marked" class="large green checkmark icon"></i>
+              <i *ngIf="!child_home.cur_doc.sentences[idx].marked" class="large placeholder icon"></i>
+            </div>
           </td>
         </tr>
         </tbody>

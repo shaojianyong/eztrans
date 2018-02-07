@@ -616,8 +616,9 @@ export class MainComponent implements OnInit {
       });
   }
 
-  isTargetHidden(index: number) {
-    return this.child_home.cur_doc.sentences[index].target === -2 || this.child_home.cur_doc.sentences[index].ignore;
+  isTargetVisible(index: number) {
+    return !(this.child_home.cur_doc.sentences[index].target === -2
+      || this.child_home.cur_doc.sentences[index].ignore);
   }
 
   sync(): void {
