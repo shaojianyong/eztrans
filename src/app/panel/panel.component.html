@@ -9,6 +9,9 @@
       <a *ngIf="sentence.target !== -2 && !sentence.ignore" class="item" (click)="changeFlagIcon()">
         <i class="{{getFlagIcon(sentence)}}"></i>
       </a>
+      <a *ngIf="sentence.target === -2 && !sentence.ignore" class="item" (click)="emptyHandTrans()">
+        <i class="plane icon"></i>
+      </a>
       <a *ngIf="!sentence.ignore" class="right item" (click)="refresh()">
         <i class="repeat icon"></i>
       </a>

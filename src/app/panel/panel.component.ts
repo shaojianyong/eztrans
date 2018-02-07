@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 const { shell } = (<any>window).require('electron');
 import { SentenceModel } from '../services/model/sentence.model';
 import { TranslateModel } from '../services/model/translate.model';
+import {EngineManagerService} from '../providers/manager/engine-manager.service';
 import engines from '../providers/manager/engines';
 
 
@@ -17,7 +18,7 @@ export class PanelComponent implements OnInit {
   @Output() rerenderEvent = new EventEmitter<any>();
   @Output() refreshEvent = new EventEmitter<any>();
 
-  constructor() {
+  constructor(private ems: EngineManagerService) {
   }
 
   selectTranslation(refer_index: number): void {
@@ -48,7 +49,27 @@ export class PanelComponent implements OnInit {
       this.sentence.custom = copy;
     }
 
-    this.sentence.target = -1;  // 默认选中定制翻译
+    this.sentence.target = -1;  // 选中定制翻译
+    this.rerenderEvent.emit({forceShowSelected: true});
+    const ce = $('#custom-editor');
+    ce.text(this.sentence.custom.target_text);
+    ce.attr('contenteditable', 'true');
+    ce.focus();
+    // this.enableHighlight();  不需要重复，onEditBlur将做这个事情
+  }
+
+  // 在网络不可用的情况下，可以纯手工翻译(空手翻)
+  emptyHandTrans() {
+    this.disableHighlight();
+    const trans = new TranslateModel();
+    trans.engine_name = 'user';
+    trans.source_lang = this.ems.getSourceLanguage();
+    trans.target_lang = this.ems.getTargetLanguage();
+    trans.source_text = this.sentence.source;
+    trans.target_text = '';
+    this.sentence.custom = trans;
+
+    this.sentence.target = -1;  // 选中定制翻译
     this.rerenderEvent.emit({forceShowSelected: true});
     const ce = $('#custom-editor');
     ce.text(this.sentence.custom.target_text);
