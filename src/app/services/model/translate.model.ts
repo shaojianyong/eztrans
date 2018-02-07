@@ -1,18 +1,6 @@
-// 翻译状态
-export const TranslateState = Object.freeze({
-  INITIAL: 0,    // 初始状态
-  REQUESTED: 1,  // 发起请求
-  RECEIVED: 2,   // 收到响应
-  SUCCESS: 3,    // 翻译成功
-  FAILED: 4      // 翻译失败
-});
-
-// 翻译质量等级
-export const TranslateGrade = Object.freeze({
-  LOW: -1,  // 劣等
-  MID: 0,   // 正常(或没有判定)
-  HIGH: 1   // 优质翻译(人翻/机翻)
-});
+/**
+ * Translate record model
+ */
 
 export class TranslateModel {
   source_lang: string;
@@ -21,8 +9,7 @@ export class TranslateModel {
   target_text: string;
   hz_translit: string;
   engine_name: string;
-  trans_state: number;
-  trans_grade: number;
+  trans_state: number;  // 翻译质量等级：-1-劣等；0-正常(默认)；1-优质(人工翻译)
 
   constructor(obj?: any) {
     this.source_lang = obj && obj.source_lang || 'en';
@@ -32,6 +19,5 @@ export class TranslateModel {
     this.hz_translit = obj && obj.hz_translit || '';
     this.engine_name = obj && obj.engine_name || 'Google';
     this.trans_state = obj && obj.trans_state || 0;
-    this.trans_grade = obj && obj.trans_grade || 0;
   }
 }
