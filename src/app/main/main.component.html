@@ -55,7 +55,7 @@
       <table id="table-{{idx}}" class="ui very basic table">
         <tbody>
         <tr>
-          <td [attr.rowspan]="isTargetHidden(idx) ? 1 : 2" class="collapsing">
+          <td [attr.rowspan]="(child_home.cur_doc.sentences[idx].target == -2 || child_home.cur_doc.sentences[idx].ignore) ? 1 : 2" class="collapsing">
             <a class="{{getStatusIcon(idx) === 'placeholder icon' ? 'ez-hide' : ''}}">
               <i id="state-{{idx}}" class="{{getStatusIcon(idx)}}"></i>
             </a>
@@ -63,14 +63,14 @@
           <td class="source-cell">
             {{child_home.cur_doc.sentences[idx].source}}
           </td>
-          <td [attr.rowspan]="isTargetHidden(idx) ? 1 : 2" class="collapsing">
+          <td [attr.rowspan]="(child_home.cur_doc.sentences[idx].target == -2 || child_home.cur_doc.sentences[idx].ignore) ? 1 : 2" class="collapsing">
             <a id="mark-{{idx}}" class="{{getMarkVisibility(idx)}}" (click)="changeFlagIcon(idx)">
               <i *ngIf="child_home.cur_doc.sentences[idx].marked" class="flag icon"></i>
               <i *ngIf="!child_home.cur_doc.sentences[idx].marked" class="flag outline icon"></i>
             </a>
           </td>
         </tr>
-        <tr *ngIf="!isTargetHidden(idx)">
+        <tr *ngIf="child_home.cur_doc.sentences[idx].target != -2 && !child_home.cur_doc.sentences[idx].ignore">
           <td class="target-cell">
             {{getTargetText(idx)}}
           </td>

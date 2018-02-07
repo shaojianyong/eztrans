@@ -8,14 +8,16 @@ const dialog = electron.remote.dialog;
 import {ExLinksModule} from '../services/utils/ex-links.module';
 
 import { FunctionUtils } from '../services/utils/function-utils';
-import {SentenceModel, SentenceStatus, StatisticsModel} from '../services/model/sentence.model';
+import {SentenceModel} from '../services/model/sentence.model';
 import {TranslateModel} from '../services/model/translate.model';
+import {ParserService} from '../parsers/base/parser.service';
 import {ParserManagerService} from '../parsers/manager/parser-manager.service';
 import {EngineManagerService} from '../providers/manager/engine-manager.service';
 import engines from '../providers/manager/engines';
 import {HomeComponent} from '../home/home.component';
 import {AboutComponent} from '../about/about.component';
 import {SettingsComponent} from '../settings/settings.component';
+import {StatisticsModel} from '../services/model/statistics.model';
 
 
 @Component({
@@ -94,10 +96,10 @@ export class MainComponent implements OnInit {
     for (let index = 0; index < this.child_home.cur_doc.sentences.length; ++index) {
       let target_text = '';
       const current = this.child_home.cur_doc.sentences[index];
-      if (current.status && current.status !== SentenceStatus.NEEDLESS) {
+      if (!current.ignore) {
         if (current.target === -1) {
           target_text = current.custom.target_text;
-        } else {
+        } else if (current.target > -1) {
           target_text = current.refers[current.target].target_text;
         }
       }
@@ -152,9 +154,8 @@ export class MainComponent implements OnInit {
   autoTranslate(): void {
     for (let index = 0; index < this.child_home.cur_doc.sentences.length; ++index) {
       const sentence = this.child_home.cur_doc.sentences[index];
-      if (sentence.status === SentenceStatus.NEEDLESS
-        || sentence.status === SentenceStatus.CHECKED
-        || sentence.refers.length === this.ems.getEnabledEngineCount()) {  // 避免重复发送请求
+      if (sentence.ignore || (sentence.refers.length === this.ems.getEnabledEngineCount()
+          && [1, 2, 3].indexOf(sentence.status) !== -1)) {  // 避免重复发送请求
         continue;
       }
       this.translate(index, sentence);
@@ -605,11 +606,6 @@ export class MainComponent implements OnInit {
         on: 'hover',
         position: 'top center'
       });
-  }
-
-  isTargetHidden(index: number) {
-    return (this.child_home.cur_doc.sentences[index].target === -2
-      || this.child_home.cur_doc.sentences[index].status === SentenceStatus.NEEDLESS);
   }
 
   sync(): void {
