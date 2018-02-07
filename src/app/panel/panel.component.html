@@ -2,7 +2,7 @@
   <div class="ui vertical segment">
     <p>{{sentence.source}}</p>
     <div class="ui small icon secondary menu">
-      <a class="item" (click)="ignore()">
+      <a class="item" (click)="skipOver()">
         <i *ngIf="sentence.ignore" class="blue quote right icon"></i>
         <i *ngIf="!sentence.ignore" class="quote right icon"></i>
       </a>
@@ -12,7 +12,7 @@
       <a *ngIf="sentence.target === -2 && !sentence.ignore" class="item" (click)="emptyHandTrans()">
         <i class="plane icon"></i>
       </a>
-      <a *ngIf="!sentence.ignore" class="right item" (click)="refresh()">
+      <a *ngIf="!sentence.ignore" class="right item" (click)="reTranslate()">
         <i class="repeat icon"></i>
       </a>
     </div>

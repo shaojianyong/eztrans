@@ -134,7 +134,7 @@ function prevPage(menuItem, browserWindow) {
 }
 
 function toggleFlag(menuItem, browserWindow) {
-  browserWindow.send('toggle-flag', menuItem.index);
+  browserWindow.send('toggle-flag');
 }
 
 function transInFlight(menuItem, browserWindow) {
@@ -210,20 +210,20 @@ function showItemContextMenu(event, params) {
     icon: './dist/assets/images/icons/quoteleft.png'
   }));
 
-  if (!params.skipped) {
-    contextMenu.append(new MenuItem({
-      label: 'Re-translate',
-      click: retranslate,
-      icon: './dist/assets/images/icons/repeat.png'
-    }));
-  }
-
   if (params.target !== -2 && !params.skipped) {
     contextMenu.append(new MenuItem({
       label: 'Toggle Check Mark',
       click: toggleFlag,
-      icon: './dist/assets/images/icons/checkmark.png',
-      index: params.cur_index
+      icon: './dist/assets/images/icons/checkmark.png'
+    }));
+  }
+
+  if (!params.skipped) {
+    contextMenu.append(new MenuItem({type: 'separator'}));
+    contextMenu.append(new MenuItem({
+      label: (params.target === -2) ? 'Translate' : 'Re-translate',
+      click: retranslate,
+      icon: './dist/assets/images/icons/repeat.png'
     }));
   }
 

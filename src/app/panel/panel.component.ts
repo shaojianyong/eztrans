@@ -114,6 +114,11 @@ export class PanelComponent implements OnInit {
     return icon;
   }
 
+  skipOver(): void {
+    this.sentence.ignore = !this.sentence.ignore;
+    this.rerenderEvent.emit({forceShowSelected: true});
+  }
+
   changeFlagIcon(): void {
     if (this.sentence.target !== -2 && !this.sentence.ignore) {
       this.sentence.marked = !this.sentence.marked;
@@ -138,13 +143,8 @@ export class PanelComponent implements OnInit {
     }
   }
 
-  refresh(): void {
+  reTranslate(): void {
     this.refreshEvent.emit({forceShowSelected: true});
-  }
-
-  ignore(): void {
-    this.sentence.ignore = !this.sentence.ignore;
-    this.rerenderEvent.emit({forceShowSelected: true});
   }
 
   enableHighlight(): void {
@@ -159,6 +159,18 @@ export class PanelComponent implements OnInit {
     ipcRenderer.on('trans-in-flight', (event) => {
       this.emptyHandTrans();
     });
-  }
 
+    ipcRenderer.on('skip_over', (event) => {
+      this.skipOver();
+    });
+
+    ipcRenderer.on('toggle-flag', (event) => {
+      this.changeFlagIcon();
+    });
+
+    ipcRenderer.on('retranslate', (event) => {
+      this.reTranslate();
+    });
+
+  }
 }

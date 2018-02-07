@@ -152,7 +152,6 @@ export class MainComponent implements OnInit {
     ipc.send('show-item-context-menu', {
       page_count: this.getPageCount(),
       cur_page: this.cur_page,
-      cur_index: this.cur_index,
       target: sentence.target,
       skipped: sentence.ignore
     });
@@ -401,14 +400,6 @@ export class MainComponent implements OnInit {
     return vz;
   }
 
-  changeFlagIcon(index: number): void {
-    const sentence = this.child_home.cur_doc.sentences[index];
-    if (sentence.target !== -2 && !sentence.ignore) {
-      sentence.marked = !sentence.marked;
-      this.rerender();
-    }
-  }
-
   @HostListener('window:keydown.arrowright', ['$event'])
   onArrowRight(event: KeyboardEvent): void {
     if (document.activeElement.getAttribute('contenteditable') || this.cur_index === -1) {
@@ -484,12 +475,6 @@ export class MainComponent implements OnInit {
         tran_list.scrollTop = tran_item.offsetTop + tran_item.clientHeight - tran_list.clientHeight;
       }
     }
-  }
-
-  skipOver(): void {
-    const sentence = this.child_home.cur_doc.sentences[this.cur_index];
-    sentence.ignore = !sentence.ignore;
-    this.rerender();
   }
 
   getStatistics(): StatisticsModel {
@@ -680,14 +665,6 @@ export class MainComponent implements OnInit {
       console.log('File Saved!');  // TODO: 自动打开文件？
     });
 
-    ipc.on('retranslate', (event) => {
-      self.retranslate();
-    });
-
-    ipc.on('skip_over', (event) => {
-      self.skipOver();
-    });
-
     ipc.on('next_page', (event) => {
       self.nextPage();
     });
@@ -696,9 +673,6 @@ export class MainComponent implements OnInit {
       self.prevPage();
     });
 
-    ipc.on('toggle-flag', (event, index) => {
-      self.changeFlagIcon(index);
-    });
 
     // 安装外部链接
     ExLinksModule.applyExLinks();
