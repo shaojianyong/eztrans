@@ -49,6 +49,10 @@ export class EngineManagerService {
     return this.target_lang;
   }
 
+  getEnabledEngineCount(): number {
+    return this.engine_list.length;
+  }
+
   translate(engine: TranslateService, source_text: string, doc_id = ''): Observable<TransResult> {
     return Observable.create(observer => {
       engine.translate(source_text, this.source_lang, this.target_lang).subscribe(

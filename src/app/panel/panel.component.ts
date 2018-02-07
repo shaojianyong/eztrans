@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 const { shell } = (<any>window).require('electron');
-import { SentenceModel, SentenceStatus } from '../services/model/sentence.model';
+import { SentenceModel } from '../services/model/sentence.model';
 import { TranslateModel } from '../services/model/translate.model';
 import engines from '../providers/manager/engines';
 
