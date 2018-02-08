@@ -453,6 +453,9 @@ export class MainComponent implements OnInit {
       document.getElementById('trans-list').scrollTop = 0;
       this.cur_index = -1;
       this.rerender();
+      if (this.search_text) {
+        $('#trans-list').highlight(this.search_text);
+      }
     }
   }
 
@@ -462,6 +465,9 @@ export class MainComponent implements OnInit {
       document.getElementById('trans-list').scrollTop = 0;
       this.cur_index = -1;
       this.rerender();
+      if (this.search_text) {
+        $('#trans-list').highlight(this.search_text);
+      }
     }
   }
 

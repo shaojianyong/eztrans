@@ -80,7 +80,7 @@ export class HomeComponent implements OnInit {
     }
 
     this.cur_doc = this.cache_docs[this.sel_doc.id];
-    this.title.setTitle(`Eztrans - [${this.getGroup(this.sel_doc.group_id).name}] ${this.sel_doc.name}`);
+    this.updateTitle();
     this.rerenderEvent.emit({forceShowSelected: false, resetDocument: true});
   }
 
@@ -94,7 +94,7 @@ export class HomeComponent implements OnInit {
     const doc_name = $(`#doc-${this.sel_doc.id}>td.doc-name`);
     doc_name.attr('contenteditable', 'false');
     this.sel_doc.name = doc_name.text();
-
+    this.updateTitle();
     event.preventDefault();
     this.modified_flag = true;
   }
@@ -103,12 +103,20 @@ export class HomeComponent implements OnInit {
     this.sel_doc.x_state = 1;  // 标记删除，实现逻辑：切换到已删除分组
     if (this.sel_doc.id === this.cur_doc.id) {
       this.cur_doc = new DocumentModel();  // 指向一个空文档
-      this.title.setTitle('Eztrans');
+      this.updateTitle();
       this.rerenderEvent.emit({forceShowSelected: false, resetDocument: true});
     } else {
       this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
     }
     this.modified_flag = true;
+  }
+
+  updateTitle(): void {
+    if (this.cur_doc.id) {
+      this.title.setTitle(`Eztrans - [${this.getGroup(this.sel_doc.group_id).name}] ${this.sel_doc.name}`);
+    } else {
+      this.title.setTitle('Eztrans');
+    }
   }
 
   moveUpDoc(): void {
