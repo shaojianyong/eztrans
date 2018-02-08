@@ -102,28 +102,23 @@
 <!-- Status Bar -->
 <div id="status-bar" class="ui attached menu">
 
-  <a class="item" data-content="No. / PageSize" data-variation="tiny">
-    <i class="caret right icon"></i> {{getPageRange().indexOf(cur_index) + 1}} / {{getPageRange().length}}
+  <a class="ui item">
+    <i class="caret right icon"></i>
+    {{getPageRange().indexOf(cur_index) + 1}} / {{getPageRange().length}}
   </a>
+
+  <a *ngIf="getPageCount() > 1" class="ui text item">
+    <i class="file powerpoint outline icon"></i>
+    {{cur_page * 100 + 1}}-{{cur_page * 100 + getPageRange().length}} / {{getLineCount()}}
+  </a>
+
   <a class="item" id="stat-item">
     <i class="bar chart icon"></i> {{getStatistics().getCompletionRate()}}%
   </a>
 
-  <a class="item" data-content="Languages" data-variation="tiny">
-    <i class="world icon"></i> {{ems.getSourceLanguage()}} - {{ems.getTargetLanguage()}}
-  </a>
-
   <div class="right menu">
-    <a *ngIf="getPageCount() > 1" class="ui icon item" (click)="nextPage()"
-       data-content="Next Page" data-variation="tiny">
-      <i class="chevron right icon"></i>
-    </a>
-    <div *ngIf="getPageCount() > 1" class="ui borderless text item">
-      {{cur_page + 1}} / {{getPageCount()}}
-    </div>
-    <a *ngIf="getPageCount() > 1" class="ui borderless icon item" (click)="prevPage()"
-       data-content="Previous Page" data-variation="tiny">
-      <i class="chevron left icon"></i>
+    <a class="item" data-content="Languages" data-variation="tiny">
+      <i class="world icon"></i> {{ems.getSourceLanguage()}} - {{ems.getTargetLanguage()}}
     </a>
     <a class="ui icon item" (click)="showAbout()" data-content="About" data-variation="tiny">
       <i class="help icon"></i>

@@ -323,6 +323,16 @@ export class MainComponent implements OnInit {
     return indexArray.slice(this.cur_page * 100, (this.cur_page + 1) * 100);
   }
 
+  getLineCount(): number {
+    let res = 0;
+    if (this.search_text) {
+      res = this.search_result.length;
+    } else {
+      res = this.child_home.cur_doc.sentences.length;
+    }
+    return res;
+  }
+
   showSettings(): void {
     this.child_settings.show();
   }
@@ -450,7 +460,7 @@ export class MainComponent implements OnInit {
     if (this.cur_page + 1 < this.getPageCount()) {
       this.cur_page++;
       document.getElementById('trans-list').scrollTop = 0;
-      this.cur_index = -1;
+      this.cur_index = this.getPageRange()[0];
       this.rerender();
       if (this.search_text) {
         $('#trans-list').highlight(this.search_text);
@@ -462,7 +472,7 @@ export class MainComponent implements OnInit {
     if (this.cur_page > 0) {
       this.cur_page--;
       document.getElementById('trans-list').scrollTop = 0;
-      this.cur_index = -1;
+      this.cur_index = this.getPageRange()[0];
       this.rerender();
       if (this.search_text) {
         $('#trans-list').highlight(this.search_text);
