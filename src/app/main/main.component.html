@@ -50,7 +50,7 @@
          (contextmenu)="onItemContextMenu(idx)"
          (mouseenter)="onMouseEnter(idx)"
          (mouseleave)="onMouseLeave(idx)"
-         class="item">
+         class="item {{idx === cur_index ? 'selected_sentence' : ''}}">
 
       <table id="table-{{idx}}" class="ui very basic table">
         <tbody>
