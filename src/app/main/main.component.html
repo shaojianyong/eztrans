@@ -104,12 +104,12 @@
 
   <a class="ui item">
     <i class="caret right icon"></i>
-    {{getPageRange().indexOf(cur_index) + 1}} / {{getPageRange().length}}
+    {{getPageRange().indexOf(cur_index) + 1}}/{{getPageRange().length}}
   </a>
 
-  <a *ngIf="getPageCount() > 1" class="ui text item">
-    <i class="file powerpoint outline icon"></i>
-    {{cur_page * 100 + 1}}-{{cur_page * 100 + getPageRange().length}} / {{getLineCount()}}
+  <a *ngIf="getPageCount() > 1" class="ui item">
+    <i class="file powerpoint outline icon"></i> {{cur_page + 1}}/{{getPageCount()}}
+    ({{cur_page * 100 + 1}}-{{cur_page * 100 + getPageRange().length}}/{{getLineCount()}})
   </a>
 
   <a class="item" id="stat-item">
