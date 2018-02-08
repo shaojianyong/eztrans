@@ -491,10 +491,13 @@ export class MainComponent implements OnInit {
       } else if (sentence.target === -2) {
         ++stats.initial;
       } else {
-        ++stats.transed;
+        // 纬度1：未确认/已确认
         if (sentence.marked) {
           ++stats.checked;
+        } else {
+          ++stats.transed;
         }
+        // 纬度2：自翻译/机翻译
         if (sentence.target === -1) {
           ++stats.revised;
         } else {
@@ -505,9 +508,12 @@ export class MainComponent implements OnInit {
     return stats;
   }
 
-  getStatInfo(): string {
-    const stats = this.getStatistics();
-    return `t=${this.child_home.cur_doc.sentences.length} s=${stats.skipped} r=${stats.revised}`;
+  installPopupTips(): void {
+    $('#stat-item').popup({
+      popup: '#stat-popup',
+      on: 'click',
+      observeChanges: false  // https://github.com/Semantic-Org/Semantic-UI/issues/4860
+    });
   }
 
   // TODO: 添加在原文中搜索还是在译文中搜索选项；添加是否忽略大小写选项；添加是否搜索单词选项
@@ -558,6 +564,7 @@ export class MainComponent implements OnInit {
     $('#trans-list').unhighlight();
   }
 
+  /*
   // only for test
   test(): void {
   }
@@ -615,6 +622,7 @@ export class MainComponent implements OnInit {
         position: 'top center'
       });
   }
+  */
 
   isTargetVisible(index: number) {
     return !(this.child_home.cur_doc.sentences[index].target === -2
@@ -660,7 +668,7 @@ export class MainComponent implements OnInit {
           self.rerender();
           $('#trans-list').unhighlight();
           if (self.getPageCount() > 1) {
-            self.installPopupTips1();
+            // self.installPopupTips1();
           }
         }
       );
@@ -679,10 +687,10 @@ export class MainComponent implements OnInit {
       self.prevPage();
     });
 
-
     // 安装外部链接
     ExLinksModule.applyExLinks();
-    this.installPopupTips0();
+    // this.installPopupTips0();
+    self.installPopupTips();
   }
 
 }
