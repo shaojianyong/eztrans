@@ -10,7 +10,6 @@ import {ExLinksModule} from '../services/utils/ex-links.module';
 import { FunctionUtils } from '../services/utils/function-utils';
 import {SentenceModel} from '../services/model/sentence.model';
 import {TranslateModel} from '../services/model/translate.model';
-import {ParserService} from '../parsers/base/parser.service';
 import {ParserManagerService} from '../parsers/manager/parser-manager.service';
 import {EngineManagerService} from '../providers/manager/engine-manager.service';
 import engines from '../providers/manager/engines';

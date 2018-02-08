@@ -16,11 +16,15 @@ export class StatisticsModel {
     this.revised = obj && obj.revised || 0;
   }
 
+  getTotal(): number {
+    return (this.initial + this.transed + this.checked + this.skipped);
+  }
+
   getCompletionRate(): number {
     let res = 0;
-    const total = this.initial + this.transed + this.skipped;
+    const total = this.getTotal();
     if (total) {
-      res = ((this.checked + this.skipped) * 100) / (this.initial + this.transed + this.skipped);
+      res = ((this.checked + this.skipped) * 100) / total;
     }
     return Math.floor(res);
   }

@@ -1,0 +1,57 @@
+<div id="stat-popup" class="ui flowing top left popup">
+  <div class="ui small very basic collapsing table">
+    <thead>
+    <tr>
+      <th colspan="3">
+        Statistics (Total: {{stats.getTotal()}})
+      </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td>
+        <i class="green checkmark icon"></i> Checked
+      </td>
+      <td>
+        {{stats.checked}}
+      </td>
+      <td>
+        Has been confirmed
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <i class="blue quote left icon"></i> Skipped
+      </td>
+      <td>
+        {{stats.skipped}}
+      </td>
+      <td>
+        Keep original text
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <i class="grey circle icon"></i> Untranslated
+      </td>
+      <td>
+        {{stats.initial}}
+      </td>
+      <td>
+        No translation yet
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <i class="orange asterisk icon"></i> Translated
+      </td>
+      <td>
+        {{stats.transed}}
+      </td>
+      <td>
+        Checked excluded
+      </td>
+    </tr>
+    </tbody>
+  </div>
+</div>

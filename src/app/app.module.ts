@@ -23,6 +23,7 @@ import { MarkdownParserService } from './parsers/markdown/markdown-parser.servic
 import { PoParserService } from './parsers/po/po-parser.service';
 import { HomeComponent } from './home/home.component';
 import { MsgboxComponent } from './msgbox/msgbox.component';
+import { StatsComponent } from './stats/stats.component';
 
 
 const routes: Routes = [
@@ -41,7 +42,8 @@ const routes: Routes = [
     AboutComponent,
     SettingsComponent,
     HomeComponent,
-    MsgboxComponent
+    MsgboxComponent,
+    StatsComponent
   ],
   imports: [
     BrowserModule,
