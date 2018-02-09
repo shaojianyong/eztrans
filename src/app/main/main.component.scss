@@ -17,8 +17,7 @@
     overflow-y: auto;
 
     .item {
-      padding-left: 12px;
-      padding-right: 12px;
+      padding: 0 12px 0 12px;  // 上右下左
 
       // https://github.com/Semantic-Org/Semantic-UI/issues/1980
       table tr td {
@@ -44,12 +43,19 @@
         line-height: 1.4285;  // 1.5, 1.28571429em
       }
 
+      .target-alone {
+        text-align: justify;
+        text-justify: distribute-all-lines;
+        text-align-last: left;
+        line-height: 1.4285; // 1.5, 1.28571429em
+      }
+
       .target-cell {
         text-align: justify;
         text-justify: distribute-all-lines;
         text-align-last: left;
         padding-top: 4px;
-        padding-bottom: 12px;
+        padding-bottom: 8px;
         line-height: 1.4285; // 1.5, 1.28571429em
       }
     }
