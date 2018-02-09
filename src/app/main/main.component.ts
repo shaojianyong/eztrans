@@ -28,6 +28,7 @@ import {StatisticsModel} from '../services/model/statistics.model';
 export class MainComponent implements OnInit {
   cur_index = -1;
   cur_page = 0;
+  page_size = 50;
   search_text = '';
   search_result = [];
 
@@ -128,15 +129,10 @@ export class MainComponent implements OnInit {
     }
 
     if (this.cur_index !== -1) {
-      // $(`#table-${this.cur_index}`).toggleClass('inverted');
       $(`#item-${this.cur_index}`).css('background-color', 'white');
     }
-
     // lightcyan; palegreen; aliceblue; lightyellow; ghostwhite; azure, cornsilk
-    // $(`#table-${index}`).toggleClass('inverted');
-    const item_element = $(`#item-${index}`);
-    item_element.css('background-color', 'gainsboro');
-
+    $(`#item-${index}`).css('background-color', 'gainsboro');
     this.cur_index = index;
     this.rerender();
   }
@@ -310,7 +306,7 @@ export class MainComponent implements OnInit {
     } else {
       count = this.child_home.cur_doc.sentences.length;
     }
-    return Math.floor(count / 100) + ((count % 100) ? 1 : 0);
+    return Math.floor(count / this.page_size) + ((count % this.page_size) ? 1 : 0);
   }
 
   getPageRange(): Array<number> {
@@ -320,7 +316,7 @@ export class MainComponent implements OnInit {
     } else {
       indexArray = Array.from(new Array(this.child_home.cur_doc.sentences.length), (x, i) => i);
     }
-    return indexArray.slice(this.cur_page * 100, (this.cur_page + 1) * 100);
+    return indexArray.slice(this.cur_page * this.page_size, (this.cur_page + 1) * this.page_size);
   }
 
   getLineCount(): number {
@@ -573,66 +569,6 @@ export class MainComponent implements OnInit {
     $('#trans-list').unhighlight();
   }
 
-  /*
-  // only for test
-  test(): void {
-  }
-
-  installPopupTips0(): void {
-    $(document).ready(() => {
-      $('.refresh.icon').parent()
-        .popup({
-          on: 'hover',
-          position: 'bottom center'
-        });
-
-      $('.setting.icon').parent()
-        .popup({
-          on: 'hover',
-          position: 'bottom right'
-        });
-
-      $('.caret.right.icon').parent()
-        .popup({
-          on: 'hover',
-          position: 'top left'
-        });
-
-      $('.bar.chart.icon').parent()
-        .popup({
-          on: 'hover',
-          position: 'top center'
-        });
-
-      $('.world.icon').parent()
-        .popup({
-          on: 'hover',
-          position: 'top center'
-        });
-
-      $('.help.icon').parent()
-        .popup({
-          on: 'hover',
-          position: 'top right'
-        });
-    });
-  }
-
-  installPopupTips1(): void {
-    $('.chevron.right.icon').parent()
-      .popup({
-        on: 'hover',
-        position: 'top center'
-      });
-
-    $('.chevron.left.icon').parent()
-      .popup({
-        on: 'hover',
-        position: 'top center'
-      });
-  }
-  */
-
   isTargetVisible(index: number) {
     return !(this.child_home.cur_doc.sentences[index].target === -2
       || this.child_home.cur_doc.sentences[index].ignore);
@@ -676,9 +612,6 @@ export class MainComponent implements OnInit {
         () => {
           self.rerender();
           $('#trans-list').unhighlight();
-          if (self.getPageCount() > 1) {
-            // self.installPopupTips1();
-          }
         }
       );
       self.rerender();
@@ -696,10 +629,10 @@ export class MainComponent implements OnInit {
       self.prevPage();
     });
 
+    self.installPopupTips();
+
     // 安装外部链接
     ExLinksModule.applyExLinks();
-    // this.installPopupTips0();
-    self.installPopupTips();
   }
 
 }

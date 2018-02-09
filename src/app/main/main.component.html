@@ -109,7 +109,7 @@
 
   <a *ngIf="getPageCount() > 1" class="ui item">
     <i class="file powerpoint outline icon"></i> {{cur_page + 1}}/{{getPageCount()}}
-    ({{cur_page * 100 + 1}}-{{cur_page * 100 + getPageRange().length}}/{{getLineCount()}})
+    ({{cur_page * page_size + 1}}-{{cur_page * page_size + getPageRange().length}}/{{getLineCount()}})
   </a>
 
   <a class="item" id="stat-item">
