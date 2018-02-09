@@ -204,11 +204,6 @@ function docDelete(menuItem, browserWindow) {
 // target, skipped
 function showItemContextMenu(event, params) {
   const contextMenu = new Menu();
-  contextMenu.append(new MenuItem({
-    label: 'Toggle Skip Over',  // keep original text
-    click: skipOver,
-    icon: './dist/assets/images/icons/quoteleft.png'
-  }));
 
   if (params.target !== -2 && !params.skipped) {
     contextMenu.append(new MenuItem({
@@ -218,8 +213,18 @@ function showItemContextMenu(event, params) {
     }));
   }
 
-  if (!params.skipped) {
-    contextMenu.append(new MenuItem({type: 'separator'}));
+  if (params.target !== -2) {
+    contextMenu.append(new MenuItem({
+      label: 'Toggle Skip Over',  // keep original text
+      click: skipOver,
+      icon: './dist/assets/images/icons/quoteleft.png'
+    }));
+  }
+
+  if (!params.skipped && !params.checked) {
+    if (contextMenu.items.length) {
+      contextMenu.append(new MenuItem({type: 'separator'}));
+    }
     contextMenu.append(new MenuItem({
       label: (params.target === -2) ? 'Translate' : 'Re-translate',
       click: retranslate,
@@ -232,6 +237,17 @@ function showItemContextMenu(event, params) {
       label: 'Translate in Flight',
       click: transInFlight,
       icon: './dist/assets/images/icons/plane.png'
+    }));
+  }
+
+  if (params.target === -2) {
+    if (contextMenu.items.length) {
+      contextMenu.append(new MenuItem({type: 'separator'}));
+    }
+    contextMenu.append(new MenuItem({
+      label: 'Toggle Skip Over',  // keep original text
+      click: skipOver,
+      icon: './dist/assets/images/icons/quoteleft.png'
     }));
   }
 

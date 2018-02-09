@@ -140,14 +140,15 @@ export class MainComponent implements OnInit {
       page_count: this.getPageCount(),
       cur_page: this.cur_page,
       target: sentence.target,
-      skipped: sentence.ignore
+      skipped: sentence.ignore,
+      checked: sentence.marked
     });
   }
 
   autoTranslate(): void {
     for (let index = 0; index < this.child_home.cur_doc.sentences.length; ++index) {
       const sentence = this.child_home.cur_doc.sentences[index];
-      if (sentence.ignore || (sentence.refers.length === this.ems.getEnabledEngineCount()
+      if (sentence.ignore || sentence.marked || (sentence.refers.length === this.ems.getEnabledEngineCount()
           && [1, 2, 3].indexOf(sentence.status) !== -1)) {  // 避免重复发送请求
         continue;
       }
@@ -175,7 +176,7 @@ export class MainComponent implements OnInit {
     const state_element = $(`#state-${index}`);
     state_element.parent().removeClass('ez-hide');
     sentence.status = 1;  // 发起请求
-    state_element.attr('class', 'spinner loading icon');
+    state_element.attr('class', 'large spinner loading icon');
 
     this.ems.translate(sentence.source, this.child_home.cur_doc.id).subscribe(
       res => {
