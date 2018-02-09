@@ -1,6 +1,6 @@
 <!-- Too bar -->
 <div id="tool-bar" class="ui violet inverted attached menu">
-  <a class="ui icon item" (click)="toggle()">
+  <a class="ui icon item" (click)="toggleLeftSide()">
     <i class="sidebar icon"></i>
   </a>
   <a class="item" (click)="importFile(null)">
@@ -14,6 +14,9 @@
   </a>
   <a class="ui icon item" (click)="sync()" data-content="Cloud Sync" data-variation="tiny">
     <i class="refresh icon"></i>
+  </a>
+  <a class="ui icon item" (click)="filter()" data-content="Filter" data-variation="tiny">
+    <i class="filter icon"></i>
   </a>
 
   <!--div class="ui simple dropdown item"> More
@@ -35,7 +38,7 @@
         <i *ngIf="searchtext.value" class="remove link icon" (click)="onCloseSearch(searchtext)"></i>
       </div>
     </div>
-    <a class="ui icon item" (click)="showSettings()" data-content="Settings" data-variation="tiny">
+    <a class="ui icon item" (click)="toggleRightSide()" data-content="Settings" data-variation="tiny">
       <i class="setting icon"></i>
     </a>
   </div>
@@ -141,13 +144,13 @@
 <!--Popup Tips-->
 <app-stats [stats]="getStatistics()"></app-stats>
 
-<!-- doc tree -->
+<!-- Left Sidebar -->
 <app-home (rerenderEvent)="forceRerender($event)"
           (exportEvent)="exportFile()"
           (importEvent)="importFile($event)">
 </app-home>
 
-<!-- Setting Dialog -->
+<!-- Right Sidebar -->
 <app-settings></app-settings>
 
 <!-- About Dialog -->

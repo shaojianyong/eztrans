@@ -255,8 +255,15 @@ export class MainComponent implements OnInit {
     return icon;
   }
 
-  toggle(): void {
+  toggleLeftSide(): void {
     $('#left-side').sidebar({
+      context: 'body',
+      dimPage: false
+    }).sidebar('toggle');
+  }
+
+  toggleRightSide(): void {
+    $('#right-side').sidebar({
       context: 'body',
       dimPage: false
     }).sidebar('toggle');
@@ -320,10 +327,6 @@ export class MainComponent implements OnInit {
       res = this.child_home.cur_doc.sentences.length;
     }
     return res;
-  }
-
-  showSettings(): void {
-    this.child_settings.show();
   }
 
   showAbout(): void {
