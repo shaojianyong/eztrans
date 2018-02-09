@@ -54,7 +54,7 @@
 
       <table id="table-{{idx}}" class="ui very basic table">
         <tbody>
-        <tr>
+        <tr *ngIf="isSourceVisible(idx)">
           <td class="collapsing">
             <div class="{{getStatusIcon(idx) === 'placeholder icon' ? 'ez-hide' : ''}} trans-flag-icon">
               <i id="state-{{idx}}" class="large {{getStatusIcon(idx)}}"></i>
@@ -102,25 +102,39 @@
 <!-- Status Bar -->
 <div id="status-bar" class="ui attached menu">
 
-  <a class="ui item">
+  <div class="item">
     <i class="caret right icon"></i>
     {{getPageRange().indexOf(cur_index) + 1}}/{{getPageRange().length}}
-  </a>
+  </div>
 
-  <a *ngIf="getPageCount() > 1" class="ui item">
-    <i class="file powerpoint outline icon"></i> {{cur_page + 1}}/{{getPageCount()}}
+  <a *ngIf="getPageCount() > 1" class="icon item" (click)="nextPage()">
+    <i class="chevron right icon"></i>
+  </a>
+  <div *ngIf="getPageCount() > 1" class="text item">
+    {{cur_page + 1}}/{{getPageCount()}}
     ({{cur_page * page_size + 1}}-{{cur_page * page_size + getPageRange().length}}/{{getLineCount()}})
+  </div>
+  <a *ngIf="getPageCount() > 1" class="icon item" (click)="prevPage()"
+     data-content="Previous Page" data-variation="tiny">
+    <i class="chevron left icon"></i>
   </a>
 
   <a class="item" id="stat-item">
     <i class="bar chart icon"></i> {{getStatistics().getCompletionRate()}}%
   </a>
+  <div class="borderless item">
+    <i class="green checkmark icon"></i> {{getStatistics().checked}}
+  </div>
+  <div class="item">
+    <i class="blue quote left icon"></i> {{getStatistics().skipped}}
+  </div>
 
   <div class="right menu">
     <a class="item" data-content="Languages" data-variation="tiny">
       <i class="world icon"></i> {{ems.getSourceLanguage()}} - {{ems.getTargetLanguage()}}
     </a>
-    <a class="ui icon item" (click)="showAbout()" data-content="About" data-variation="tiny">
+
+    <a class="icon item" (click)="showAbout()" data-content="About" data-variation="tiny">
       <i class="help icon"></i>
     </a>
   </div>

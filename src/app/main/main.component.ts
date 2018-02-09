@@ -31,6 +31,7 @@ export class MainComponent implements OnInit {
   page_size = 50;
   search_text = '';
   search_result = [];
+  visibility = 0;  // 只显示未翻译、跳过、完成、为标记，只显示标记为完成的译文，搜索时visibility自动重置
 
   @ViewChild(HomeComponent) child_home: HomeComponent;
   @ViewChild(SettingsComponent) child_settings: SettingsComponent;
@@ -567,6 +568,10 @@ export class MainComponent implements OnInit {
     }
     this.rerender();
     $('#trans-list').unhighlight();
+  }
+
+  isSourceVisible(index: number) {
+    return true; // !(this.child_home.cur_doc.sentences[index].marked);
   }
 
   isTargetVisible(index: number) {
