@@ -129,17 +129,8 @@ export class MainComponent implements OnInit {
       return;
     }
 
-    if (this.cur_index !== -1) {
-      $(`#item-${this.cur_index}`).css('background-color', 'white');
-    }
-    // lightcyan; palegreen; aliceblue; lightyellow; ghostwhite; azure, cornsilk
-    $(`#item-${index}`).css('background-color', 'gainsboro');
     this.cur_index = index;
     this.rerender();
-  }
-
-  onItemDblclick(index): void {
-    this.translate(index, this.child_home.cur_doc.sentences[index]);
   }
 
   onItemContextMenu(index: number): void {
@@ -338,37 +329,6 @@ export class MainComponent implements OnInit {
     this.child_about.show();
   }
 
-  onMouseEnter(index: number): void {
-    if (index !== this.cur_index) {
-      const index_element = $(`#item-${index}`);
-      // index_element.attr('normal-background-color', index_element.css('background-color'));
-      index_element.css('background-color', 'whitesmoke');  // lavender, ghostwhite, whitesmoke
-    }
-
-    $(`#mark-${index}`).removeClass('ez-hide');
-    this.mouseEnterShow(index);
-  }
-
-  onMouseLeave(index: number): void {
-    if (index !== this.cur_index) {
-      const index_element = $(`#item-${index}`);
-      if (index === this.cur_index) {
-        index_element.css('background-color', 'gainsboro');
-      } else {
-        index_element.css('background-color', 'white');
-      }
-    }
-
-    const mark_element = $(`#mark-${index}`);
-    if (this.child_home.cur_doc.sentences[index].marked || index === this.cur_index) {
-    } else {
-      if (!mark_element.hasClass('ez-hide')) {
-        mark_element.addClass('ez-hide');
-      }
-    }
-    this.mouseLeaveHide(index);
-  }
-
   retranslate(): void {
     const sentence = this.child_home.cur_doc.sentences[this.cur_index];
     if (sentence.ignore || sentence.marked) {
@@ -387,14 +347,6 @@ export class MainComponent implements OnInit {
       this.showSelectedItem();
     }
     this.retranslate();
-  }
-
-  mouseEnterShow(index: number): void {
-    $(`#exec-${index}`).removeClass('ez-hide');
-  }
-
-  mouseLeaveHide(index: number): void {
-    $(`#exec-${index}`).toggleClass('ez-hide');
   }
 
   getMarkVisibility(index: number): string {
