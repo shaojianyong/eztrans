@@ -73,7 +73,7 @@
               <i class="large placeholder icon"></i>
             </div>
           </td>
-          <td class="target-cell">
+          <td class="{{isSourceVisible(idx) ? 'target-cell' : 'target-alone'}}">
             {{getTargetText(idx)}}
           </td>
           <td class="collapsing">

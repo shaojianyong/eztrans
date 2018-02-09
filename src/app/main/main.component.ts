@@ -514,12 +514,13 @@ export class MainComponent implements OnInit {
   }
 
   isSourceVisible(index: number) {
-    return true; // !(this.child_home.cur_doc.sentences[index].marked);
+    const sentence = this.child_home.cur_doc.sentences[index];
+    return (!sentence.marked || sentence.ignore);
   }
 
   isTargetVisible(index: number) {
-    return !(this.child_home.cur_doc.sentences[index].target === -2
-      || this.child_home.cur_doc.sentences[index].ignore);
+    const sentence = this.child_home.cur_doc.sentences[index];
+    return (sentence.target !== -2 && !sentence.ignore);
   }
 
   sync(): void {
