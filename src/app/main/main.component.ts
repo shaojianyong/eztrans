@@ -349,15 +349,6 @@ export class MainComponent implements OnInit {
     this.retranslate();
   }
 
-  getMarkVisibility(index: number): string {
-    let vz = 'ez-hide';
-    if (this.child_home.cur_doc.sentences[index].marked || index === this.cur_index) {
-      $(`#mark-${index}`).removeClass('ez-hide');
-      vz = '';
-    }
-    return vz;
-  }
-
   @HostListener('window:keydown.arrowright', ['$event'])
   onArrowRight(event: KeyboardEvent): void {
     if (document.activeElement.getAttribute('contenteditable') || this.cur_index === -1) {

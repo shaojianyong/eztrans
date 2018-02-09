@@ -77,7 +77,7 @@
             {{getTargetText(idx)}}
           </td>
           <td class="collapsing">
-            <div id="mark-{{idx}}" class="{{getMarkVisibility(idx)}} trans-flag-icon">
+            <div class="trans-flag-icon">
               <i *ngIf="child_home.cur_doc.sentences[idx].marked" class="large green checkmark icon"></i>
               <i *ngIf="!child_home.cur_doc.sentences[idx].marked" class="large placeholder icon"></i>
             </div>
