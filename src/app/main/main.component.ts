@@ -31,7 +31,8 @@ export class MainComponent implements OnInit {
   page_size = 50;
   search_text = '';
   search_result = [];
-  visibility = 0;  // 只显示未翻译、跳过、完成、为标记，只显示标记为完成的译文，搜索时visibility自动重置
+  filter = 0;  // 0-No filter 1-Skipped 2-Checked 3-Translated 4-Untranslated
+  visibility = 0;  // 0-显示所有 1-只显示原文 2-只显示译文，搜索时visibility自动重置
 
   @ViewChild(HomeComponent) child_home: HomeComponent;
   @ViewChild(SettingsComponent) child_settings: SettingsComponent;
@@ -301,7 +302,7 @@ export class MainComponent implements OnInit {
 
   getPageCount(): number {
     let count = 0;
-    if (this.search_text) {
+    if (this.search_text || this.filter) {
       count = this.search_result.length;
     } else {
       count = this.child_home.cur_doc.sentences.length;
@@ -311,7 +312,7 @@ export class MainComponent implements OnInit {
 
   getPageRange(): Array<number> {
     let indexArray = [];
-    if (this.search_text) {
+    if (this.search_text || this.filter) {
       indexArray = this.search_result;
     } else {
       indexArray = Array.from(new Array(this.child_home.cur_doc.sentences.length), (x, i) => i);
@@ -321,7 +322,7 @@ export class MainComponent implements OnInit {
 
   getLineCount(): number {
     let res = 0;
-    if (this.search_text) {
+    if (this.search_text || this.filter) {
       res = this.search_result.length;
     } else {
       res = this.child_home.cur_doc.sentences.length;
@@ -462,11 +463,86 @@ export class MainComponent implements OnInit {
   }
 
   installPopupTips(): void {
-    $('#stat-item').popup({
+    $('#filter-dropdown').dropdown({
+      on: 'hover',
+      onChange: (lower_item_str, item_str, item_obj) => {
+        const value = Number.parseInt(item_obj[0].getAttribute('value'));
+        if (value !== this.filter) {
+          this.cur_page = 0;
+          this.filter = value;
+          if (this.filter || this.search_text) {
+            this.filterSearch();
+          }  else {
+            this.search_result = [];
+          }
+
+          if (this.cur_index !== -1) {
+            if (this.getPageRange().indexOf(this.cur_index) === -1) {
+              this.cur_index = -1;
+            }
+          }
+          this.rerender();
+          if (this.search_text) {
+            const transList = $('#trans-list');
+            transList.unhighlight();
+            transList.highlight(this.search_text);
+          }
+        }
+      }
+    });
+
+    $('#statusbar-stat-item').popup({
       popup: '#stat-popup',
       on: 'click',
       observeChanges: false  // https://github.com/Semantic-Org/Semantic-UI/issues/4860
     });
+  }
+
+  // 0-No filter 1-Skipped 2-Checked 3-Translated 4-Untranslated
+  filterTest(index: number): boolean {
+    let res = false;
+    const sentence = this.child_home.cur_doc.sentences[index];
+    switch (this.filter) {
+      case 0:
+        res = true;
+        break;
+      case 1:
+        res = sentence.ignore;
+        break;
+      case 2:
+        res = (!sentence.ignore  && sentence.marked);
+        break;
+      case 3:
+        res = (!sentence.ignore && !sentence.marked && sentence.target !== -2);
+        break;
+      case 4:
+        res = (!sentence.ignore && !sentence.marked && sentence.target === -2);
+        break;
+      default:
+        alert(`Bad filter value: ${this.filter}`);
+        break;
+    }
+    return res;
+  }
+
+  searchTest(index: number): boolean {
+    const str = this.search_text.toLowerCase();
+    const source_text = this.child_home.cur_doc.sentences[index].source.toLowerCase();
+    const target_text = this.getTargetText(index).toLowerCase();
+    return (source_text.indexOf(str) !== -1 || target_text.indexOf(str) !== -1);
+  }
+
+  filterSearch(): void {
+    if (this.filter || this.search_text) {
+      this.cur_page = 0;
+      this.search_result = [];
+      for (let index = 0; index < this.child_home.cur_doc.sentences.length; ++index) {
+        if ((!this.search_text || this.searchTest(index))
+          && (!this.filter || this.filterTest(index))) {
+          this.search_result.push(index);
+        }
+      }
+    }
   }
 
   // TODO: 添加在原文中搜索还是在译文中搜索选项；添加是否忽略大小写选项；添加是否搜索单词选项
@@ -477,23 +553,14 @@ export class MainComponent implements OnInit {
         return;
       }
 
-      this.cur_page = 0;
-      this.search_result = [];
-      for (let index = 0; index < this.child_home.cur_doc.sentences.length; ++index) {
-        const str = text.toLowerCase();
-        const source_text = this.child_home.cur_doc.sentences[index].source.toLowerCase();
-        const target_text = this.getTargetText(index).toLowerCase();
-        if (source_text.indexOf(str) !== -1 || target_text.indexOf(str) !== -1) {
-          this.search_result[this.search_result.length] = index;
-        }
-      }
+      this.search_text = text;
+      this.filterSearch();
 
       if (this.cur_index !== -1) {
-        if (this.search_result.indexOf(this.cur_index) === -1) {
+        if (this.getPageRange().indexOf(this.cur_index) === -1) {
           this.cur_index = -1;
         }
       }
-      this.search_text = text;
       this.rerender();
       const transList = $('#trans-list');
       transList.unhighlight();
@@ -506,8 +573,14 @@ export class MainComponent implements OnInit {
   onCloseSearch(inputBox: HTMLInputElement): void {
     inputBox.value = '';
     this.search_text = '';
-    this.search_result = [];
     this.cur_page = 0;
+
+    if (this.filter) {
+      this.filterSearch();
+    } else {
+      this.search_result = [];
+    }
+
     if (this.cur_index !== -1) {
       if (this.getPageRange().indexOf(this.cur_index) === -1) {
         this.cur_index = -1;
@@ -518,8 +591,9 @@ export class MainComponent implements OnInit {
   }
 
   isSourceVisible(index: number) {
-    const sentence = this.child_home.cur_doc.sentences[index];
-    return (!sentence.marked || sentence.ignore);
+    // const sentence = this.child_home.cur_doc.sentences[index];
+    // return (!sentence.marked || sentence.ignore);
+    return true;
   }
 
   isTargetVisible(index: number) {
