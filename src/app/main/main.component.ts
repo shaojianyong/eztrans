@@ -270,17 +270,17 @@ export class MainComponent implements OnInit {
     }).sidebar('toggle');
   }
 
-  getEngineIcon(index: number): string {
+  getTargetRightIcon(index: number): string {
+    let res = '';
     const sentence = this.child_home.cur_doc.sentences[index];
-    let icon = '';
-    if (sentence.target === -2) {
-      icon = 'refresh icon';  // TODO: 手动点击翻译
-    } else if (sentence.target === -1) {
-      icon = 'user outline icon';
+    if (sentence.marked) {
+      res = 'green checkmark icon';
+    } else if (sentence.target !== -2) {
+      res = 'orange asterisk icon';
     } else {
-      icon = engines[sentence.refers[sentence.target].engine_name].icon;
+      res = 'placeholder icon';
     }
-    return icon;
+    return res;
   }
 
   getTargetText(index: number): string {
