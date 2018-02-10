@@ -29,11 +29,11 @@
 
   <div class="right menu">
     <div class="ui floating labeled icon dropdown item" id="filter-dropdown">
-      <i class="filter icon"></i>
+      <i class="{{getFilterIcon()}}"></i>
       <div class="menu">
         <div class="item" value="0">
-          <i class="violet asterisk icon"></i>
-          No Filter
+          <i class="violet filter icon"></i>
+          All (Reset)
         </div>
         <div class="divider"></div>
         <div class="item" value="2">
@@ -45,7 +45,7 @@
           Skipped
         </div>
         <div class="item" value="3">
-          <i class="orange star icon"></i>
+          <i class="orange asterisk icon"></i>
           Translated
         </div>
         <div class="item" value="4">

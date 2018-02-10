@@ -466,6 +466,7 @@ export class MainComponent implements OnInit {
     $('#filter-dropdown').dropdown({
       on: 'hover',
       onChange: (lower_item_str, item_str, item_obj) => {
+        // console.log('===>', item_obj.children('i').attr("class"));
         const value = Number.parseInt(item_obj[0].getAttribute('value'));
         if (value !== this.filter) {
           this.cur_page = 0;
@@ -496,6 +497,31 @@ export class MainComponent implements OnInit {
       on: 'click',
       observeChanges: false  // https://github.com/Semantic-Org/Semantic-UI/issues/4860
     });
+  }
+
+  getFilterIcon(): string {
+    let res = '';
+    switch (this.filter) {
+      case 0:
+        res = 'filter icon';
+        break;
+      case 1:
+        res = 'quote left icon';
+        break;
+      case 2:
+        res = 'checkmark icon';
+        break;
+      case 3:
+        res = 'asterisk icon';
+        break;
+      case 4:
+        res = 'circle icon';
+        break;
+      default:
+        alert(`Bad filter value: ${this.filter}`);
+        break;
+    }
+    return res;
   }
 
   // 0-No filter 1-Skipped 2-Checked 3-Translated 4-Untranslated
