@@ -285,7 +285,7 @@ export class MainComponent implements OnInit {
     const sentence = this.child_home.cur_doc.sentences[index];
     let icon = 'placeholder icon';  // 占位符
     if (sentence.ignore) {
-      icon = 'blue quote left icon';
+      icon = 'green quote left icon';
     } else if (sentence.target === -1) {
       icon = 'placeholder icon';  // 占位符
     } else if (sentence.status === SentenceStatus.INITIAL) {
@@ -357,7 +357,7 @@ export class MainComponent implements OnInit {
     if (sentence.marked) {
       res = 'green checkmark icon';
     } else if (sentence.target !== -2) {
-      res = 'teal asterisk icon';
+      res = 'blue asterisk icon';
     } else {
       res = 'placeholder icon';
     }
