@@ -31,7 +31,7 @@ export class MainComponent implements OnInit {
   page_size = 50;
   search_text = '';
   search_result = [];
-  filter = 0;  // 0-No filter 1-Skipped 2-Checked 3-Translated 4-Untranslated
+  filter = '';  // ''(all), skipped, checked, translated, untranslated
   visibility = 0;  // 0-显示所有 1-只显示原文 2-只显示译文，搜索时visibility自动重置
 
   @ViewChild(HomeComponent) child_home: HomeComponent;
@@ -489,7 +489,7 @@ export class MainComponent implements OnInit {
       on: 'hover',
       onChange: (lower_item_str, item_str, item_obj) => {
         // console.log('===>', item_obj.children('i').attr("class"));
-        const value = Number.parseInt(item_obj[0].getAttribute('value'));
+        const value = item_obj[0].getAttribute('value');
         if (value !== this.filter) {
           this.cur_page = 0;
           this.filter = value;
@@ -524,19 +524,19 @@ export class MainComponent implements OnInit {
   getFilterIcon(): string {
     let res = '';
     switch (this.filter) {
-      case 0:
+      case '':
         res = 'filter icon';
         break;
-      case 1:
+      case 'skipped':
         res = 'quote left icon';
         break;
-      case 2:
+      case 'checked':
         res = 'checkmark icon';
         break;
-      case 3:
+      case 'translated':
         res = 'asterisk icon';
         break;
-      case 4:
+      case 'untranslated':
         res = 'circle icon';
         break;
       default:
@@ -546,24 +546,24 @@ export class MainComponent implements OnInit {
     return res;
   }
 
-  // 0-No filter 1-Skipped 2-Checked 3-Translated 4-Untranslated
+  // ''(all), skipped, checked, translated, untranslated
   filterTest(index: number): boolean {
     let res = false;
     const sentence = this.child_home.cur_doc.sentences[index];
     switch (this.filter) {
-      case 0:
+      case '':
         res = true;
         break;
-      case 1:
+      case 'skipped':
         res = sentence.ignore;
         break;
-      case 2:
+      case 'checked':
         res = (!sentence.ignore  && sentence.marked);
         break;
-      case 3:
+      case 'translated':
         res = (!sentence.ignore && !sentence.marked && sentence.target !== -2);
         break;
-      case 4:
+      case 'untranslated':
         res = (!sentence.ignore && !sentence.marked && sentence.target === -2);
         break;
       default:
@@ -585,8 +585,7 @@ export class MainComponent implements OnInit {
       this.cur_page = 0;
       this.search_result = [];
       for (let index = 0; index < this.child_home.cur_doc.sentences.length; ++index) {
-        if ((!this.search_text || this.searchTest(index))
-          && (!this.filter || this.filterTest(index))) {
+        if ((!this.search_text || this.searchTest(index)) && (!this.filter || this.filterTest(index))) {
           this.search_result.push(index);
         }
       }
