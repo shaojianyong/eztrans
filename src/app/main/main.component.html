@@ -81,23 +81,23 @@
         <tbody>
         <tr *ngIf="isSourceVisible(idx)">
           <td class="collapsing">
-            <div class="{{getStatusIcon(idx) === 'placeholder icon' ? 'ez-hide' : ''}} trans-flag-icon">
-              <i id="state-{{idx}}" class="large {{getStatusIcon(idx)}}"></i>
+            <div class="trans-flag-icon">
+              <i id="state-{{idx}}" class="large {{getSourceLeftIcon(idx)}}"></i>
             </div>
           </td>
           <td class="{{isTargetVisible(idx) ? 'source-cell' : 'source-alone'}}">
             {{child_home.cur_doc.sentences[idx].source}}
           </td>
           <td class="collapsing">
-            <div class="ez-hide trans-flag-icon">
+            <div class="trans-flag-icon">
               <i class="large placeholder icon"></i>
             </div>
           </td>
         </tr>
         <tr *ngIf="isTargetVisible(idx)">
           <td class="collapsing">
-            <div class="ez-hide trans-flag-icon">
-              <i class="large placeholder icon"></i>
+            <div class="trans-flag-icon">
+              <i class="large {{getTargetLeftIcon(idx)}}"></i>
             </div>
           </td>
           <td class="{{isSourceVisible(idx) ? 'target-cell' : 'target-alone'}}">

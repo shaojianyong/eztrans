@@ -175,7 +175,6 @@ export class MainComponent implements OnInit {
 
   translate(index: number, sentence: SentenceModel): void {
     const state_element = $(`#state-${index}`);
-    state_element.parent().removeClass('ez-hide');
     sentence.status = 1;  // 发起请求
     state_element.attr('class', 'large spinner loading icon');
 
@@ -232,7 +231,7 @@ export class MainComponent implements OnInit {
     );
   }
 
-  getStatusIcon(index: number): string {
+  getSourceLeftIcon(index: number): string {
     const sentence = this.child_home.cur_doc.sentences[index];
     let icon = 'placeholder icon';  // 占位符
     if (sentence.ignore) {
@@ -266,8 +265,31 @@ export class MainComponent implements OnInit {
   toggleRightSide(): void {
     $('#right-side').sidebar({
       context: 'body',
-      dimPage: false
+      dimPage: false,
+      transition: 'overlay'
     }).sidebar('toggle');
+  }
+
+  getTargetLeftIcon(index: number): string {
+    let res = '';
+    const sentence = this.child_home.cur_doc.sentences[index];
+    if (sentence.target === -1) {
+      let fake = false;
+      for (const trans of sentence.refers) {
+        if (trans.target_text === sentence.custom.target_text) {
+          fake = true;
+          break;
+        }
+      }
+      if (fake || !sentence.custom.target_text) {
+        res = 'red help icon';
+      } else {
+        res = 'green idea icon';
+      }
+    } else {
+      res = 'placeholder icon';
+    }
+    return res;
   }
 
   getTargetRightIcon(index: number): string {
