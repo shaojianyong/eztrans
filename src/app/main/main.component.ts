@@ -173,19 +173,6 @@ export class MainComponent implements OnInit {
     this.rerender();
   }
 
-  findRefer(sentence: SentenceModel, engineName: string): any {
-    let res = null;
-    let index = 0;
-    for (const refer of sentence.refers) {
-      if (refer.engine_name === engineName) {
-        res = {index: index, refer: refer};
-        break;
-      }
-      ++index;
-    }
-    return res;
-  }
-
   updateSentenceStatus(sentence: SentenceModel, tranState: string): boolean {
     let changed = false;
     if (tranState !== TranslateState.SUCCESS && tranState !== TranslateState.FAILURE) {
@@ -213,20 +200,25 @@ export class MainComponent implements OnInit {
 
   translate(index: number, sentence: SentenceModel): void {
     for (const engine of this.ems.engine_list) {
-      let trans = null;
-      let rfidx = 0;
-      const result = this.findRefer(sentence, engine.getEngineName());
-      if (result && result.refer) {
-        rfidx = result.index;
-        if (result.refer.trans_state === TranslateState.SUCCESS && result.refer.target_text) {  // TODO: 并且翻译语言没有切换
+      let refer_idx = -1;
+      for (let i = 0; i < sentence.refers.length; ++i) {
+        if (sentence.refers[i].engine_name === engine.getEngineName()) {
+          refer_idx = i;
+          break;
+        }
+      }
+
+      let trans_obj = null;
+      if (refer_idx !== -1) {
+        trans_obj = sentence.refers[refer_idx];
+        if (trans_obj.trans_state === TranslateState.SUCCESS && trans_obj.target_text) {  // TODO: 并且翻译语言没有切换
           continue;  // 不发重复请求
         } else {
-          trans = result.refer;
-          trans.target_text = 'Waiting for response...';
-          trans.trans_state = TranslateState.REQUESTED;
+          trans_obj.target_text = 'Waiting for response...';
+          trans_obj.trans_state = TranslateState.REQUESTED;
         }
       } else {
-        trans = new TranslateModel({
+        trans_obj = new TranslateModel({
           engine_name: engine.getEngineName(),
           source_lang: this.ems.getSourceLanguage(),
           target_lang: this.ems.getTargetLanguage(),
@@ -234,28 +226,28 @@ export class MainComponent implements OnInit {
           target_text: 'Waiting for response...',  // 简化处理
           trans_state: TranslateState.REQUESTED
         });
-        rfidx = sentence.refers.length;
-        sentence.refers.push(trans);
+        refer_idx = sentence.refers.length;
+        sentence.refers.push(trans_obj);
       }
 
       sentence.status = SentenceStatus.IN_PROC;
       $(`#src-right-${index}`).attr('class', 'large spinner loading icon');
 
-      engine.translateX(trans, this.child_home.cur_doc.id).subscribe(
+      engine.translateX(trans_obj, this.child_home.cur_doc.id).subscribe(
         res => {
-          if (res.result === 'ok' && trans.target_text) {
-            trans.trans_state = TranslateState.SUCCESS;
+          if (res.result === 'ok' && trans_obj.target_text) {
+            trans_obj.trans_state = TranslateState.SUCCESS;
             // 修正语句的状态
-            const statusChanged = this.updateSentenceStatus(sentence, trans.trans_state);
+            const statusChanged = this.updateSentenceStatus(sentence, trans_obj.trans_state);
 
             // 根据评分选用最佳翻译
             let targetChanged = false;
             if (sentence.target === -2) {
-              sentence.target = rfidx;
+              sentence.target = refer_idx;
               targetChanged = true;
             } else if (sentence.target !== -1) {
-              if (trans.trans_grade > sentence.refers[sentence.target].trans_grade) {
-                sentence.target = rfidx;
+              if (trans_obj.trans_grade > sentence.refers[sentence.target].trans_grade) {
+                sentence.target = refer_idx;
                 targetChanged = true;
               }
             }
@@ -267,8 +259,8 @@ export class MainComponent implements OnInit {
             }
           } else {
             // TODO: 失败的选项，禁止选用！！
-            trans.trans_state = TranslateState.FAILURE;
-            const statusChanged = this.updateSentenceStatus(sentence, trans.trans_state);
+            trans_obj.trans_state = TranslateState.FAILURE;
+            const statusChanged = this.updateSentenceStatus(sentence, trans_obj.trans_state);
             if (res.doc_id === this.child_home.cur_doc.id && statusChanged
               && this.getPageRange().indexOf(index) !== -1) {
               this.rerender();
@@ -277,8 +269,8 @@ export class MainComponent implements OnInit {
           }
         },
         err => {
-          trans.trans_state = TranslateState.FAILURE;
-          const statusChanged = this.updateSentenceStatus(sentence, trans.trans_state);
+          trans_obj.trans_state = TranslateState.FAILURE;
+          const statusChanged = this.updateSentenceStatus(sentence, trans_obj.trans_state);
           if (err.doc_id === this.child_home.cur_doc.id && statusChanged
             && this.getPageRange().indexOf(index) !== -1) {
             this.rerender();
