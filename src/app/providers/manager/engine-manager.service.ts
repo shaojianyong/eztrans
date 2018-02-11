@@ -52,19 +52,4 @@ export class EngineManagerService {
   getEnabledEngineCount(): number {
     return this.engine_list.length;
   }
-
-  // engine_filter: all, google, -google
-  translate(source_text: string, doc_id = '', engine_filter = 'all'): Observable<TransResult> {
-    return Observable.create(observer => {
-      for (const ts of this.engine_list) {
-        if ((engine_filter === 'all' || engine_filter === ts.getEngineName()) ||
-          (engine_filter[0] === '-' && engine_filter.slice(1) !== ts.getEngineName())) {
-          ts.translate(source_text, this.source_lang, this.target_lang).subscribe(
-            res => observer.next(new TransResult({trans: res, docId: doc_id})),
-            err => observer.error(new TransResult({trans: err, docId: doc_id}))
-          );
-        }
-      }
-    });
-  }
 }
