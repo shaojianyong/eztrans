@@ -19,7 +19,7 @@ describe('BaiduFanyiService', () => {
 {
   "trans_result": {
     "from": "en",
-    "to": "zh",
+    "to": "zh",  // zh-cn
     "domain": "all",
     "type": 2,
     "status": 0,

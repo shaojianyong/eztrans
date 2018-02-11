@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-import { TranslateService } from '../base/translate.service';
+import { TranslateService, TranslateResult } from '../base/translate.service';
 import { TranslateModel } from '../../services/model/translate.model';
 
 // 由于translate.google.com被墙，需要手动修改node_modules中的代码，这不符合规矩
@@ -15,13 +15,7 @@ export class GoogleTranslateService extends TranslateService {
   }
 
   translate(source_text: string, source_lang: string, target_lang: string): Observable<TranslateModel> {
-    if (source_lang === 'zh') {
-      source_lang = 'zh-cn';
-    }
 
-    if (target_lang === 'zh') {
-      target_lang = 'zh-cn';
-    }
 
     return Observable.create(observer => {
       try {
@@ -33,12 +27,31 @@ export class GoogleTranslateService extends TranslateService {
           tm.source_text = source_text;
           tm.target_text = result.translation;
           if (['zh-cn', 'zh-tw'].indexOf(tm.target_lang) !== -1 && result.sentences) {
-            tm.hz_translit = result.sentences[result.sentences.length - 1].translit;  // 中文拼音
+            tm.attach_data = {
+              'Pinyin': result.sentences[result.sentences.length - 1].translit
+            };  // 中文拼音
           }
           observer.next(tm);
         });
       } catch (e) {
         observer.error(e);
+      }
+    });
+  }
+
+  translateX(translate: TranslateModel, doc_id: string): Observable<TranslateResult> {
+    return Observable.create(observer => {
+      try {
+        google_translate({
+          text: translate.source_text,
+          source: translate.source_lang,
+          target: translate.target_lang
+        }, (result) => {
+            translate.target_text = result.translation;
+          observer.next({result: 'ok', doc_id: doc_id});
+        });
+      } catch (e) {
+        observer.error({result: e, doc_id: doc_id});
       }
     });
   }

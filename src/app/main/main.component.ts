@@ -8,8 +8,8 @@ const dialog = electron.remote.dialog;
 import {ExLinksModule} from '../services/utils/ex-links.module';
 
 import { FunctionUtils } from '../services/utils/function-utils';
-import {SentenceModel} from '../services/model/sentence.model';
-import {TranslateModel} from '../services/model/translate.model';
+import {SentenceModel, SentenceStatus} from '../services/model/sentence.model';
+import {TranslateModel, TranslateState} from '../services/model/translate.model';
 import {ParserManagerService} from '../parsers/manager/parser-manager.service';
 import {EngineManagerService} from '../providers/manager/engine-manager.service';
 import engines from '../providers/manager/engines';
@@ -146,11 +146,11 @@ export class MainComponent implements OnInit {
     });
   }
 
+  // TODO: 只翻译当前页面的语句？？用户搜索过滤了怎么办？自动撤销搜索翻译？？
   autoTranslate(): void {
     for (let index = 0; index < this.child_home.cur_doc.sentences.length; ++index) {
       const sentence = this.child_home.cur_doc.sentences[index];
-      if (sentence.ignore || sentence.marked || (sentence.refers.length === this.ems.getEnabledEngineCount()
-          && [1, 2, 3].indexOf(sentence.status) !== -1)) {  // 避免重复发送请求
+      if (sentence.ignore || sentence.marked) {  // 不要动用户的劳动成果
         continue;
       }
       this.translate(index, sentence);
@@ -173,62 +173,120 @@ export class MainComponent implements OnInit {
     this.rerender();
   }
 
-  translate(index: number, sentence: SentenceModel): void {
-    const state_element = $(`#state-${index}`);
-    sentence.status = 1;  // 发起请求
-    state_element.attr('class', 'large spinner loading icon');
-
-    this.ems.translate(sentence.source, this.child_home.cur_doc.id).subscribe(
-      res => {
-        const tm = res.trans;
-        if (tm.target_text && tm.target_text.length > 0) {
-          sentence.status = 2;  // 返回响应
-          // state_element.attr('class', 'notched circle loading icon');
-        } else {
-          sentence.status = 4;  // 告警
-          // state_element.attr('class', 'warning circle icon');
-        }
-
-        let exist = false;
-        for (let idx = 0; idx < sentence.refers.length; ++idx) {
-          if (tm.engine_name === sentence.refers[idx].engine_name) {
-            sentence.refers[idx] = tm;  // 覆盖
-            exist = true;
-          }
-        }
-        if (!exist) {
-          sentence.refers[sentence.refers.length] = tm;
-          if (sentence.target === -2) {
-            sentence.target = 0;
-          } else if (sentence.target >= 0 && sentence.target !== sentence.refers.length - 1) {
-            const cur_state = sentence.refers[sentence.target].trans_state;
-            const new_state = sentence.refers[sentence.refers.length - 1].trans_state;
-            if (cur_state < new_state) {
-              sentence.target = sentence.refers.length - 1;
-            }
-          }
-        }
-
-        if (sentence.refers.length === this.ems.getEnabledEngineCount()) {
-          if (sentence.status === 2) {
-            sentence.status = 3;  // 翻译完成
-            // state_element.parent().toggleClass('ez-hide');
-          }
-        }
-
-        if (res.docId === this.child_home.cur_doc.id) {
-          this.rerender();
-        }
-      },
-      err => {
-        console.log(err.trans);  // TODO: 提供错误信息展示方案
-        sentence.status = 5;  // 错误
-        // state_element.attr('class', 'remove circle icon');
-        if (err.docId === this.child_home.cur_doc.id) {
-          this.rerender();
-        }
+  findRefer(sentence: SentenceModel, engineName: string): any {
+    let res = null;
+    let index = 0;
+    for (const refer of sentence.refers) {
+      if (refer.engine_name === engineName) {
+        res = {index: index, refer: refer};
+        break;
       }
-    );
+      ++index;
+    }
+    return res;
+  }
+
+  updateSentenceStatus(sentence: SentenceModel, tranState: string): boolean {
+    let changed = false;
+    if (tranState !== TranslateState.SUCCESS && tranState !== TranslateState.FAILURE) {
+      alert('Bad translate state for update sentence status: ' + tranState);
+    }
+
+    if (sentence.status === SentenceStatus.IN_PROC) {
+      sentence.status = (tranState === TranslateState.SUCCESS ? SentenceStatus.SUCCESS : SentenceStatus.FAILURE);
+      changed = true;
+    } else if (sentence.status === SentenceStatus.SUCCESS) {
+      if (tranState === TranslateState.FAILURE) {
+        sentence.status = SentenceStatus.WARNING;
+        changed = true;
+      }
+    } else if (sentence.status === SentenceStatus.WARNING) {
+      // 不需要改变
+    } else if (sentence.status === SentenceStatus.FAILURE) {
+      if (tranState === TranslateState.SUCCESS) {
+        sentence.status = SentenceStatus.WARNING;
+        changed = true;
+      }
+    }
+    return changed;
+  }
+
+  translate(index: number, sentence: SentenceModel): void {
+    sentence.status = SentenceStatus.IN_PROC;
+    $(`#src-right-${index}`).attr('class', 'large spinner loading icon');
+
+    for (const engine of this.ems.engine_list) {
+      let trans = null;
+      let rfidx = 0;
+      const result = this.findRefer(sentence, engine.getEngineName());
+      if (result && result.refer) {
+        rfidx = result.index;
+        if (result.refer.trans_state === TranslateState.SUCCESS && result.refer.target_text) {  // TODO: 并且翻译语言没有切换
+          continue;  // 不发重复请求
+        } else {
+          trans = result.refer;
+          trans.target_text = 'Waiting for response...';
+          trans.trans_state = TranslateState.REQUESTED;
+        }
+      } else {
+        trans = new TranslateModel({
+          engine_name: engine.getEngineName(),
+          source_lang: this.ems.getSourceLanguage(),
+          target_lang: this.ems.getTargetLanguage(),
+          source_text: sentence.source,
+          target_text: 'Waiting for response...',  // 简化处理
+          trans_state: TranslateState.REQUESTED
+        });
+        rfidx = sentence.refers.length;
+        sentence.refers.push(trans);
+      }
+
+      engine.translateX(trans, this.child_home.cur_doc.id).subscribe(
+        res => {
+          if (res.result === 'ok' && trans.target_text) {
+            trans.trans_state = TranslateState.SUCCESS;
+            // 修正语句的状态
+            const statusChanged = this.updateSentenceStatus(sentence, trans.trans_state);
+
+            // 根据评分选用最佳翻译
+            let targetChanged = false;
+            if (sentence.target === -2) {
+              sentence.target = 0;
+              targetChanged = true;
+            } else if (sentence.target !== -1) {
+              if (trans.trans_grade > sentence.refers[sentence.target].trans_grade) {
+                sentence.target = rfidx;
+                targetChanged = true;
+              }
+            }
+
+            // 如果文档没有切换，更新视图，否则，不需要更新
+            if (res.doc_id === this.child_home.cur_doc.id && (statusChanged || targetChanged)
+              && this.getPageRange().indexOf(index) !== -1) {
+              this.rerender();
+            }
+          } else {
+            // TODO: 失败的选项，禁止选用！！
+            trans.trans_state = TranslateState.FAILURE;
+            const statusChanged = this.updateSentenceStatus(sentence, trans.trans_state);
+            if (res.doc_id === this.child_home.cur_doc.id && statusChanged
+              && this.getPageRange().indexOf(index) !== -1) {
+              this.rerender();
+            }
+            // alert(`Translate failed: ${res.result}`);
+          }
+        },
+        err => {
+          trans.trans_state = TranslateState.FAILURE;
+          const statusChanged = this.updateSentenceStatus(sentence, trans.trans_state);
+          if (err.doc_id === this.child_home.cur_doc.id && statusChanged
+            && this.getPageRange().indexOf(index) !== -1) {
+            this.rerender();
+          }
+          // alert(`Translate failed: ${err.result}`);
+        }
+      );
+    }
   }
 
   getSourceLeftIcon(index: number): string {
@@ -236,22 +294,31 @@ export class MainComponent implements OnInit {
     let icon = 'placeholder icon';  // 占位符
     if (sentence.ignore) {
       icon = 'blue quote left icon';
-    } else if (sentence.target === -1 && sentence.custom.target_text) {
+    } else if (sentence.target === -1) {
       icon = 'placeholder icon';  // 占位符
-    } else if (sentence.status === 0) {
+    } else if (sentence.status === SentenceStatus.INITIAL) {
       icon = 'placeholder icon';  // 占位符
-    } else if (sentence.status === 1) {
-      icon = 'spinner loading icon';
-    } else if (sentence.status === 2) {
-      icon = 'notched circle loading icon';
-    } else if (sentence.status === 3) {
+    } else if (sentence.status === SentenceStatus.IN_PROC) {
+      icon = 'send icon';
+    } else if (sentence.status === SentenceStatus.SUCCESS) {
       icon = 'placeholder icon';  // 占位符
-    } else if (sentence.status === 4) {
-      icon = 'warning circle icon';
-    } else if (sentence.status === 5) {
-      icon = 'remove circle icon';
+    } else if (sentence.status === SentenceStatus.WARNING) {
+      icon = 'orange warning circle icon';
+    } else if (sentence.status === SentenceStatus.FAILURE) {
+      icon = 'red remove circle icon';
     }
+    return icon;
+  }
 
+  getSourceRightIcon(index: number): string {
+    let icon = 'placeholder icon';
+    const sentence = this.child_home.cur_doc.sentences[index];
+    for (const refer of sentence.refers) {
+      if (refer.trans_state !== TranslateState.SUCCESS && refer.trans_state !== TranslateState.FAILURE) {
+        icon = 'spinner loading icon';
+        break;
+      }
+    }
     return icon;
   }
 
@@ -298,7 +365,7 @@ export class MainComponent implements OnInit {
     if (sentence.marked) {
       res = 'green checkmark icon';
     } else if (sentence.target !== -2) {
-      res = 'orange asterisk icon';
+      res = 'teal asterisk icon';
     } else {
       res = 'placeholder icon';
     }
@@ -365,7 +432,7 @@ export class MainComponent implements OnInit {
     if (sentence.target !== -1) {
       sentence.target = -2;
     }
-    sentence.refers = [];
+    sentence.refers = [];  // TODO: 需要强制重新翻译？
     this.translate(this.cur_index, sentence);
   }
 

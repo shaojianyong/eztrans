@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { TranslateService } from '../base/translate.service';
+import { TranslateService, TranslateResult } from '../base/translate.service';
 import { TranslateModel } from '../../services/model/translate.model';
 const querystring = (<any>window).require('querystring');
 
@@ -44,7 +44,7 @@ export class IcibaTransService extends TranslateService {
             }
           } else if (res['status'] === 0) {
             tm.target_text = res['content']['word_mean'].join(' / ');
-            tm.trans_state = -1;  // 单词翻译模式，仅供参考
+            tm.trans_grade = 1;  // 单词翻译模式，仅供参考
           } else {
             observer.error('iCIBA translate error');
             return;
@@ -59,4 +59,44 @@ export class IcibaTransService extends TranslateService {
         });
     });
   }
+
+  translateX(translate: TranslateModel, doc_id: string): Observable<TranslateResult> {
+    const params = {
+      f: translate.source_lang,
+      t: translate.target_lang,
+      w: translate.source_text
+    };
+
+    const data = querystring.stringify(params);
+    const hdrs = new HttpHeaders({
+      'Content-Length': data.length,
+      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+    });
+
+    return Observable.create(observer => {
+      this.http.post('http://fy.iciba.com/ajax.php?a=fy', data, {headers: hdrs}).subscribe(
+        res => {
+          if (res['status'] === 1) {
+            translate.target_text = res['content']['out'];
+            if (translate.target_text.endsWith('<br/>')) {
+              translate.target_text = translate.target_text.slice(0, -5);
+            }
+          } else if (res['status'] === 0) {
+            translate.target_text = res['content']['word_mean'].join(' / ');
+            translate.trans_grade = 1;  // 单词翻译模式，仅供参考
+          } else {
+            observer.error('iCIBA translate error');
+            return;
+          }
+          observer.next({result: 'ok', doc_id: doc_id});
+        },
+        err => {
+          observer.error({result: err, doc_id: doc_id});
+        },
+        () => {
+          observer.complete();
+        });
+    });
+  }
+
 }

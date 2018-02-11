@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import { TranslateService } from '../base/translate.service';
+import { TranslateService, TranslateResult } from '../base/translate.service';
 import { TranslateModel } from '../../services/model/translate.model';
 const querystring = (<any>window).require('querystring');
 const md5 = (<any>window).require('md5');
@@ -55,4 +55,51 @@ export class BaiduVipfyService extends TranslateService {
         });
     });
   }
+
+  duLangCode(goLangCode: string): string {
+    let res = goLangCode;
+    if (goLangCode === 'zh-cn') {
+      res = 'zh';
+    }
+    if (goLangCode === 'zh-tw') {
+      res = 'cht';
+    }
+    return res;
+  }
+
+  translateX(translate: TranslateModel, doc_id: string): Observable<TranslateResult> {
+    const tm_now = Date.now().toString();
+    const params = {
+      from: this.duLangCode(translate.source_lang),
+      to: this.duLangCode(translate.target_lang),
+      q: translate.source_text,
+      appid: APPID,
+      salt: tm_now,
+      sign: md5(`${APPID}${translate.source_text}${tm_now}${KEY}`)
+    };
+
+    const data = querystring.stringify(params);
+    const head = new HttpHeaders({
+      'Content-Length': data.length,
+      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+    });
+
+    return Observable.create(observer => {
+      this.http.post('http://api.fanyi.baidu.com/api/trans/vip/translate', data, {headers: head}).subscribe(
+        res => {
+          translate.target_text = '';
+          for (const sentence of res['trans_result']) {
+            translate.target_text += sentence['dst'];
+          }
+          observer.next({result: 'ok', doc_id: doc_id});
+        },
+        err => {
+          observer.error({result: err, doc_id: doc_id});
+        },
+        () => {
+          observer.complete();
+        });
+    });
+  }
+
 }

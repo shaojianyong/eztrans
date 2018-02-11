@@ -40,13 +40,13 @@ export class PanelComponent implements OnInit {
       this.sentence.custom.target_text = orig.target_text;
 
     } else {
-      const copy = new TranslateModel();
-      copy.engine_name = orig.engine_name;
-      copy.source_lang = orig.source_lang;
-      copy.target_lang = orig.target_lang;
-      copy.source_text = orig.source_text;
-      copy.target_text = orig.target_text;
-      this.sentence.custom = copy;
+      this.sentence.custom = new TranslateModel({
+        engine_name: orig.engine_name,
+        source_lang: orig.source_lang,
+        target_lang: orig.target_lang,
+        source_text: orig.source_text,
+        target_text: orig.target_text
+      });
     }
 
     this.sentence.target = -1;  // 选中定制翻译
@@ -61,13 +61,12 @@ export class PanelComponent implements OnInit {
   // 在网络不可用的情况下，可以纯手工翻译(空手翻)
   emptyHandTrans() {
     this.disableHighlight();
-    const trans = new TranslateModel();
-    trans.engine_name = 'user';
-    trans.source_lang = this.ems.getSourceLanguage();
-    trans.target_lang = this.ems.getTargetLanguage();
-    trans.source_text = this.sentence.source;
-    trans.target_text = '';
-    this.sentence.custom = trans;
+    this.sentence.custom = new TranslateModel({
+      engine_name: 'user',
+      source_lang: this.ems.getSourceLanguage(),
+      target_lang: this.ems.getTargetLanguage(),
+      source_text: this.sentence.source,
+    });
 
     this.sentence.target = -1;  // 选中定制翻译
     this.rerenderEvent.emit({forceShowSelected: true});

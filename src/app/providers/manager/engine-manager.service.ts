@@ -21,7 +21,7 @@ export class TransResult {
 @Injectable()
 export class EngineManagerService {
   source_lang = 'auto';
-  target_lang = 'zh';
+  target_lang = 'zh-cn';
   engine_list: Array<TranslateService>;
 
   constructor(

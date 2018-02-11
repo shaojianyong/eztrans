@@ -45,7 +45,7 @@
           Skipped
         </div>
         <div class="item" value="translated">
-          <i class="orange asterisk icon"></i>
+          <i class="teal asterisk icon"></i>
           Translated
         </div>
         <div class="item" value="untranslated">
@@ -82,7 +82,7 @@
         <tr *ngIf="isSourceVisible(idx)">
           <td class="collapsing">
             <div class="trans-flag-icon">
-              <i id="state-{{idx}}" class="large {{getSourceLeftIcon(idx)}}"></i>
+              <i class="large {{getSourceLeftIcon(idx)}}"></i>
             </div>
           </td>
           <td class="{{isTargetVisible(idx) ? 'source-cell' : 'source-alone'}}">
@@ -90,7 +90,7 @@
           </td>
           <td class="collapsing">
             <div class="trans-flag-icon">
-              <i class="large placeholder icon"></i>
+              <i id="src-right-{{idx}}" class="large {{getSourceRightIcon(idx)}}"></i>
             </div>
           </td>
         </tr>

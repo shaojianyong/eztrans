@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {TranslateService} from '../base/translate.service';
+import {TranslateService, TranslateResult} from '../base/translate.service';
 import {TranslateModel} from '../../services/model/translate.model';
 
 const querystring = (<any>window).require('querystring');
@@ -62,6 +62,61 @@ export class BaiduFanyiService extends TranslateService {
     });
   }
 
+  duLangCode(goLangCode: string): string {
+    let res = goLangCode;
+    if (goLangCode === 'zh-cn') {
+      res = 'zh';
+    }
+    if (goLangCode === 'zh-tw') {
+      res = 'cht';
+    }
+    return res;
+  }
+
+  translateX(translate: TranslateModel, doc_id: string): Observable<TranslateResult> {
+    const params = {
+      from: this.duLangCode(translate.source_lang),
+      to: this.duLangCode(translate.target_lang),
+      query: translate.source_text,
+      simple_means_flag: 3,
+      sign: '54706.276099',
+      token: '26dbe50b8c71437e9bf5d1c5372dcd59'
+    };
+
+    const data = querystring.stringify(params);
+    const head = new HttpHeaders({
+      'Host': 'fanyi.baidu.com',
+      'Connection': 'keep-alive',
+      'Content-Length': data.length,
+      'Accept': '*/*',
+      'Origin': 'http://fanyi.baidu.com',
+      'X-Requested-With': 'XMLHttpRequest',
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.89 Safari/537.36',
+      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+      'Referer': 'http://fanyi.baidu.com/',
+      'Accept-Encoding': 'gzip, deflate',
+      'Accept-Language': 'en-US,en;q=0.9,zh;q=0.8,zh-CN;q=0.7'
+    });
+
+    return Observable.create(observer => {
+      this.http.post('http://fanyi.baidu.com/v2transapi', data, {headers: head}).subscribe(
+        res => {
+          if (res['trans_result']['status'] === 0) {
+            translate.target_text = res['trans_result']['data'][0]['dst'];
+            observer.next({result: 'ok', doc_id: doc_id});
+          } else {
+            observer.error({result: res['trans_result'], doc_id: doc_id});
+          }
+        },
+        err => {
+          observer.error({result: err, doc_id: doc_id});
+        },
+        () => {
+          observer.complete();
+        });
+    });
+  }
+
   /*
   translate(source_text: string, callback: Function): void {
     const params = {
@@ -89,4 +144,5 @@ export class BaiduFanyiService extends TranslateService {
         // console.log('The POST observable is now completed');
       });
   }*/
+
 }
