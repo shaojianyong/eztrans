@@ -212,9 +212,6 @@ export class MainComponent implements OnInit {
   }
 
   translate(index: number, sentence: SentenceModel): void {
-    sentence.status = SentenceStatus.IN_PROC;
-    $(`#src-right-${index}`).attr('class', 'large spinner loading icon');
-
     for (const engine of this.ems.engine_list) {
       let trans = null;
       let rfidx = 0;
@@ -241,6 +238,9 @@ export class MainComponent implements OnInit {
         sentence.refers.push(trans);
       }
 
+      sentence.status = SentenceStatus.IN_PROC;
+      $(`#src-right-${index}`).attr('class', 'large spinner loading icon');
+
       engine.translateX(trans, this.child_home.cur_doc.id).subscribe(
         res => {
           if (res.result === 'ok' && trans.target_text) {
@@ -251,7 +251,7 @@ export class MainComponent implements OnInit {
             // 根据评分选用最佳翻译
             let targetChanged = false;
             if (sentence.target === -2) {
-              sentence.target = 0;
+              sentence.target = rfidx;
               targetChanged = true;
             } else if (sentence.target !== -1) {
               if (trans.trans_grade > sentence.refers[sentence.target].trans_grade) {
@@ -299,7 +299,7 @@ export class MainComponent implements OnInit {
     } else if (sentence.status === SentenceStatus.INITIAL) {
       icon = 'placeholder icon';  // 占位符
     } else if (sentence.status === SentenceStatus.IN_PROC) {
-      icon = 'send icon';
+      icon = 'blue send icon';
     } else if (sentence.status === SentenceStatus.SUCCESS) {
       icon = 'placeholder icon';  // 占位符
     } else if (sentence.status === SentenceStatus.WARNING) {
@@ -429,10 +429,13 @@ export class MainComponent implements OnInit {
       return;
     }
 
+    /* TODO: 需要强制重新翻译？重新翻译下放到引擎，可以指定引擎进行重新翻译！！
     if (sentence.target !== -1) {
       sentence.target = -2;
     }
-    sentence.refers = [];  // TODO: 需要强制重新翻译？
+    sentence.refers = [];
+    */
+
     this.translate(this.cur_index, sentence);
   }
 

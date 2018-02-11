@@ -48,6 +48,7 @@ export class GoogleTranslateService extends TranslateService {
           target: translate.target_lang
         }, (result) => {
             translate.target_text = result.translation;
+          translate.trans_grade = 4;
           observer.next({result: 'ok', doc_id: doc_id});
         });
       } catch (e) {

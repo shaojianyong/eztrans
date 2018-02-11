@@ -80,6 +80,7 @@ export class IcibaTransService extends TranslateService {
             translate.target_text = res['content']['out'];
             if (translate.target_text.endsWith('<br/>')) {
               translate.target_text = translate.target_text.slice(0, -5);
+              translate.trans_grade = 3;
             }
           } else if (res['status'] === 0) {
             translate.target_text = res['content']['word_mean'].join(' / ');
