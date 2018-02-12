@@ -3,9 +3,26 @@
   <a class="ui icon item" (click)="toggleLeftSide()">
     <i class="sidebar icon"></i>
   </a>
-  <a class="item" (click)="importFile(null)">
-    <i class="sign in icon"></i> Import
-  </a>
+  <div class="ui floating labeled icon dropdown item" id="import-dropdown"> Import
+    <i class="dropdown icon"></i>
+    <div class="menu">
+      <div class="ui violet header"> Import From:
+      </div>
+      <div class="divider"></div>
+      <div class="item" (click)="importFile(null)">
+        <i class="violet folder open icon"></i> Local Computer
+      </div>
+      <div class="divider"></div>
+      <div class="item">
+        <i class="violet world icon"></i> Web URL
+      </div>
+      <div class="item">
+        <i class="violet cloud icon"></i> SUDA Cloud
+      </div>
+    </div>
+  </div>
+
+
   <a class="item" (click)="autoTranslate()">
     <i class="translate icon"></i> Translate
   </a>
@@ -17,21 +34,24 @@
     <i class="dropdown icon"></i>
     <div class="menu">
       <div class="item" (click)="sync()">
-        <i class="cloud download icon"></i> Cloud Sync
+        <i class="violet cloud download icon"></i> Cloud Sync
       </div>
       <div class="item">
-        <i class="cloud upload icon"></i> Sync Upload
-      </div>
-      <div class="divider"></div>
-      <div class="item">
-        <i class="refresh icon"></i> Check for Update
+        <i class="violet cloud upload icon"></i> Sync Upload
       </div>
       <div class="divider"></div>
       <div class="item">
-        <i class="user icon"></i> Account Settings
+        <i class="violet share alternate icon"></i> Share
       </div>
       <div class="item">
-        <i class="book icon"></i> Glossary
+        <i class="violet send icon"></i> Publish
+      </div>
+      <div class="divider"></div>
+      <div class="item">
+        <i class="violet user icon"></i> Account Settings
+      </div>
+      <div class="item">
+        <i class="violet book icon"></i> Glossary
       </div>
     </div>
   </div>

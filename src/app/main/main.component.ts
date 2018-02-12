@@ -535,7 +535,13 @@ export class MainComponent implements OnInit {
   }
 
   installPopupTips(): void {
+    $('#import-dropdown').dropdown({
+      action: 'hide',  // 隐藏选中标记
+      on: 'hover'
+    });
+
     $('#more-dropdown').dropdown({
+      action: 'hide',
       on: 'hover'
     });
 
@@ -705,6 +711,7 @@ export class MainComponent implements OnInit {
 
   sync(): void {
     // 与翻译云同步
+    console.log('Sync...');
   }
 
   ngOnInit() {
