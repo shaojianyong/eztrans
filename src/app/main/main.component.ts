@@ -564,7 +564,8 @@ export class MainComponent implements OnInit {
 
     $('#statusbar-stat-item').popup({
       popup: '#stat-popup',
-      on: 'click',
+      on: 'hover',  // click
+      hoverable: true,
       observeChanges: false  // https://github.com/Semantic-Org/Semantic-UI/issues/4860
     });
   }
