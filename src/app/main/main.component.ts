@@ -173,29 +173,35 @@ export class MainComponent implements OnInit {
     this.rerender();
   }
 
-  updateSentenceStatus(sentence: SentenceModel, tranState: string): boolean {
-    let changed = false;
-    if (tranState !== TranslateState.SUCCESS && tranState !== TranslateState.FAILURE) {
-      alert('Bad translate state for update sentence status: ' + tranState);
+  getSentenceStatus(sentence: SentenceModel): string {
+    let res = SentenceStatus.INITIAL;
+    let successNum = 0;
+    let failureNum = 0;
+    let initialNum = 0;
+    const totalNum = sentence.refers.length;
+
+    for (const refer of sentence.refers) {
+      if (refer.trans_state === TranslateState.SUCCESS) {
+        ++successNum;
+      } else if (refer.trans_state === TranslateState.FAILURE) {
+        ++failureNum;
+      } else if (refer.trans_state === TranslateState.INITIAL) {
+        ++initialNum;
+      }
     }
 
-    if (sentence.status === SentenceStatus.IN_PROC) {
-      sentence.status = (tranState === TranslateState.SUCCESS ? SentenceStatus.SUCCESS : SentenceStatus.FAILURE);
-      changed = true;
-    } else if (sentence.status === SentenceStatus.SUCCESS) {
-      if (tranState === TranslateState.FAILURE) {
-        sentence.status = SentenceStatus.WARNING;
-        changed = true;
-      }
-    } else if (sentence.status === SentenceStatus.WARNING) {
-      // 不需要改变
-    } else if (sentence.status === SentenceStatus.FAILURE) {
-      if (tranState === TranslateState.SUCCESS) {
-        sentence.status = SentenceStatus.WARNING;
-        changed = true;
-      }
+    if (successNum === totalNum) {
+      res = SentenceStatus.SUCCESS;
+    } else if (failureNum === totalNum) {
+      res = SentenceStatus.FAILURE;
+    } else if (successNum + failureNum === totalNum) {
+      res = SentenceStatus.WARNING;
+    } else if (initialNum === totalNum) {
+      res = SentenceStatus.INITIAL;
+    } else {
+      res = SentenceStatus.IN_PROC;
     }
-    return changed;
+    return res;
   }
 
   translate(index: number, sentence: SentenceModel): void {
@@ -214,7 +220,6 @@ export class MainComponent implements OnInit {
         if (trans_obj.trans_state === TranslateState.SUCCESS && trans_obj.target_text) {  // TODO: 并且翻译语言没有切换
           continue;  // 不发重复请求
         } else {
-          trans_obj.target_text = 'Waiting for response...';
           trans_obj.trans_state = TranslateState.REQUESTED;
         }
       } else {
@@ -223,46 +228,36 @@ export class MainComponent implements OnInit {
           source_lang: this.ems.getSourceLanguage(),
           target_lang: this.ems.getTargetLanguage(),
           source_text: sentence.source,
-          target_text: 'Waiting for response...',  // 简化处理
           trans_state: TranslateState.REQUESTED
         });
         refer_idx = sentence.refers.length;
         sentence.refers.push(trans_obj);
       }
 
-      sentence.status = SentenceStatus.IN_PROC;
-      $(`#src-right-${index}`).attr('class', 'large spinner loading icon');
+      this.rerender();  // 展示旋转图标
 
       engine.translateX(trans_obj, this.child_home.cur_doc.id).subscribe(
         res => {
           if (res.result === 'ok' && trans_obj.target_text) {
             trans_obj.trans_state = TranslateState.SUCCESS;
-            // 修正语句的状态
-            const statusChanged = this.updateSentenceStatus(sentence, trans_obj.trans_state);
 
             // 根据评分选用最佳翻译
-            let targetChanged = false;
             if (sentence.target === -2) {
               sentence.target = refer_idx;
-              targetChanged = true;
             } else if (sentence.target !== -1) {
               if (trans_obj.trans_grade > sentence.refers[sentence.target].trans_grade) {
                 sentence.target = refer_idx;
-                targetChanged = true;
               }
             }
 
             // 如果文档没有切换，更新视图，否则，不需要更新
-            if (res.doc_id === this.child_home.cur_doc.id && (statusChanged || targetChanged)
-              && this.getPageRange().indexOf(index) !== -1) {
+            if (res.doc_id === this.child_home.cur_doc.id && this.getPageRange().indexOf(index) !== -1) {
               this.rerender();
             }
           } else {
             // TODO: 失败的选项，禁止选用！！
             trans_obj.trans_state = TranslateState.FAILURE;
-            const statusChanged = this.updateSentenceStatus(sentence, trans_obj.trans_state);
-            if (res.doc_id === this.child_home.cur_doc.id && statusChanged
-              && this.getPageRange().indexOf(index) !== -1) {
+            if (res.doc_id === this.child_home.cur_doc.id && this.getPageRange().indexOf(index) !== -1) {
               this.rerender();
             }
             // alert(`Translate failed: ${res.result}`);
@@ -270,9 +265,7 @@ export class MainComponent implements OnInit {
         },
         err => {
           trans_obj.trans_state = TranslateState.FAILURE;
-          const statusChanged = this.updateSentenceStatus(sentence, trans_obj.trans_state);
-          if (err.doc_id === this.child_home.cur_doc.id && statusChanged
-            && this.getPageRange().indexOf(index) !== -1) {
+          if (err.doc_id === this.child_home.cur_doc.id && this.getPageRange().indexOf(index) !== -1) {
             this.rerender();
           }
           // alert(`Translate failed: ${err.result}`);
@@ -283,35 +276,28 @@ export class MainComponent implements OnInit {
 
   getSourceLeftIcon(index: number): string {
     const sentence = this.child_home.cur_doc.sentences[index];
+    const status = this.getSentenceStatus(sentence);
     let icon = 'placeholder icon';  // 占位符
     if (sentence.ignore) {
       icon = 'green quote left icon';
     } else if (sentence.target === -1) {
       icon = 'placeholder icon';  // 占位符
-    } else if (sentence.status === SentenceStatus.INITIAL) {
+    } else if (status === SentenceStatus.INITIAL) {
       icon = 'placeholder icon';  // 占位符
-    } else if (sentence.status === SentenceStatus.IN_PROC) {
-      icon = 'blue send icon';
-    } else if (sentence.status === SentenceStatus.SUCCESS) {
+    } else if (status === SentenceStatus.IN_PROC) {
+      icon = 'spinner loading icon';
+    } else if (status === SentenceStatus.SUCCESS) {
       icon = 'placeholder icon';  // 占位符
-    } else if (sentence.status === SentenceStatus.WARNING) {
+    } else if (status === SentenceStatus.WARNING) {
       icon = 'orange warning circle icon';
-    } else if (sentence.status === SentenceStatus.FAILURE) {
+    } else if (status === SentenceStatus.FAILURE) {
       icon = 'red remove circle icon';
     }
     return icon;
   }
 
   getSourceRightIcon(index: number): string {
-    let icon = 'placeholder icon';
-    const sentence = this.child_home.cur_doc.sentences[index];
-    for (const refer of sentence.refers) {
-      if (refer.trans_state !== TranslateState.SUCCESS && refer.trans_state !== TranslateState.FAILURE) {
-        icon = 'spinner loading icon';
-        break;
-      }
-    }
-    return icon;
+    return 'placeholder icon';
   }
 
   toggleLeftSide(): void {
