@@ -280,6 +280,8 @@ export class MainComponent implements OnInit {
     let icon = 'placeholder icon';  // 占位符
     if (sentence.ignore) {
       icon = 'green quote left icon';
+    } else if (sentence.marked) {
+      icon = 'placeholder icon';  // 隐藏状态
     } else if (sentence.target === -1) {
       icon = 'placeholder icon';  // 占位符
     } else if (status === SentenceStatus.INITIAL) {
@@ -533,6 +535,10 @@ export class MainComponent implements OnInit {
   }
 
   installPopupTips(): void {
+    $('#more-dropdown').dropdown({
+      on: 'hover'
+    });
+
     $('#filter-dropdown').dropdown({
       on: 'hover',
       onChange: (lower_item_str, item_str, item_obj) => {

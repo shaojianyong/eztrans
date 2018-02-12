@@ -12,45 +12,49 @@
   <a class="item" (click)="exportFile()">
     <i class="sign out icon"></i> Export
   </a>
-  <a class="icon item" (click)="sync()" data-content="Cloud Sync" data-variation="tiny">
-    <i class="refresh icon"></i>
-  </a>
 
-  <!--div class="ui simple dropdown item"> More
+  <div class="ui floating labeled icon dropdown item" id="more-dropdown"> More
     <i class="dropdown icon"></i>
-    <div class="ui menu">
-      <a class="item"><i class="edit icon"></i> 术语库</a>
-      <a class="item"><i class="globe icon"></i> Choose Language</a>
-      <a class="item"><i class="settings icon"></i> Account Settings</a>
+    <div class="menu">
+      <div class="item" (click)="sync()">
+        <i class="cloud download icon"></i> Cloud Sync
+      </div>
+      <div class="item">
+        <i class="cloud upload icon"></i> Sync Upload
+      </div>
       <div class="divider"></div>
-      <a class="item"><i class="settings icon"></i> Check for Update</a>
+      <div class="item">
+        <i class="refresh icon"></i> Check for Update
+      </div>
+      <div class="divider"></div>
+      <div class="item">
+        <i class="user icon"></i> Account Settings
+      </div>
+      <div class="item">
+        <i class="book icon"></i> Glossary
+      </div>
     </div>
-  </div-->
+  </div>
 
   <div class="right menu">
     <div class="ui floating labeled icon dropdown item" id="filter-dropdown">
       <i class="{{getFilterIcon()}}"></i>
       <div class="menu">
         <div class="item" value="">
-          <i class="violet filter icon"></i>
-          All (Reset)
+          <i class="violet filter icon"></i> All (Reset)
         </div>
         <div class="divider"></div>
         <div class="item" value="checked">
-          <i class="green checkmark icon"></i>
-          Checked
+          <i class="green checkmark icon"></i> Checked
         </div>
         <div class="item" value="skipped">
-          <i class="green quote left icon"></i>
-          Skipped
+          <i class="green quote left icon"></i> Skipped
         </div>
         <div class="item" value="translated">
-          <i class="blue asterisk icon"></i>
-          Translated
+          <i class="blue asterisk icon"></i> Translated
         </div>
         <div class="item" value="untranslated">
-          <i class="grey circle icon"></i>
-          Untranslated
+          <i class="grey circle icon"></i> Untranslated
         </div>
       </div>
     </div>
