@@ -3,7 +3,10 @@
   <a class="ui icon item" (click)="toggleLeftSide()">
     <i class="sidebar icon"></i>
   </a>
-  <div class="ui floating labeled icon dropdown item" id="import-dropdown">
+  <a class="item" (click)="importFile(null)">
+    <i class="sign in icon"></i> Import
+  </a>
+  <!--div class="ui floating labeled icon dropdown item" id="import-dropdown">
     <i class="sign in icon"></i>
     <div class="menu">
       <div class="ui violet header"> Import From:
@@ -15,21 +18,21 @@
       <div class="item">
         <i class="violet world icon"></i> Internet
       </div>
-      <!--div class="item">
+      <div class="item">
         <i class="violet cloud icon"></i> SUDA Cloud
-      </div-->
+      </div>
     </div>
-  </div>
+  </div-->
 
 
-  <a class="icon item" (click)="autoTranslate()">
-    <i class="translate icon"></i>
+  <a class="item" (click)="autoTranslate()">
+    <i class="translate icon"></i> Translate
   </a>
-  <a class="icon item" (click)="preview()">
+  <!--a class="icon item" (click)="preview()">
     <i class="lab icon"></i>
-  </a>
-  <a class="icon item" (click)="exportFile()">
-    <i class="sign out icon"></i>
+  </a-->
+  <a class="item" (click)="exportFile()">
+    <i class="sign out icon"></i> Export
   </a>
 
   <div class="ui floating labeled icon dropdown item" id="more-dropdown">
