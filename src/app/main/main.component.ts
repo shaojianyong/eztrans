@@ -310,9 +310,9 @@ export class MainComponent implements OnInit {
   }
 
   toggleRightSide(): void {
-    $('#right-side').sidebar({
+    $('#preview-side').sidebar({
       context: 'body',
-      dimPage: false,
+      dimPage: true,
       transition: 'overlay'
     }).sidebar('toggle');
   }

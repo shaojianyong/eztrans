@@ -8,3 +8,15 @@ body {
 .highlight {
   background-color: #ff9632; //#FFFF88;
 }
+
+
+#preview-side {
+  // width: 80vw;
+  height: 100vh !important;
+  margin-top: -100vh !important;
+
+  webview {
+    width: 100%;
+    height: 100%;
+  }
+}
