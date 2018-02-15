@@ -9,9 +9,9 @@ body {
   background-color: #ff9632; //#FFFF88;
 }
 
-
+// stackoverflow.com/questions/26766296/semantic-ui-bottom-sidebar-increase-size
 #preview-side {
-  // width: 80vw;
+  // width: 100vw !important;
   height: 100vh !important;
   margin-top: -100vh !important;
 
