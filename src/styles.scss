@@ -15,8 +15,12 @@ body {
   height: 100vh !important;
   margin-top: -100vh !important;
 
-  webview {
+  #preview-context {
     width: 100%;
     height: 100%;
+    webview {
+      width: 100%;
+      height: 100%;
+    }
   }
 }

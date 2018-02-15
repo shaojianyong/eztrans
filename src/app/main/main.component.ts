@@ -310,11 +310,19 @@ export class MainComponent implements OnInit {
   }
 
   toggleRightSide(): void {
+
+  }
+
+  preview(): void {
     $('#preview-side').sidebar({
       context: 'body',
       dimPage: true,
       transition: 'overlay'
     }).sidebar('toggle');
+
+    $('#preview-close').sticky({
+      context: '#preview-context'
+    });
   }
 
   getTargetLeftIcon(index: number): string {
@@ -765,6 +773,16 @@ export class MainComponent implements OnInit {
       self.prevPage();
     });
 
+    // 预览视图
+    $('#preview-close-button').on('click', () => {
+      self.preview();
+    });
+
+    $('#preview-export-button').on('click', () => {
+      self.exportFile();
+    });
+
+    // 安装弹出提示
     self.installPopupTips();
 
     // 安装外部链接
