@@ -90,7 +90,7 @@ export class HomeComponent implements OnInit {
     doc_name.focus();
   }
 
-  endDocRename(event: any): void {
+  endDocRename(event: KeyboardEvent): void {
     const doc_name = $(`#doc-${this.sel_doc.id}>td.doc-name`);
     doc_name.attr('contenteditable', 'false');
     this.sel_doc.name = doc_name.text();

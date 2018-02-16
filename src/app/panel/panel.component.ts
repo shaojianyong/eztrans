@@ -142,6 +142,11 @@ export class PanelComponent implements OnInit {
     }
   }
 
+  endEditEnterKeyDown(event: KeyboardEvent): void {
+    $('#custom-editor').blur();
+    event.preventDefault();
+  }
+
   reTranslate(): void {
     this.refreshEvent.emit({forceShowSelected: true});
   }
