@@ -117,6 +117,14 @@ function saveFile (event, filePath, content) {
   });
 }
 
+function savePreviewFile(event, docId, content) {
+  const filePath = path.join(__dirname, 'preview_cache', docId + '.html');
+  console.log(content);
+  fs.writeFile(filePath, content, function(err) {
+    event.sender.send('preview-file-saved', err, filePath);
+  });
+}
+
 function retranslate(menuItem, browserWindow) {
   browserWindow.send('retranslate');
 }
@@ -565,6 +573,7 @@ function deleteDocFile(event, doc_id) {
 ipc.on('read-file', readFile);
 ipc.on('read-file-sync', readFileSync);
 ipc.on('save-file', saveFile);
+ipc.on('save-preview-file', savePreviewFile);
 ipc.on('show-item-context-menu', showItemContextMenu);
 ipc.on('show-doc-context-menu', showDocContextMenu);
 ipc.on('show-group-context-menu', showGroupContextMenu);

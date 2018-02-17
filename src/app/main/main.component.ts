@@ -87,7 +87,7 @@ export class MainComponent implements OnInit {
   }
 
   exportFile(): void {
-    if (!this.child_home.cur_doc) {
+    if (!this.child_home.cur_doc || !this.child_home.cur_doc.id) {
       return;
     }
 
@@ -120,6 +120,32 @@ export class MainComponent implements OnInit {
         ipc.send('save-file', filename, parser.getLastData(fileExt));
       }
     });
+  }
+
+  savePreviewFile(): void {
+    if (!this.child_home.cur_doc || !this.child_home.cur_doc.id) {
+      return;
+    }
+
+    const segments = [];
+    const parser = this.pms.getParser(this.child_home.cur_doc.data_type);
+    parser.load(this.child_home.cur_doc.file_data);
+
+    for (let index = 0; index < this.child_home.cur_doc.sentences.length; ++index) {
+      let target_text = '';
+      const current = this.child_home.cur_doc.sentences[index];
+      if (!current.ignore && current.target !== -2) {
+        if (current.target === -1) {
+          target_text = current.custom.target_text;
+        } else {
+          target_text = current.refers[current.target].target_text;
+        }
+      }
+      segments[index] = target_text;
+    }
+    parser.update(segments);
+
+    ipc.send('save-preview-file', this.child_home.cur_doc.id, parser.getLastData('html'));
   }
 
   // ipcRenderer与ipcMain同步通信，在JavaScript中，同步代码好丑陋
@@ -314,6 +340,13 @@ export class MainComponent implements OnInit {
   }
 
   preview(): void {
+    this.savePreviewFile();
+  }
+
+  showPreview(filePath: string): void {
+    filePath.replace(/\\/g, '/');
+    $('#preview-context>webview').attr('src', 'file:///' + filePath);
+
     $('#preview-side').sidebar({
       context: 'body',
       dimPage: true,
@@ -763,6 +796,10 @@ export class MainComponent implements OnInit {
 
     ipc.on('file-saved', (event, err) => {
       console.log('File Saved!');  // TODO: 自动打开文件？
+    });
+
+    ipc.on('preview-file-saved', (event, err, filePath) => {
+      self.showPreview(filePath);
     });
 
     ipc.on('next_page', (event) => {
