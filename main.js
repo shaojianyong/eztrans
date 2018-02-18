@@ -25,27 +25,26 @@ let openedDocs = {};
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
-let view;
+let transView;
 
 function createWindow() {
   // Create the browser window.
   // electron.Menu.setApplicationMenu(null);  // 隐藏菜单栏
   mainWindow = new BrowserWindow({width: 800, height: 600, minWidth: 800, minHeight: 600});
 
-  view = new BrowserView();
-  mainWindow.setBrowserView(view);
+  transView = new BrowserView();
+  mainWindow.setBrowserView(transView);
   const wcb = mainWindow.getContentBounds();
-  view.setBounds({x: 0, y: 0, width: wcb.width, height: wcb.height});
-  view.setAutoResize({width: true, height: true});
-  view.webContents.loadURL(url.format({
+  transView.setBounds({x: 0, y: 0, width: wcb.width, height: wcb.height});
+  transView.setAutoResize({width: true, height: true});
+  transView.webContents.loadURL(url.format({
     pathname: path.join(__dirname, 'dist', 'index.html'),
     protocol: 'file:',
     slashes: true
   }));
-  // view.webContents.loadURL('https://www.baidu.com/');
 
-  // view.webContents.openDevTools();
   // Open the DevTools.
+  transView.webContents.openDevTools();
   // mainWindow.webContents.openDevTools();
 
   // Emitted when the window is closed.
@@ -278,8 +277,10 @@ function showItemContextMenu(event, params) {
   contextMenu.append(new MenuItem({ label: 'Delete', icon: './dist/assets/images/icons/delete.png' }));
   */
 
-  const win = BrowserWindow.fromWebContents(event.sender);
-  contextMenu.popup(win);
+  // const win = BrowserWindow.fromWebContents(event.sender);  undefined!
+  const win = BrowserWindow.fromBrowserView(transView);
+  // const win = BrowserWindow.getFocusedWindow();
+  contextMenu.popup(null, {x: 0, y: 0});
 }
 
 function showDocContextMenu(event, curGroup, allGroup, opened) {
