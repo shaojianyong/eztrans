@@ -1,9 +1,8 @@
 import {Component, OnInit, ChangeDetectorRef, ViewChild, HostListener} from '@angular/core';
 import {Title} from '@angular/platform-browser';
 
-const electron = (<any>window).require('electron');
-const ipc = electron.ipcRenderer;
-const dialog = electron.remote.dialog;
+const {ipcRenderer, remote} = (<any>window).require('electron');
+const {dialog, Menu, MenuItem} = remote;
 
 import {ExLinksModule} from '../services/utils/ex-links.module';
 
@@ -81,7 +80,7 @@ export class MainComponent implements OnInit {
     dialog.showOpenDialog(options, (files) => {
       if (files) {
         this.reset();
-        ipc.send('read-file', files, group_id);  // ('read-file', files, this);  进程之间不能传递对象
+        ipcRenderer.send('read-file', files, group_id);  // ('read-file', files, this);  进程之间不能传递对象
       }
     });
   }
@@ -117,7 +116,7 @@ export class MainComponent implements OnInit {
     dialog.showSaveDialog(options, (filename) => {
       if (filename) {
         const fileExt = FunctionUtils.getExtName(filename).toLowerCase();
-        ipc.send('save-file', filename, parser.getLastData(fileExt));
+        ipcRenderer.send('save-file', filename, parser.getLastData(fileExt));
       }
     });
   }
@@ -145,7 +144,7 @@ export class MainComponent implements OnInit {
     }
     parser.update(segments);
 
-    ipc.send('save-preview-file', this.child_home.cur_doc.id, parser.getLastData('html'));
+    ipcRenderer.send('save-preview-file', this.child_home.cur_doc.id, parser.getLastData('html'));
   }
 
   // ipcRenderer与ipcMain同步通信，在JavaScript中，同步代码好丑陋
@@ -163,7 +162,7 @@ export class MainComponent implements OnInit {
   onItemContextMenu(index: number): void {
     this.onItemClick(index);
     const sentence = this.child_home.cur_doc.sentences[index];
-    ipc.send('show-item-context-menu', {
+    ipcRenderer.send('show-item-context-menu', {
       page_count: this.getPageCount(),
       cur_page: this.cur_page,
       target: sentence.target,
@@ -758,7 +757,7 @@ export class MainComponent implements OnInit {
   ngOnInit() {
     const self = this;
 
-    ipc.on('file-read', (event, err, data, filePath, group_id) => {
+    ipcRenderer.on('file-read', (event, err, data, filePath, group_id) => {
       if (!this.child_home.addDocument(filePath, data, group_id)) {
         return;
       }
@@ -794,19 +793,19 @@ export class MainComponent implements OnInit {
       self.rerender();
     });
 
-    ipc.on('file-saved', (event, err) => {
+    ipcRenderer.on('file-saved', (event, err) => {
       console.log('File Saved!');  // TODO: 自动打开文件？
     });
 
-    ipc.on('preview-file-saved', (event, err, filePath) => {
+    ipcRenderer.on('preview-file-saved', (event, err, filePath) => {
       self.showPreview(filePath);
     });
 
-    ipc.on('next_page', (event) => {
+    ipcRenderer.on('next_page', (event) => {
       self.nextPage();
     });
 
-    ipc.on('previous_page', (event) => {
+    ipcRenderer.on('previous_page', (event) => {
       self.prevPage();
     });
 
