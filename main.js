@@ -1,17 +1,10 @@
-const electron = require('electron');
-// Module to control application life.
-const app = electron.app;
-// Module to create native browser window.
-const BrowserWindow = electron.BrowserWindow;
+const {app, BrowserWindow, BrowserView, ipcMain, dialog, Menu, MenuItem} = require('electron');
+
 const fs = require('fs');
 const url = require('url');
 const path = require('path');
 const loki = require('lokijs');
 
-const ipc = electron.ipcMain;
-const dialog = electron.dialog;
-const Menu = electron.Menu;
-const MenuItem = electron.MenuItem;
 
 // app-settings, app-status
 const appDb = new loki(path.join(__dirname, 'database', 'app.db'), {
@@ -59,7 +52,7 @@ function createWindow () {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
-    mainWindow = null
+    mainWindow = null;
   });
 }
 
@@ -570,17 +563,17 @@ function deleteDocFile(event, doc_id) {
 }
 
 // Handles reading the contents of a file
-ipc.on('read-file', readFile);
-ipc.on('read-file-sync', readFileSync);
-ipc.on('save-file', saveFile);
-ipc.on('save-preview-file', savePreviewFile);
-ipc.on('show-item-context-menu', showItemContextMenu);
-ipc.on('show-doc-context-menu', showDocContextMenu);
-ipc.on('show-group-context-menu', showGroupContextMenu);
-ipc.on('show-recycle-bin-context-menu', showRecycleBinContextMenu);
-ipc.on('show-recycle-doc-context-menu', showRecycleDocContextMenu);
-ipc.on('req-doc-groups', reqDocGroups);
-ipc.on('save-doc-groups', saveDocGroups);
-ipc.on('req-document', reqDocument);
-ipc.on('save-document', saveDocument);
-ipc.on('delete-document-file', deleteDocFile);
+ipcMain.on('read-file', readFile);
+ipcMain.on('read-file-sync', readFileSync);
+ipcMain.on('save-file', saveFile);
+ipcMain.on('save-preview-file', savePreviewFile);
+ipcMain.on('show-item-context-menu', showItemContextMenu);
+ipcMain.on('show-doc-context-menu', showDocContextMenu);
+ipcMain.on('show-group-context-menu', showGroupContextMenu);
+ipcMain.on('show-recycle-bin-context-menu', showRecycleBinContextMenu);
+ipcMain.on('show-recycle-doc-context-menu', showRecycleDocContextMenu);
+ipcMain.on('req-doc-groups', reqDocGroups);
+ipcMain.on('save-doc-groups', saveDocGroups);
+ipcMain.on('req-document', reqDocument);
+ipcMain.on('save-document', saveDocument);
+ipcMain.on('delete-document-file', deleteDocFile);
