@@ -277,10 +277,11 @@ function showItemContextMenu(event, params) {
   contextMenu.append(new MenuItem({ label: 'Delete', icon: './dist/assets/images/icons/delete.png' }));
   */
 
-  // const win = BrowserWindow.fromWebContents(event.sender);  undefined!
-  const win = BrowserWindow.fromBrowserView(transView);
-  // const win = BrowserWindow.getFocusedWindow();
-  contextMenu.popup(null, {x: 0, y: 0});
+  // const bv = BrowserView.fromWebContents(event.sender);
+  // const win1 = BrowserWindow.fromWebContents(event.sender);  undefined!
+  // const win2 = BrowserWindow.fromBrowserView(bv);
+  const win = BrowserWindow.getFocusedWindow();  // win === win2
+  contextMenu.popup(win);
 }
 
 function showDocContextMenu(event, curGroup, allGroup, opened) {

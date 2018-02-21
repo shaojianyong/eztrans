@@ -49,7 +49,7 @@
     "@types/node": "~6.0.60",
     "@types/semantic-ui": "^2.2.6",
     "codelyzer": "~3.2.0",
-    "electron": "^1.7.9",
+    "electron": "^1.8.2",
     "jasmine-core": "~2.6.2",
     "jasmine-spec-reporter": "~4.1.0",
     "karma": "~1.7.0",
