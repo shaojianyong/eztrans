@@ -24,9 +24,7 @@ import { PoParserService } from './parsers/po/po-parser.service';
 import { HomeComponent } from './home/home.component';
 import { MsgboxComponent } from './msgbox/msgbox.component';
 import { StatsComponent } from './stats/stats.component';
-import { FilterComponent } from './filter/filter.component';
 import { OpenComponent } from './open/open.component';
-import { PreviewComponent } from './preview/preview.component';
 
 
 const routes: Routes = [
@@ -47,9 +45,7 @@ const routes: Routes = [
     HomeComponent,
     MsgboxComponent,
     StatsComponent,
-    FilterComponent,
-    OpenComponent,
-    PreviewComponent
+    OpenComponent
   ],
   imports: [
     BrowserModule,

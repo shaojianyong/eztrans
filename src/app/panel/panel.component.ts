@@ -86,7 +86,7 @@ export class PanelComponent implements OnInit {
   }
 
   getHeartIcon(refer_index: number): string {
-    let heart = 'empty heart icon';
+    let heart = 'heart outline icon';
     if (this.sentence.target === refer_index) {
       heart = 'heart icon';
     }

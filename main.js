@@ -25,26 +25,40 @@ let openedDocs = {};
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
-let transView;
+//let transView;
+let preview;
 
 function createWindow() {
   // Create the browser window.
   // electron.Menu.setApplicationMenu(null);  // 隐藏菜单栏
   mainWindow = new BrowserWindow({width: 800, height: 600, minWidth: 800, minHeight: 600});
 
-  transView = new BrowserView();
-  mainWindow.setBrowserView(transView);
+  preview = new BrowserView();
+  mainWindow.setBrowserView(preview);
   const wcb = mainWindow.getContentBounds();
-  transView.setBounds({x: 0, y: 0, width: wcb.width, height: wcb.height});
-  transView.setAutoResize({width: true, height: true});
-  transView.webContents.loadURL(url.format({
+  preview.setBounds({x: 0, y: 0, width: wcb.width, height: wcb.height});
+  preview.setAutoResize({width: true, height: true});
+  /*transView.webContents.loadURL(url.format({
+    pathname: path.join(__dirname, 'dist', 'index.html'),
+    protocol: 'file:',
+    slashes: true
+  }));*/
+
+  preview.webContents.loadURL('https://www.whitehouse.gov/articles/great-debate-presidents-day-washingtons-birthday/');
+
+  mainWindow.setBrowserView(null);
+
+  mainWindow.loadURL(url.format({
     pathname: path.join(__dirname, 'dist', 'index.html'),
     protocol: 'file:',
     slashes: true
   }));
 
+  // mainWindow.setBrowserView(preview);
+
+
   // Open the DevTools.
-  transView.webContents.openDevTools();
+  // transView.webContents.openDevTools();
   // mainWindow.webContents.openDevTools();
 
   // Emitted when the window is closed.
@@ -112,7 +126,7 @@ function saveFile(event, filePath, content) {
 
 function savePreviewFile(event, docId, content) {
   const filePath = path.join(__dirname, 'preview_cache', docId + '.html');
-  console.log(content);
+  // console.log(content);
   fs.writeFile(filePath, content, function(err) {
     event.sender.send('preview-file-saved', err, filePath);
   });

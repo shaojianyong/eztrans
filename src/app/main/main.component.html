@@ -26,7 +26,7 @@
 
 
   <a class="item" (click)="autoTranslate()">
-    <i class="translate icon"></i> Translate
+    <i class="language icon"></i> Translate
   </a>
   <!--a class="icon item" (click)="preview()">
     <i class="lab icon"></i>
@@ -39,10 +39,10 @@
     <i class="ellipsis horizontal icon"></i>
     <div class="menu">
       <div class="item" (click)="sync()">
-        <i class="violet cloud download icon"></i> Cloud Sync
+        <i class="violet cloud download alternate icon"></i> Cloud Sync
       </div>
       <div class="item">
-        <i class="violet cloud upload icon"></i> Sync Upload
+        <i class="violet cloud upload alternate icon"></i> Sync Upload
       </div>
       <div class="divider"></div>
       <div class="item">
@@ -194,7 +194,6 @@
 </div>
 
 <!--Popup Tips-->
-<app-filter></app-filter>
 <app-stats [stats]="getStatistics()"></app-stats>
 
 <!-- Left Sidebar -->
@@ -202,6 +201,9 @@
           (exportEvent)="exportFile()"
           (importEvent)="importFile($event)">
 </app-home>
+
+<!-- File Open Dialog -->
+<app-open></app-open>
 
 <!-- Right Sidebar -->
 <app-settings></app-settings>

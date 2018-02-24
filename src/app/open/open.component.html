@@ -1,3 +1,47 @@
-<p>
-  open works!
-</p>
+<div id="open-dialog" class="ui modal">
+  <div class="ui header">
+    Import New Document
+  </div>
+  <div class="content pt-tab-menu">
+
+
+
+
+    <div class="ui pointing secondary menu">
+      <a class="active item" data-tab="first">Web Page</a>
+      <a class="item" data-tab="second">Local File</a>
+      <a class="item" data-tab="third">Suda Cloud</a>
+    </div>
+    <div class="ui active tab segment" data-tab="first">
+      <div class="ui fluid action input">
+        <input type="text" #webPageURL placeholder="Internet Web Page">
+        <button class="ui icon button" (click)="paste(webPageURL)">
+          <i class="paste icon"></i>
+        </button>
+      </div>
+    </div>
+    <div class="ui tab segment" data-tab="second">
+      <div class="ui fluid action input">
+        <input type="text" #localFileURL placeholder="Local Computer File">
+        <button class="ui icon button" (click)="browse(localFileURL)">
+          <i class="ellipsis horizontal icon"></i>
+        </button>
+      </div>
+    </div>
+    <div class="ui tab segment" data-tab="third">
+      <p>Translate Requests on Suda Cloud</p>
+    </div>
+
+
+
+
+  </div>
+  <div class="actions">
+    <div class="ui primary ok button">
+      Import
+    </div>
+    <div class="ui cancel button">
+      Cancel
+    </div>
+  </div>
+</div>

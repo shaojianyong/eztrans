@@ -11,11 +11,11 @@ import {SentenceModel, SentenceStatus} from '../services/model/sentence.model';
 import {TranslateModel, TranslateState} from '../services/model/translate.model';
 import {ParserManagerService} from '../parsers/manager/parser-manager.service';
 import {EngineManagerService} from '../providers/manager/engine-manager.service';
-import engines from '../providers/manager/engines';
 import {HomeComponent} from '../home/home.component';
 import {AboutComponent} from '../about/about.component';
 import {SettingsComponent} from '../settings/settings.component';
 import {StatisticsModel} from '../services/model/statistics.model';
+import {OpenComponent} from '../open/open.component';
 
 
 @Component({
@@ -34,6 +34,7 @@ export class MainComponent implements OnInit {
   visibility = 0;  // 0-显示所有 1-只显示原文 2-只显示译文，搜索时visibility自动重置
 
   @ViewChild(HomeComponent) child_home: HomeComponent;
+  @ViewChild(OpenComponent) child_open: OpenComponent;
   @ViewChild(SettingsComponent) child_settings: SettingsComponent;
   @ViewChild(AboutComponent) child_about: AboutComponent;
 
@@ -59,6 +60,10 @@ export class MainComponent implements OnInit {
 
   // ipcRenderer与ipcMain同步通信
   importFile(event: any): void {
+    this.child_open.show(() => {
+    });
+
+    /*
     let group_id = null;
     const group = this.child_home.getCurSelGroup();
     if (event) {
@@ -68,7 +73,6 @@ export class MainComponent implements OnInit {
     } else {
       group_id = 'my-translations';
     }
-
 
     const options = {
       title: 'Open a Structured Text File',
@@ -83,6 +87,7 @@ export class MainComponent implements OnInit {
         ipcRenderer.send('read-file', files, group_id);  // ('read-file', files, this);  进程之间不能传递对象
       }
     });
+    */
   }
 
   exportFile(): void {
@@ -823,6 +828,32 @@ export class MainComponent implements OnInit {
 
     // 安装外部链接
     ExLinksModule.applyExLinks();
+
+    /*
+    $.contextMenu({
+      selector: '#item-0',
+      autoHide: true,
+      callback: function(key, options) {
+        const m = 'clicked: ' + key;
+        alert(m);
+      },
+      items: {
+        'edit': {name: 'Edit', icon: 'edit'},
+        'cut': {name: 'Cut', icon: 'cut'},
+        copy: {name: 'Copy', icon: 'copy'},
+        'paste': {name: 'Paste', icon: 'paste'},
+        'delete': {name: 'Delete', icon: 'red star'},
+        'sep1': '---------',
+        'quit': {name: 'Quit', icon: function(){
+          return 'context-menu-icon context-menu-icon-quit';
+        }}
+      }
+    });
+
+    $('#item-0').on('click', function(e){
+      console.log('clicked', this);
+    });
+    */
   }
 
 }
