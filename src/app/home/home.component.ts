@@ -353,9 +353,8 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  addDocument(filePath: string, fileData, group_id: string): boolean {
+  addDocument(filePath: string, fileName: string, fileData: string, group_id: string): boolean {
     const doc = this.findDocInfo(filePath);
-    const fileName = FunctionUtils.getFileName(filePath);
     if (doc && doc.name.toLowerCase() === fileName.toLowerCase()) {  // 已导入，并且没有重命名
       if (doc.id === this.cur_doc.id) {
         this.child_msgbox.setType(1);  // info
@@ -382,7 +381,7 @@ export class HomeComponent implements OnInit {
     const docId = 'd' + moment().format('YYYYMMDDHHmmssSSS');
     const diNew = new DocInfoModel({
       id: docId,
-      name: FunctionUtils.getFileName(filePath),
+      name: fileName,
       group_id: group_id,
       file_path: filePath
     });

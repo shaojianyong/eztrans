@@ -8,6 +8,8 @@ const {dialog} = remote;
   styleUrls: ['./open.component.css']
 })
 export class OpenComponent implements OnInit {
+  docUrl = '';
+  typeId = '';
 
   constructor() { }
 
@@ -37,7 +39,6 @@ export class OpenComponent implements OnInit {
         {name: 'Text Files', extensions: ['txt', 'md', 'po']}
       ]
     };
-    console.log('browse...');
     dialog.showOpenDialog(options, (files) => {
       if (files) {
         inputBox.value = files[0];
@@ -45,12 +46,25 @@ export class OpenComponent implements OnInit {
     });
   }
 
+  onOK(): void {
+    const activeTab = $('.ui.active.tab.segment');
+    this.typeId = activeTab.attr('data-tab');
+    this.docUrl = activeTab.find('input').val().toString();
+  }
+
+  getTypeId(): string {
+    return this.typeId;
+  }
+
+  getDocUrl(): string {
+    return this.docUrl;
+}
+
   ngOnInit() {
     $('.pt-tab-menu .menu .item')
       .tab({
         context: '.pt-tab-menu'
-      })
-    ;
+      });
   }
 
 }

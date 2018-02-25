@@ -60,7 +60,27 @@ export class MainComponent implements OnInit {
 
   // ipcRenderer与ipcMain同步通信
   importFile(event: any): void {
+    let group_id = null;
+    const group = this.child_home.getCurSelGroup();
+    if (event) {
+      group_id = event.group_id;
+    } else if (group) {
+      group_id = group.id;
+    } else {
+      group_id = 'my-translations';
+    }
+
     this.child_open.show(() => {
+      const url = this.child_open.getDocUrl();
+      const tid = this.child_open.getTypeId();
+
+      if (url) {
+        this.reset();
+        ipcRenderer.send('read-file', url, group_id);
+      } else {
+        alert(tid === 'first' ? 'Please input an internet web URL.' : 'Please input a local file path.');
+        return false;
+      }
     });
 
     /*
@@ -762,12 +782,12 @@ export class MainComponent implements OnInit {
   ngOnInit() {
     const self = this;
 
-    ipcRenderer.on('file-read', (event, err, data, filePath, group_id) => {
-      if (!this.child_home.addDocument(filePath, data, group_id)) {
+    ipcRenderer.on('file-read', (event, err, data, filePath, fileName, group_id) => {
+      if (!this.child_home.addDocument(filePath, fileName, data, group_id)) {
         return;
       }
       self.reset();
-      const ext_name = FunctionUtils.getExtName(filePath);
+      const ext_name = FunctionUtils.getExtName(fileName);
       const parser = this.pms.getParser(ext_name);
       parser.load(data);
       parser.parse().subscribe(

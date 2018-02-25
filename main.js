@@ -1,4 +1,5 @@
-const {app, BrowserWindow, BrowserView, ipcMain, dialog, Menu, MenuItem} = require('electron');
+const { app, BrowserWindow, BrowserView, ipcMain, dialog, Menu, MenuItem } = require('electron');
+const { JSDOM } = require('jsdom');
 
 const fs = require('fs');
 const url = require('url');
@@ -95,11 +96,40 @@ app.on('activate', function() {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
-function readFile(event, files, group_id) {
-  if (files) {
-    const filePath = files[0];
-    fs.readFile(filePath, 'utf8', function(err, data) {
-      event.sender.send('file-read', err, data, filePath, group_id);
+function getBaseURL(fileUrl) {
+  const index = fileUrl.lastIndexOf('/');
+  return fileUrl.substr(0, index + 1);
+}
+
+function getFileName(filePath) {
+  let res = null;
+  const ns = filePath.split(/\/|\\/);
+  if (ns.length) {
+    res = ns[ns.length - 1];
+  }
+  return res;
+}
+
+function readFile(event, fileUrl, group_id) {
+  if (fileUrl.length > 9
+    && (fileUrl.substr(0, 7).toLowerCase() === 'http://'
+      || fileUrl.substr(0, 8).toLowerCase() === 'https://')) {
+    JSDOM.fromURL(fileUrl).then(dom => {
+      // TODO: 对dom.window.document.head和firstElementChild做些检查
+      const baseNode = dom.window.document.createElement('base');
+      baseNode.setAttribute('href', getBaseURL(fileUrl));
+      dom.window.document.head.insertBefore(baseNode, dom.window.document.head.firstElementChild);
+
+      let fileName = dom.window.document.title.toLowerCase().replace(/ /g, '_') + '.html';
+      if (fileUrl.endsWith('.html') || fileUrl.endsWith('.HTML')) {
+        const index = fileUrl.lastIndexOf('/');
+        fileName = fileUrl.substr(index + 1);
+      }
+      event.sender.send('file-read', null, dom.serialize(), fileUrl, fileName, group_id);
+    });
+  } else {
+    fs.readFile(fileUrl, 'utf8', function(err, data) {
+      event.sender.send('file-read', err, data, fileUrl, getFileName(fileUrl), group_id);
     });
   }
 }
