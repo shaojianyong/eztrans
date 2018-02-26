@@ -49,6 +49,7 @@ export class MainComponent implements OnInit {
   reset(): void {
     this.cur_page = 0;
     this.cur_index = -1;
+    document.getElementById('trans-list').scrollTop = 0;
     this.search_text = '';
     $('#main-search').val('');
     $('#trans-list').unhighlight();
