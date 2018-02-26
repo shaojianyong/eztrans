@@ -120,7 +120,7 @@ function readFile(event, fileUrl, group_id) {
       baseNode.setAttribute('href', getBaseURL(fileUrl));
       dom.window.document.head.insertBefore(baseNode, dom.window.document.head.firstElementChild);
 
-      let fileName = dom.window.document.title.toLowerCase().replace(/ /g, '_') + '.html';
+      let fileName = dom.window.document.title.toLowerCase().replace(/ /g, '-') + '.html';
       if (fileUrl.endsWith('.html') || fileUrl.endsWith('.HTML')) {
         const index = fileUrl.lastIndexOf('/');
         fileName = fileUrl.substr(index + 1);

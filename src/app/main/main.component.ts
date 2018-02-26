@@ -136,7 +136,8 @@ export class MainComponent implements OnInit {
     const expInfo = this.pms.getExportInfo(this.child_home.cur_doc.data_type);
     const options = {
       title: expInfo.title,
-      filters: expInfo.filters
+      filters: expInfo.filters,
+      defaultPath: this.child_home.getDocInfo(this.child_home.cur_doc.id).name
     };
     dialog.showSaveDialog(options, (filename) => {
       if (filename) {
