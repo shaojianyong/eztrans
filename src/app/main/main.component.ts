@@ -48,9 +48,6 @@ export class MainComponent implements OnInit {
 
   reset(): void {
     this.cur_page = 0;
-    if (this.cur_index !== -1) {
-      $(`#item-${this.cur_index}`).css('background-color', 'white');
-    }
     this.cur_index = -1;
     this.search_text = '';
     $('#main-search').val('');
