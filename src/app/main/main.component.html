@@ -106,12 +106,12 @@
          (contextmenu)="onItemContextMenu(idx)"
          class="item {{idx === cur_index ? 'selected_sentence' : ''}}">
 
-      <table id="table-{{idx}}" class="ui very basic table">
+      <table id="table-{{idx}}" class="ui very basic compact table">
         <tbody>
         <tr *ngIf="isSourceVisible(idx)">
           <td class="collapsing">
             <div class="trans-flag-icon">
-              <i class="large {{getSourceLeftIcon(idx)}}"></i>
+              <i class="{{getSourceLeftIcon(idx)}}"></i>
             </div>
           </td>
           <td class="{{isTargetVisible(idx) ? 'source-cell' : 'source-alone'}}">
@@ -119,14 +119,14 @@
           </td>
           <td class="collapsing">
             <div class="trans-flag-icon">
-              <i class="large {{getSourceRightIcon(idx)}}"></i>
+              <i class="{{getSourceRightIcon(idx)}}"></i>
             </div>
           </td>
         </tr>
         <tr *ngIf="isTargetVisible(idx)">
           <td class="collapsing">
             <div class="trans-flag-icon">
-              <i class="large {{getTargetLeftIcon(idx)}}"></i>
+              <i class="{{getTargetLeftIcon(idx)}}"></i>
             </div>
           </td>
           <td class="{{isSourceVisible(idx) ? 'target-cell' : 'target-alone'}}">
@@ -134,7 +134,7 @@
           </td>
           <td class="collapsing">
             <div class="trans-flag-icon">
-              <i class="large {{getTargetRightIcon(idx)}}"></i>
+              <i class="{{getTargetRightIcon(idx)}}"></i>
             </div>
           </td>
         </tr>
