@@ -239,7 +239,9 @@ export class MainComponent implements OnInit {
       }
     }
 
-    if (successNum === totalNum) {
+    if (totalNum === 0) {
+      res = SentenceStatus.INITIAL;
+    } else if (successNum === totalNum) {
       res = SentenceStatus.SUCCESS;
     } else if (failureNum === totalNum) {
       res = SentenceStatus.FAILURE;
@@ -334,11 +336,11 @@ export class MainComponent implements OnInit {
     } else if (sentence.target === -1) {
       icon = 'placeholder icon';  // 占位符
     } else if (status === SentenceStatus.INITIAL) {
-      icon = 'placeholder icon';  // 占位符
+      icon = (index === this.cur_index) ? 'olive quote left icon' : 'placeholder icon';
     } else if (status === SentenceStatus.IN_PROC) {
       icon = 'spinner loading icon';
     } else if (status === SentenceStatus.SUCCESS) {
-      icon = 'placeholder icon';  // 占位符
+      icon = (index === this.cur_index) ? 'olive quote left icon' : 'placeholder icon';
     } else if (status === SentenceStatus.WARNING) {
       icon = 'orange warning circle icon';
     } else if (status === SentenceStatus.FAILURE) {
@@ -348,7 +350,19 @@ export class MainComponent implements OnInit {
   }
 
   getSourceRightIcon(index: number): string {
-    return 'placeholder icon';
+    const sentence = this.child_home.cur_doc.sentences[index];
+    const status = this.getSentenceStatus(sentence);
+    let res = 'placeholder icon';
+    if (index === this.cur_index) {
+      if (status === SentenceStatus.INITIAL) {
+        res = 'olive language icon';
+      } else if (status === SentenceStatus.WARNING || status === SentenceStatus.FAILURE) {
+        res = 'olive repeat icon';
+      } else {
+        res = 'placeholder icon';
+      }
+    }
+    return res;
   }
 
   toggleLeftSide(): void {

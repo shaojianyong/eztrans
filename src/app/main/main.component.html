@@ -140,6 +140,26 @@
         </tr>
         </tbody>
       </table>
+
+
+      <div class="ui center aligned container">
+      <div *ngIf="idx === cur_index" class="ui fluid attached compact menu">
+        <a class="right item" (click)="skipOver()">
+          <i *ngIf="child_home.cur_doc.sentences[cur_index].ignore" class="green quote right icon"></i>
+          <i *ngIf="!child_home.cur_doc.sentences[cur_index].ignore" class="quote right icon"></i>
+        </a>
+        <a *ngIf="child_home.cur_doc.sentences[cur_index].target !== -2 && !child_home.cur_doc.sentences[cur_index].ignore" class="item" (click)="changeFlagIcon()">
+          <i class="checkmark icon"></i>
+        </a>
+        <a *ngIf="child_home.cur_doc.sentences[cur_index].target === -2 && !child_home.cur_doc.sentences[cur_index].ignore" class="item" (click)="emptyHandTrans()">
+          <i class="plane icon"></i>
+        </a>
+        <a *ngIf="!child_home.cur_doc.sentences[cur_index].ignore" class="item" (click)="reTranslate()">
+          <i class="repeat icon"></i>
+        </a>
+      </div>
+      </div>
+
     </div>
   </div>
 
