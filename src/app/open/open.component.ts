@@ -58,7 +58,7 @@ export class OpenComponent implements OnInit {
 
   getDocUrl(): string {
     return this.docUrl;
-}
+  }
 
   ngOnInit() {
     $('.pt-tab-menu .menu .item')
