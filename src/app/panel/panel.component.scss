@@ -1,18 +1,19 @@
 #panel-container {
   .ui.vertical.segment {
-    padding-top: 20px;
+    padding-top: 12px;
+    padding-bottom: 2px;
     padding-left: 20px;
     padding-right: 20px;
     p {
       text-align: justify;
       text-justify: distribute-all-lines;
       text-align-last: left;
+      line-height: 1.4285;
+      margin-bottom: 2px;
     }
-  }
 
-  p {
-    margin: 0;
-    padding: 0;
-    line-height: 1.4285;
+    div.menu {
+      margin-top: 2px;
+    }
   }
 }

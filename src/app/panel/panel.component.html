@@ -3,14 +3,14 @@
     <div id="custom-editor" contenteditable="true" [textContent]="sentence.custom.target_text"
          (input)="onEditInput()" (focus)="onEditFocus()" (blur)="onEditBlur()"
          (keydown.enter)="endEditEnterKeyDown($event)"></div>
-    <div class="ui small icon secondary menu">
+    <div class="ui small secondary menu">
       <a class="item" (click)="selectTranslation(-1)">
-        <i class="{{getHeartIcon(-1)}}"></i>
+        <i class="{{getHeartIcon(-1)}}"></i> Like
       </a>
       <a class="item" (click)="removeCustom()">
-        <i class="remove icon"></i>
+        <i class="remove icon"></i> Delete
       </a>
-      <a class="right item">
+      <a class="right icon item">
         <i class="idea icon"></i>
       </a>
     </div>
@@ -18,14 +18,14 @@
   <!-- important: idx定义要用let，否则事件处理函数不能用它作为参数 -->
   <div *ngFor="let refer of sentence.refers; let idx = index" class="ui vertical segment">
     <p>{{refer.target_text}}</p>
-    <div class="ui small icon secondary menu">
+    <div class="ui small secondary menu">
       <a class="item" (click)="selectTranslation(idx)">
-        <i class="{{getHeartIcon(idx)}}"></i>
+        <i class="{{getHeartIcon(idx)}}"></i> Like
       </a>
       <a class="item" (click)="clone(idx)">
-        <i class="clone outline icon"></i>
+        <i class="clone outline icon"></i> Clone
       </a>
-      <a class="right item" (click)="onExLink(refer.engine_name)">
+      <a class="right icon item" (click)="onExLink(refer.engine_name)">
         <i class="{{getEngineIcon(refer.engine_name)}}"></i>
       </a>
     </div>
