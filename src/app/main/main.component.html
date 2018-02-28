@@ -146,7 +146,7 @@
   </div>
 
 
-  <div class="ui container" id="refer-preview">
+  <div *ngIf="child_home.cur_doc && child_home.cur_doc.id" class="ui container" id="refer-preview">
   <split direction="vertical" gutterColor="#e5e5e5">
     <split-area size="50">
       <app-panel [index]="cur_index"

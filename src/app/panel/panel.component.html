@@ -1,211 +1,33 @@
-<div id="panel-container" *ngIf="sentence" class="ui container">
-  <!--div class="ui vertical segment">
-    <p>{{sentence.source}}</p>
+<div id="panel-container" *ngIf="sentence && sentence.target !== -2 && !sentence.ignore" class="ui container">
+  <div *ngIf="sentence.custom" class="ui vertical segment">
+    <div id="custom-editor" contenteditable="true" [textContent]="sentence.custom.target_text"
+         (input)="onEditInput()" (focus)="onEditFocus()" (blur)="onEditBlur()"
+         (keydown.enter)="endEditEnterKeyDown($event)"></div>
     <div class="ui small icon secondary menu">
-      <a class="item" (click)="skipOver()">
-        <i *ngIf="sentence.ignore" class="green quote right icon"></i>
-        <i *ngIf="!sentence.ignore" class="quote right icon"></i>
+      <a class="item" (click)="selectTranslation(-1)">
+        <i class="{{getHeartIcon(-1)}}"></i>
       </a>
-      <a *ngIf="sentence.target !== -2 && !sentence.ignore" class="item" (click)="changeFlagIcon()">
-        <i class="{{getFlagIcon(sentence)}}"></i>
-      </a>
-      <a *ngIf="sentence.target === -2 && !sentence.ignore" class="item" (click)="emptyHandTrans()">
-        <i class="plane icon"></i>
-      </a>
-      <a *ngIf="!sentence.ignore" class="right item" (click)="reTranslate()">
-        <i class="repeat icon"></i>
-      </a>
-    </div>
-  </div-->
-
-  <div *ngIf="sentence.target !== -2 && !sentence.ignore">
-    <div *ngIf="sentence.custom" class="ui vertical segment">
-      <div id="custom-editor" contenteditable="true" [textContent]="sentence.custom.target_text"
-           (input)="onEditInput()" (focus)="onEditFocus()" (blur)="onEditBlur()"
-           (keydown.enter)="endEditEnterKeyDown($event)"></div>
-      <div class="ui small icon secondary menu">
-        <a class="item" (click)="selectTranslation(-1)">
-          <i class="{{getHeartIcon(-1)}}"></i>
-        </a>
-        <a class="item" (click)="removeCustom()">
-          <i class="remove icon"></i>
-        </a>
-        <a class="right item">
-          <i class="idea icon"></i>
-        </a>
-      </div>
-    </div>
-    <!-- important: idx定义要用let，否则事件处理函数不能用它作为参数 -->
-    <div *ngFor="let refer of sentence.refers; let idx = index" class="ui vertical segment">
-      <p>{{refer.target_text}}</p>
-      <div class="ui small icon secondary menu">
-        <a class="item" (click)="selectTranslation(idx)">
-          <i class="{{getHeartIcon(idx)}}"></i>
-        </a>
-        <a class="item" (click)="clone(idx)">
-          <i class="clone outline icon"></i>
-        </a>
-        <a class="right item" (click)="onExLink(refer.engine_name)">
-          <i class="{{getEngineIcon(refer.engine_name)}}"></i>
-        </a>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!--div class="ui small horizontal list">
-  <div class="item" (click)="onExLink(refer.engine_name)">
-    <i class="radio icon"></i>
-    <div class="content">
-      <div class="header">Option {{idx+1}}</div>
-    </div>
-  </div>
-  <div class="item">
-    <i class="heart icon"></i>
-    <div class="content">
-      <div class="header">100</div>
-    </div>
-  </div>
-</div>
-<div class="ui small right floated horizontal list">
-  <div class="item">
-    <i class="cloud icon"></i>
-    <div class="content">
-      <div class="header"><a (click)="onExLink(refer.engine_name)">{{refer.engine_name}}</a></div>
-    </div>
-  </div>
-</div-->
-
-
-<!--
-<div id="myc" class="ui container">
-  <div class="ui segment">
-    <p>本次新发现的系外行星名为Kepler-90i，这是一颗小质量的岩石行星，由于距离恒星很近，公转周期仅有大约14.4天，
-      因此可以想象其地表温度极高。本次发现的另一个亮点在于，这一成果是借助谷歌公司的机器学习技术实现的。机器学习
-      技术的本质在于计算机通过人工智能技术实现“自我学习”。在这一案例中，计算机学会了如何对开普勒望远镜获得的海量
-      数据中搜寻疑似的系外行星信号。</p>
-    <div class="ui small horizontal list">
-      <div class="item">
-        <i class="radio icon"></i>
-        <div class="content">
-          <div class="header">Option 1</div>
-        </div>
-      </div>
-      <div class="item">
-        <i class="heart icon"></i>
-        <div class="content">
-          <div class="header">100</div>
-        </div>
-      </div>
-    </div>
-    <div class="ui small right floated horizontal list">
-      <div class="item">
-        <i class="database icon"></i>
-        <div class="content">
-          <div class="header"><a href="https://github.com/shaojianyong">Local</a></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="ui tertiary segment">
-    <p>本次新发现的系外行星名为Kepler-90i，这是一颗小质量的岩石行星，由于距离恒星很近，公转周期仅有大约14.4天，
-      因此可以想象其地表温度极高。本次发现的另一个亮点在于，这一成果是借助谷歌公司的机器学习技术实现的。机器学习
-      技术的本质在于计算机通过人工智能技术实现“自我学习”。在这一案例中，计算机学会了如何对开普勒望远镜获得的海量
-      数据中搜寻疑似的系外行星信号。</p>
-    <div class="ui small horizontal list">
-      <div class="item">
-        <i class="selected radio icon"></i>
-        <div class="content">
-          <div class="header">Option 2</div>
-        </div>
-      </div>
-      <div class="item">
-        <i class="heart icon"></i>
-        <div class="content">
-          <div class="header">100</div>
-        </div>
-      </div>
-    </div>
-    <div class="ui small right floated horizontal list">
-      <div class="item">
-        <i class="cloud icon"></i>
-        <div class="content">
-          <div class="header"><a href="http://fanyi.baidu.com/">Baidu</a></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="ui segment">
-    <p>本次新发现的系外行星名为Kepler-90i，这是一颗小质量的岩石行星，由于距离恒星很近，公转周期仅有大约14.4天，
-      因此可以想象其地表温度极高。本次发现的另一个亮点在于，这一成果是借助谷歌公司的机器学习技术实现的。机器学习
-      技术的本质在于计算机通过人工智能技术实现“自我学习”。在这一案例中，计算机学会了如何对开普勒望远镜获得的海量
-      数据中搜寻疑似的系外行星信号。</p>
-    <div class="ui small horizontal list">
-      <div class="item">
-        <i class="radio icon"></i>
-        <div class="content">
-          <div class="header">Option 3</div>
-        </div>
-      </div>
-      <div class="item">
-        <i class="heart icon"></i>
-        <div class="content">
-          <div class="header">100</div>
-        </div>
-      </div>
-      <div class="item">
-        <i class="refresh icon"></i>
-        <div class="content">
-          <div class="header">Refresh</div>
-        </div>
-      </div>
-      <div class="item">
+      <a class="item" (click)="removeCustom()">
         <i class="remove icon"></i>
-        <div class="content">
-          <div class="header">Remove</div>
-        </div>
-      </div>
+      </a>
+      <a class="right item">
+        <i class="idea icon"></i>
+      </a>
     </div>
-    <div class="ui small right floated horizontal list">
-      <div class="item">
-        <i class="cloud icon"></i>
-        <div class="content">
-          <div class="header"><a href="https://translate.google.cn/">Google</a></div>
-        </div>
-      </div>
+  </div>
+  <!-- important: idx定义要用let，否则事件处理函数不能用它作为参数 -->
+  <div *ngFor="let refer of sentence.refers; let idx = index" class="ui vertical segment">
+    <p>{{refer.target_text}}</p>
+    <div class="ui small icon secondary menu">
+      <a class="item" (click)="selectTranslation(idx)">
+        <i class="{{getHeartIcon(idx)}}"></i>
+      </a>
+      <a class="item" (click)="clone(idx)">
+        <i class="clone outline icon"></i>
+      </a>
+      <a class="right item" (click)="onExLink(refer.engine_name)">
+        <i class="{{getEngineIcon(refer.engine_name)}}"></i>
+      </a>
     </div>
   </div>
 </div>
--->
-
-<!--table class="ui very basic table"-->
-<!--table class="ui celled structured table">
-  <tbody>
-  <tr>
-    <td rowspan="2" class="collapsing">Beta Team</td>
-    <td style="padding: 0;
-      text-align:justify;
-        text-justify:distribute-all-lines;
-        text-align-last:left">In the real world, it’s all Jeep. The Trackhawk gets a surprising jump on the
-      Challenger
-      thanks to its all-wheel-drive system and launch control. Even though the SUV tips the scales at 5,258 pounds
-      (2,384 kilograms), it looks like on its feet in a straight line against the Challenger.
-    </td>
-    <td rowspan="2" class="collapsing">
-      <i class="green checkmark icon"></i>
-    </td>
-  </tr>
-  <tr>
-    <td style="padding: 0">Project 2</td>
-  </tr>
-  </tbody>
-</table-->
-
-<!--i class="icons">
-  <i class="red dont icon"></i>
-  <i class="disabled user icon"></i>
-</i-->
-
-<!--app-home></app-home-->
