@@ -336,11 +336,11 @@ export class MainComponent implements OnInit {
     } else if (sentence.target === -1) {
       icon = 'placeholder icon';  // 占位符
     } else if (status === SentenceStatus.INITIAL) {
-      icon = (index === this.cur_index) ? 'olive quote left icon' : 'placeholder icon';
+      icon = (index === this.cur_index) ? 'bordered blue inverted quote left link icon' : 'placeholder icon';
     } else if (status === SentenceStatus.IN_PROC) {
       icon = 'spinner loading icon';
     } else if (status === SentenceStatus.SUCCESS) {
-      icon = (index === this.cur_index) ? 'olive quote left icon' : 'placeholder icon';
+      icon = (index === this.cur_index) ? 'bordered blue inverted quote left link icon' : 'placeholder icon';
     } else if (status === SentenceStatus.WARNING) {
       icon = 'orange warning circle icon';
     } else if (status === SentenceStatus.FAILURE) {
