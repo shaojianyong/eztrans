@@ -330,17 +330,17 @@ export class MainComponent implements OnInit {
     const status = this.getSentenceStatus(sentence);
     let icon = 'placeholder icon';  // 占位符
     if (sentence.ignore) {
-      icon = 'green quote left icon';
+      icon = 'green quote left link icon';
     } else if (sentence.marked) {
       icon = 'placeholder icon';  // 隐藏状态
     } else if (sentence.target === -1) {
       icon = 'placeholder icon';  // 占位符
     } else if (status === SentenceStatus.INITIAL) {
-      icon = (index === this.cur_index) ? 'bordered blue inverted quote left link icon' : 'placeholder icon';
+      icon = (index === this.cur_index) ? 'violet quote left link icon' : 'placeholder icon';
     } else if (status === SentenceStatus.IN_PROC) {
       icon = 'spinner loading icon';
     } else if (status === SentenceStatus.SUCCESS) {
-      icon = (index === this.cur_index) ? 'bordered blue inverted quote left link icon' : 'placeholder icon';
+      icon = (index === this.cur_index) ? 'violet quote left link icon' : 'placeholder icon';
     } else if (status === SentenceStatus.WARNING) {
       icon = 'orange warning circle icon';
     } else if (status === SentenceStatus.FAILURE) {
@@ -355,9 +355,9 @@ export class MainComponent implements OnInit {
     let res = 'placeholder icon';
     if (index === this.cur_index) {
       if (status === SentenceStatus.INITIAL) {
-        res = 'olive language icon';
+        res = 'violet translate link icon';
       } else if (status === SentenceStatus.WARNING || status === SentenceStatus.FAILURE) {
-        res = 'olive repeat icon';
+        res = 'violet repeat link icon';
       } else {
         res = 'placeholder icon';
       }
@@ -421,9 +421,9 @@ export class MainComponent implements OnInit {
     let res = '';
     const sentence = this.child_home.cur_doc.sentences[index];
     if (sentence.marked) {
-      res = 'green checkmark icon';
+      res = 'green checkmark link icon';
     } else if (sentence.target !== -2) {
-      res = 'blue asterisk icon';
+      res = 'blue asterisk link icon';
     } else {
       res = 'placeholder icon';
     }
