@@ -1,5 +1,5 @@
 <div id="panel-container" *ngIf="sentence" class="ui container">
-  <div class="ui vertical segment">
+  <!--div class="ui vertical segment">
     <p>{{sentence.source}}</p>
     <div class="ui small icon secondary menu">
       <a class="item" (click)="skipOver()">
@@ -16,7 +16,7 @@
         <i class="repeat icon"></i>
       </a>
     </div>
-  </div>
+  </div-->
 
   <div *ngIf="sentence.target !== -2 && !sentence.ignore">
     <div *ngIf="sentence.custom" class="ui vertical segment">

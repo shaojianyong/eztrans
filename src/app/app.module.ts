@@ -25,6 +25,7 @@ import { HomeComponent } from './home/home.component';
 import { MsgboxComponent } from './msgbox/msgbox.component';
 import { StatsComponent } from './stats/stats.component';
 import { OpenComponent } from './open/open.component';
+import { AngularSplitModule } from 'angular-split';
 
 
 const routes: Routes = [
@@ -52,6 +53,7 @@ const routes: Routes = [
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
+    AngularSplitModule,
     RouterModule.forRoot(routes)
   ],
   providers: [

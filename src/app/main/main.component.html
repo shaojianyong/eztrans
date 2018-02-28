@@ -145,13 +145,22 @@
     </div>
   </div>
 
-  <app-panel [index]="cur_index"
-             [search]="search_text"
-             [sentence]="child_home.cur_doc.sentences[cur_index]"
-             (rerenderEvent)="forceRerender($event)"
-             (refreshEvent)="retranslate()"
-             id="trans-panel">
-  </app-panel>
+
+  <div class="ui container" id="refer-preview">
+  <split direction="vertical" gutterColor="#e5e5e5">
+    <split-area size="50">
+      <app-panel [index]="cur_index"
+                 [search]="search_text"
+                 [sentence]="child_home.cur_doc.sentences[cur_index]"
+                 (rerenderEvent)="forceRerender($event)"
+                 (refreshEvent)="retranslate()">
+      </app-panel>
+    </split-area>
+    <split-area size="50">
+      <p>Preview ...</p>
+    </split-area>
+  </split>
+  </div>
 </div>
 
 <!-- Status Bar -->
