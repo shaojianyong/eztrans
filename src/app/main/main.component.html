@@ -1,5 +1,5 @@
 <!-- Too bar -->
-<div id="tool-bar" class="ui violet inverted attached menu">
+<div id="tool-bar" class="ui violet inverted top fixed menu">
   <a class="ui icon item" (click)="toggleLeftSide()">
     <i class="sidebar icon"></i>
   </a>
@@ -142,24 +142,6 @@
       </table>
 
 
-      <div class="ui center aligned container">
-      <div *ngIf="idx === cur_index" class="ui fluid attached compact menu">
-        <a class="right item" (click)="skipOver()">
-          <i *ngIf="child_home.cur_doc.sentences[cur_index].ignore" class="green quote right icon"></i>
-          <i *ngIf="!child_home.cur_doc.sentences[cur_index].ignore" class="quote right icon"></i>
-        </a>
-        <a *ngIf="child_home.cur_doc.sentences[cur_index].target !== -2 && !child_home.cur_doc.sentences[cur_index].ignore" class="item" (click)="changeFlagIcon()">
-          <i class="checkmark icon"></i>
-        </a>
-        <a *ngIf="child_home.cur_doc.sentences[cur_index].target === -2 && !child_home.cur_doc.sentences[cur_index].ignore" class="item" (click)="emptyHandTrans()">
-          <i class="plane icon"></i>
-        </a>
-        <a *ngIf="!child_home.cur_doc.sentences[cur_index].ignore" class="item" (click)="reTranslate()">
-          <i class="repeat icon"></i>
-        </a>
-      </div>
-      </div>
-
     </div>
   </div>
 
@@ -173,7 +155,7 @@
 </div>
 
 <!-- Status Bar -->
-<div id="status-bar" class="ui attached menu">
+<div id="status-bar" class="ui bottom fixed menu">
 
   <div class="item">
     <i class="caret right icon"></i>
