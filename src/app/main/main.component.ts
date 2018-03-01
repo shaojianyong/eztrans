@@ -603,7 +603,6 @@ export class MainComponent implements OnInit {
     $('#filter-dropdown').dropdown({
       on: 'hover',
       onChange: (lower_item_str, item_str, item_obj) => {
-        // console.log('===>', item_obj.children('i').attr("class"));
         const value = item_obj[0].getAttribute('value');
         if (value !== this.filter) {
           this.cur_page = 0;
