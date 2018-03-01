@@ -357,6 +357,7 @@ export class MainComponent implements OnInit {
     this.savePreviewFile();
   }
 
+  /*
   showPreview(filePath: string): void {
     filePath.replace(/\\/g, '/');
     $('#preview-context>webview').attr('src', 'file:///' + filePath);
@@ -371,6 +372,7 @@ export class MainComponent implements OnInit {
       context: '#preview-context'
     });
   }
+  */
 
   getTargetLeftIcon(index: number): string {
     let res = '';
@@ -763,9 +765,18 @@ export class MainComponent implements OnInit {
     return (sentence.target !== -2 && !sentence.ignore);
   }
 
-  sync(): void {
+  showPreview(): void {
     const webview = document.getElementsByTagName('webview')[0];
-    (<any>webview).loadURL(`data:text/html,${this.getLastFileData('html')}`);
+    // (<any>webview).loadURL(`data:text/html,${this.getLastFileData('html')}`);
+
+    (<any>webview).loadURL(`data:text/html,<html><head><title>Hello</title></head><body><h1>Hello World!</h1></body></html>`);
+  }
+
+  updatePreview(): void {
+    const webview = document.getElementsByTagName('webview')[0];
+
+    const updateCode = `document.getElementsByTagName('h1')[0].textContent = 'Hello John!'`;
+    (<any>webview).executeJavaScript(updateCode);
   }
 
   ngOnInit() {
@@ -812,7 +823,7 @@ export class MainComponent implements OnInit {
     });
 
     ipcRenderer.on('preview-file-saved', (event, err, filePath) => {
-      self.showPreview(filePath);
+      // self.showPreview(filePath);
     });
 
     ipcRenderer.on('next_page', (event) => {
