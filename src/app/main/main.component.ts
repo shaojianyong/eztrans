@@ -80,32 +80,6 @@ export class MainComponent implements OnInit {
         return false;
       }
     });
-
-    /*
-    let group_id = null;
-    const group = this.child_home.getCurSelGroup();
-    if (event) {
-      group_id = event.group_id;
-    } else if (group) {
-      group_id = group.id;
-    } else {
-      group_id = 'my-translations';
-    }
-
-    const options = {
-      title: 'Open a Structured Text File',
-      filters: [
-        {name: 'Text Files', extensions: ['txt', 'html', 'md', 'po']}
-      ]
-    };
-
-    dialog.showOpenDialog(options, (files) => {
-      if (files) {
-        this.reset();
-        ipcRenderer.send('read-file', files, group_id);  // ('read-file', files, this);  进程之间不能传递对象
-      }
-    });
-    */
   }
 
   exportFile(): void {
@@ -113,6 +87,21 @@ export class MainComponent implements OnInit {
       return;
     }
 
+    const expInfo = this.pms.getExportInfo(this.child_home.cur_doc.data_type);
+    const options = {
+      title: expInfo.title,
+      filters: expInfo.filters,
+      defaultPath: this.child_home.getDocInfo(this.child_home.cur_doc.id).name
+    };
+    dialog.showSaveDialog(options, (filename) => {
+      if (filename) {
+        const fileExt = FunctionUtils.getExtName(filename).toLowerCase();
+        ipcRenderer.send('save-file', filename, this.getLastFileData(fileExt));
+      }
+    });
+  }
+
+  getLastFileData(dataType: string): string {
     const segments = [];
     const parser = this.pms.getParser(this.child_home.cur_doc.data_type);
     parser.load(this.child_home.cur_doc.file_data);
@@ -130,19 +119,7 @@ export class MainComponent implements OnInit {
       segments[index] = target_text;
     }
     parser.update(segments);
-
-    const expInfo = this.pms.getExportInfo(this.child_home.cur_doc.data_type);
-    const options = {
-      title: expInfo.title,
-      filters: expInfo.filters,
-      defaultPath: this.child_home.getDocInfo(this.child_home.cur_doc.id).name
-    };
-    dialog.showSaveDialog(options, (filename) => {
-      if (filename) {
-        const fileExt = FunctionUtils.getExtName(filename).toLowerCase();
-        ipcRenderer.send('save-file', filename, parser.getLastData(fileExt));
-      }
-    });
+    return parser.getLastData(dataType);
   }
 
   savePreviewFile(): void {
@@ -788,9 +765,8 @@ export class MainComponent implements OnInit {
   }
 
   sync(): void {
-    // 与翻译云同步
-    console.log('sync...');
-    webview.loadURL(data);
+    const webview = document.getElementsByTagName('webview')[0];
+    (<any>webview).loadURL(`data:text/html,${this.getLastFileData('html')}`);
   }
 
   ngOnInit() {
