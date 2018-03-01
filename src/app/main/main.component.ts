@@ -787,9 +787,10 @@ export class MainComponent implements OnInit {
     return (sentence.target !== -2 && !sentence.ignore);
   }
 
-  sync(event: any): void {
+  sync(): void {
     // 与翻译云同步
-    console.log(event);
+    console.log('sync...');
+    webview.loadURL(data);
   }
 
   ngOnInit() {
