@@ -787,9 +787,9 @@ export class MainComponent implements OnInit {
     return (sentence.target !== -2 && !sentence.ignore);
   }
 
-  sync(): void {
+  sync(event: any): void {
     // 与翻译云同步
-    console.log('Sync...');
+    console.log(event);
   }
 
   ngOnInit() {
@@ -861,32 +861,6 @@ export class MainComponent implements OnInit {
 
     // 安装外部链接
     ExLinksModule.applyExLinks();
-
-    /*
-    $.contextMenu({
-      selector: '#item-0',
-      autoHide: true,
-      callback: function(key, options) {
-        const m = 'clicked: ' + key;
-        alert(m);
-      },
-      items: {
-        'edit': {name: 'Edit', icon: 'edit'},
-        'cut': {name: 'Cut', icon: 'cut'},
-        copy: {name: 'Copy', icon: 'copy'},
-        'paste': {name: 'Paste', icon: 'paste'},
-        'delete': {name: 'Delete', icon: 'red star'},
-        'sep1': '---------',
-        'quit': {name: 'Quit', icon: function(){
-          return 'context-menu-icon context-menu-icon-quit';
-        }}
-      }
-    });
-
-    $('#item-0').on('click', function(e){
-      console.log('clicked', this);
-    });
-    */
   }
 
 }

@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
@@ -66,6 +66,10 @@ const routes: Routes = [
     PoParserService,
     TextParserService
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+
+  // 为了使用浏览器原生标签webview，否则webview会被当作angular的组件，从而产生错误
+  // stackoverflow.com/questions/47566743/to-allow-any-element-add-no-errors-schema-to-the-ngmodule-schemas-of-this-c
+  schemas: [NO_ERRORS_SCHEMA]
 })
 export class AppModule { }

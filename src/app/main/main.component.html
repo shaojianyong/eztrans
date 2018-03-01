@@ -147,7 +147,7 @@
 
 
   <div *ngIf="child_home.cur_doc && child_home.cur_doc.id" class="ui container" id="refer-preview">
-  <split direction="vertical" gutterColor="#e5e5e5">
+  <split direction="vertical" (dragStart)="sync($event)" (dragProgress)="sync($event)" (dragEnd)="sync($event)" gutterColor="#e5e5e5">
     <split-area size="50">
       <app-panel [index]="cur_index"
                  [search]="search_text"
@@ -157,7 +157,7 @@
       </app-panel>
     </split-area>
     <split-area size="50">
-      <webview src="https://www.whitehouse.gov/"></webview>
+      <webview class="fluid attached" src="https://www.whitehouse.gov/" autosize></webview>
     </split-area>
   </split>
   </div>
