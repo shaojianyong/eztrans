@@ -68,7 +68,7 @@ const routes: Routes = [
   ],
   bootstrap: [AppComponent],
 
-  // 为了使用浏览器原生标签webview，否则webview会被当作angular的组件，从而产生错误
+  // 为了使用浏览器原生标签webview，否则webview会被当作angular组件，从而产生错误
   // stackoverflow.com/questions/47566743/to-allow-any-element-add-no-errors-schema-to-the-ngmodule-schemas-of-this-c
   schemas: [NO_ERRORS_SCHEMA]
 })
