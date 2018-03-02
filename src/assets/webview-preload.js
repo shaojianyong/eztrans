@@ -35,7 +35,7 @@ function nodeUpdate(node, newData) {
   }
 }
 
-function htmlUpdate(data) {
+function htmlUpdate(transData) {
   var newData = {
     texts: transData,
     index: 0
