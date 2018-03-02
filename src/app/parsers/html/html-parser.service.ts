@@ -5,7 +5,7 @@ const { JSDOM } = (<any>window).require('jsdom');
 import { ParserService } from '../base/parser.service';
 import { FunctionUtils } from '../../services/utils/function-utils';
 
-const SKIP_ELEMENTS = ['script', 'pre', 'code'];
+const SKIP_ELEMENTS = ['script', 'pre', 'code', 'noscript'];
 
 @Injectable()
 export class HtmlParserService extends ParserService {
