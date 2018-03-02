@@ -42,7 +42,7 @@ export class HtmlParserService extends ParserService {
   traverseR(node: Node, observer): void {
     if (node.nodeType === Node.TEXT_NODE) {
       const trimmed = node.nodeValue.trim();
-      if (trimmed && trimmed.length > 1) {
+      if (trimmed) {  // && trimmed.length > 1
         observer.next({
           source: trimmed,
           target: null
@@ -62,7 +62,7 @@ export class HtmlParserService extends ParserService {
   traverseW(node: Node, newData: any): void {
     if (node.nodeType === Node.TEXT_NODE) {
       const trimmed = node.nodeValue.trim();
-      if (trimmed && trimmed.length > 1) {
+      if (trimmed) {  // && trimmed.length > 1
         const newVal = FunctionUtils.htmlEscape(newData.texts[newData.index]);
         if (newVal) {
           if (trimmed === node.nodeValue) {

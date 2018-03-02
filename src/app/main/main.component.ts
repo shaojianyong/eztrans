@@ -765,18 +765,88 @@ export class MainComponent implements OnInit {
     return (sentence.target !== -2 && !sentence.ignore);
   }
 
+  getUpdateScript(): string {
+    const segments = [];
+    for (let index = 0; index < this.child_home.cur_doc.sentences.length; ++index) {
+      let target_text = '';
+      const current = this.child_home.cur_doc.sentences[index];
+      if (!current.ignore && current.target !== -2) {
+        if (current.target === -1) {
+          target_text = current.custom.target_text;
+        } else {
+          target_text = current.refers[current.target].target_text;
+        }
+      }
+      segments[index] = target_text;
+    }
+
+    const updateScript = `
+      function htmlEscape(str) {
+        return str
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#27;')
+          .replace(/\\//g, '&#2f;');
+      }
+
+      function traverseW(node, newData) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const trimmed = node.nodeValue.trim();
+        if (trimmed) {
+          const newVal = htmlEscape(newData.texts[newData.index]);
+          if (newVal) {
+            if (trimmed === node.nodeValue) {
+              node.nodeValue = newVal;
+            } else {
+              node.nodeValue = node.nodeValue.replace(trimmed, newVal);
+            }
+          }
+          newData.index++;
+        }
+      }
+  
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        if (['script', 'pre', 'code', 'noscript'].indexOf(node.nodeName.toLowerCase()) === -1) {
+          for (let i = 0; i < node.childNodes.length; ++i) {
+            this.traverseW(node.childNodes[i], newData);
+          }
+        }
+      }
+    }
+    
+    function update(segments) {
+      const newData = {
+        texts: segments,
+        index: 0
+      };
+      traverseW(document.body, newData);
+    }
+    
+    `;
+
+    return updateScript + 'update(' + `['` + segments.join(`', '`) + `']` + ');\n';
+  }
+
   showPreview(): void {
     const webview = document.getElementsByTagName('webview')[0];
-    // (<any>webview).loadURL(`data:text/html,${this.getLastFileData('html')}`);
+    (<any>webview).loadURL(`data:text/html,${this.getLastFileData('html')}`);
 
-    (<any>webview).loadURL(`data:text/html,<html><head><title>Hello</title></head><body><h1>Hello World!</h1></body></html>`);
+    (<any>webview).addEventListener('dom-ready', () => {
+      (<any>webview).openDevTools();
+    });
+
+    // (<any>webview).loadURL(`data:text/html,<html><head><title>Hello</title></head><body><h1>Hello World!</h1></body></html>`);
   }
 
   updatePreview(): void {
+    const updateScript = this.getUpdateScript();
+    console.log(updateScript);
     const webview = document.getElementsByTagName('webview')[0];
+    (<any>webview).executeJavaScript(updateScript);
 
-    const updateCode = `document.getElementsByTagName('h1')[0].textContent = 'Hello John!'`;
-    (<any>webview).executeJavaScript(updateCode);
+    // const updateScript = `document.getElementsByTagName('h1')[0].textContent = 'Hello John!'`;
   }
 
   ngOnInit() {
