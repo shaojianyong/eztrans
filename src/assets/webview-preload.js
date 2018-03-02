@@ -1,20 +1,10 @@
 const { ipcRenderer } = require('electron');
 
-function htmlEscape(str) {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#27;')
-    .replace(/\//g, '&#2f;');
-}
-
 function nodeUpdate(node, newData) {
   if (node.nodeType === Node.TEXT_NODE) {
     var trimmed = node.nodeValue.trim();
     if (trimmed) {
-      var newVal = htmlEscape(newData.texts[newData.index]);
+      var newVal = newData.texts[newData.index];
       if (newVal) {
         if (trimmed === node.nodeValue) {
           node.nodeValue = newVal;
