@@ -43,6 +43,20 @@ function htmlUpdate(transData) {
   nodeUpdate(document.body, newData);
 }
 
+function disableLinks() {
+  var links = document.querySelectorAll('a[href]');
+  for (var i = 0; i < links.length; i++) {
+    links.item(i).addEventListener('click', function (e) {
+      e.preventDefault();
+      // shell.openExternal(url);
+    });
+  }
+}
+
 ipcRenderer.on('update-preview', function(event, message) {
   htmlUpdate(message);
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+  disableLinks();
 });
