@@ -77,26 +77,7 @@ function hitTest(node, hitObj) {
   }
 }
 
-function scrollTo(nodeIndex) {
-  var seekObj = {
-    idx: 0,
-    tgt: nodeIndex,
-    obj: null
-  };
-  seekNode(document.body, seekObj);
-  var eleParent = seekObj.obj.parentNode;
-  while (eleParent.nodeType !== Node.ELEMENT_NODE) {
-    eleParent = eleParent.parentNode;
-  }
-
-  if (window.$) {
-    window.$('html, body').animate({
-      scrollTop: eleParent.offsetTop + (document.body.clientHeight + eleParent.clientHeight) / 2
-    }, 1000);
-  } else {
-    document.body.scrollTop = eleParent.offsetTop + (document.body.clientHeight + eleParent.clientHeight) / 2;
-  }
-
+function selectNode(eleParent) {
   if (eleParent !== selectedNode) {
     var oldBackColor = eleParent.style.backgroundColor;
     eleParent.style.backgroundColor = '#e0e0e7';
@@ -106,6 +87,29 @@ function scrollTo(nodeIndex) {
     orgBackColor = oldBackColor;
     selectedNode = eleParent;
   }
+}
+
+function scrollTo(nodeIndex) {
+  var seekObj = {
+    idx: 0,
+    tgt: nodeIndex,
+    obj: null
+  };
+  seekNode(document.body, seekObj);
+  var eleNode = seekObj.obj;
+  while (eleNode.nodeType !== Node.ELEMENT_NODE) {
+    eleNode = eleNode.parentNode;
+  }
+
+  if (window.$) {
+    window.$('html, body').animate({
+      scrollTop: eleNode.offsetTop + (document.body.clientHeight + eleNode.clientHeight) / 2
+    }, 200);
+  } else {
+    document.body.scrollTop = eleNode.offsetTop + (document.body.clientHeight + eleNode.clientHeight) / 2;
+  }
+
+  selectNode(eleNode);
 }
 
 function disableLinks() {
@@ -145,6 +149,11 @@ document.addEventListener('click', function (event) {
   hitTest(document.body, hitObj);
 
   if (hitObj.tgt !== -1) {
+    var eleNode = hitObj.obj;
+    while (eleNode.nodeType !== Node.ELEMENT_NODE) {
+      eleNode = eleNode.parentNode;
+    }
+    selectNode(eleNode);
     ipc.sendToHost('hit-item', hitObj.tgt);
   }
 });

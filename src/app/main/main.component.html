@@ -142,8 +142,9 @@
     </div>
   </div>
 
-  <div *ngIf="child_home.cur_doc && child_home.cur_doc.id" id="right-side-pane">
-    <app-panel [index]="cur_index"
+  <div id="right-side-pane">
+    <app-panel *ngIf="child_home.cur_doc && child_home.cur_doc.id"
+               [index]="cur_index"
                [search]="search_text"
                [sentence]="child_home.cur_doc.sentences[cur_index]"
                (rerenderEvent)="forceRerender($event)"

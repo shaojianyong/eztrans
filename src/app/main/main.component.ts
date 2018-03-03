@@ -161,6 +161,7 @@ export class MainComponent implements OnInit {
 
     this.cur_index = index;
     this.rerender();
+    this.syncPreview();
   }
 
   onItemContextMenu(index: number): void {
@@ -194,6 +195,7 @@ export class MainComponent implements OnInit {
   forceRerender(event: any): void {
     if (event.hasOwnProperty('resetDocument') && event.resetDocument) {
       this.reset();
+      this.showPreview();
     }
 
     if (event.forceShowSelected) {
@@ -557,6 +559,23 @@ export class MainComponent implements OnInit {
     }
   }
 
+  getPageIndex(index: number): number {
+    let pos = -1;
+    if (this.search_text || this.filter) {
+      if ((!this.search_text || this.searchTest(index)) && (!this.filter || this.filterTest(index))) {
+        pos = this.search_result.indexOf(index);
+      }
+    } else {
+      pos = index;
+    }
+
+    let page = -1;
+    if (pos !== -1) {
+      page = Math.floor(pos / this.page_size);
+    }
+    return page;
+  }
+
   showSelectedItem(): void {
     if (this.cur_index !== -1) {
       const tran_list = document.getElementById('trans-list');
@@ -768,26 +787,44 @@ export class MainComponent implements OnInit {
     return (sentence.target !== -2 && !sentence.ignore);
   }
 
-  showPreview(): void {
+  initPreview(): void {
     const webview = document.getElementsByTagName('webview')[0];
-    (<any>webview).loadURL(`data:text/html,${this.getLastFileData('html')}`);
-
     (<any>webview).addEventListener('dom-ready', () => {
       (<any>webview).openDevTools();
     });
 
     (<any>webview).addEventListener('ipc-message', (event: any) => {
-      console.log('Channel: ', event.channel);
-      console.log('Index: ', event.args[0]);
+      console.log('----->Index: ', event.args[0]);
+      const hit = event.args[0];
+      if (hit === this.cur_index) {
+        return;
+      }
+      const page = this.getPageIndex(hit);
+      if (page !== -1) {
+        this.cur_index = hit;
+        this.cur_page = page;  // flip page
+        this.rerender();
+        this.showSelectedItem();
+      }
     });
   }
 
+  showPreview(): void {
+    const webview = document.getElementsByTagName('webview')[0];
+    if (this.child_home.cur_doc && this.child_home.cur_doc.id) {
+      (<any>webview).loadURL(`data:text/html,${this.getLastFileData('html')}`);
+    } else {
+      (<any>webview).loadURL('data:text/html,<html><body></body></html>');
+    }
+  }
+
+  // TODO: 当LastTransData变化时，自动调用此函数
   updatePreview(): void {
     const webview = document.getElementsByTagName('webview')[0];
     (<any>webview).send('update-preview', this.getLastTransData());
   }
 
-  scrollTest(): void {
+  syncPreview(): void {
     const webview = document.getElementsByTagName('webview')[0];
     (<any>webview).send('scroll-to', this.cur_index);
   }
@@ -855,6 +892,8 @@ export class MainComponent implements OnInit {
     $('#preview-export-button').on('click', () => {
       self.exportFile();
     });
+
+    this.initPreview();
 
     // 安装弹出提示
     self.installPopupTips();
