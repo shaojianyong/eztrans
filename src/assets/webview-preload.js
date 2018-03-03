@@ -1,4 +1,4 @@
-const { ipcRenderer } = require('electron');
+var ipc = require('electron').ipcRenderer;
 
 function nodeUpdate(node, newData) {
   if (node.nodeType === Node.TEXT_NODE) {
@@ -43,7 +43,7 @@ function disableLinks() {
   }
 }
 
-ipcRenderer.on('update-preview', function(event, message) {
+ipc.on('update-preview', function(event, message) {
   htmlUpdate(message);
 });
 
