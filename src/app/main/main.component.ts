@@ -775,6 +775,11 @@ export class MainComponent implements OnInit {
     (<any>webview).addEventListener('dom-ready', () => {
       (<any>webview).openDevTools();
     });
+
+    (<any>webview).addEventListener('ipc-message', (event: any) => {
+      console.log('Channel: ', event.channel);
+      console.log('Index: ', event.args[0]);
+    });
   }
 
   updatePreview(): void {

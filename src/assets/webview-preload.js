@@ -56,6 +56,27 @@ function seekNode(node, seekObj) {
   }
 }
 
+function hitTest(node, hitObj) {
+  if (node.nodeType === Node.TEXT_NODE) {
+    var trimmed = node.nodeValue.trim();
+    if (trimmed) {
+      if (hitObj.obj === node || hitObj.obj === node.parentNode) {
+        hitObj.tgt = hitObj.idx;
+        return;
+      }
+      hitObj.idx++;
+    }
+  }
+
+  if (node.nodeType === Node.ELEMENT_NODE) {
+    if (['script', 'pre', 'code', 'noscript'].indexOf(node.nodeName.toLowerCase()) === -1) {
+      for (var i = 0; i < node.childNodes.length; ++i) {
+        hitTest(node.childNodes[i], hitObj);
+      }
+    }
+  }
+}
+
 function scrollTo(nodeIndex) {
   var seekObj = {
     idx: 0,
@@ -109,4 +130,21 @@ document.addEventListener('DOMContentLoaded', function () {
   window.$ = window.jQuery = require('../assets/jquery-3.2.1.min');
 
   disableLinks();
+});
+
+document.addEventListener('click', function (event) {
+  // stackoverflow.com/questions/9012537/how-to-get-the-element-clicked-for-the-whole-document
+  event = event || window.event;
+  var target = event.target || event.srcElement;
+
+  var hitObj = {
+    idx: 0,
+    tgt: -1,
+    obj: target
+  };
+  hitTest(document.body, hitObj);
+
+  if (hitObj.tgt !== -1) {
+    ipc.sendToHost('hit-item', hitObj.tgt);
+  }
 });
