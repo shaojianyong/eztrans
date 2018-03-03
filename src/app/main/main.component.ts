@@ -782,6 +782,11 @@ export class MainComponent implements OnInit {
     (<any>webview).send('update-preview', this.getLastTransData());
   }
 
+  scrollTest(): void {
+    const webview = document.getElementsByTagName('webview')[0];
+    (<any>webview).send('scroll-to', this.cur_index);
+  }
+
   ngOnInit() {
     const self = this;
 
