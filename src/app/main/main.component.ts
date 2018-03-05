@@ -794,7 +794,6 @@ export class MainComponent implements OnInit {
     });
 
     (<any>webview).addEventListener('ipc-message', (event: any) => {
-      console.log('----->Index: ', event.args[0]);
       const hit = event.args[0];
       if (hit === this.cur_index) {
         return;

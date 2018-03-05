@@ -101,15 +101,13 @@ function scrollTo(nodeIndex) {
     eleNode = eleNode.parentNode;
   }
 
-  if (window.$) {
+  // stackoverflow.com/questions/178325/how-do-i-check-if-an-element-is-hidden-in-jquery
+  if ($(eleNode).is(":visible")) {
     window.$('html, body').animate({
-      scrollTop: eleNode.offsetTop + (document.body.clientHeight + eleNode.clientHeight) / 2
+      scrollTop: $(eleNode).offset().top  // 绝对(相对页面的)偏移量
     }, 200);
-  } else {
-    document.body.scrollTop = eleNode.offsetTop + (document.body.clientHeight + eleNode.clientHeight) / 2;
+    selectNode(eleNode);
   }
-
-  selectNode(eleNode);
 }
 
 function disableLinks() {
