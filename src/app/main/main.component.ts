@@ -277,9 +277,15 @@ export class MainComponent implements OnInit {
             // 根据评分选用最佳翻译
             if (sentence.target === -2) {
               sentence.target = refer_idx;
+              if (res.doc_id === this.child_home.cur_doc.id) {
+                this.updatePreview();
+              }
             } else if (sentence.target !== -1) {
               if (trans_obj.trans_grade > sentence.refers[sentence.target].trans_grade) {
                 sentence.target = refer_idx;
+                if (res.doc_id === this.child_home.cur_doc.id) {
+                  this.updatePreview();
+                }
               }
             }
 
@@ -817,7 +823,6 @@ export class MainComponent implements OnInit {
     }
   }
 
-  // TODO: 当LastTransData变化时，自动调用此函数
   updatePreview(): void {
     const webview = document.getElementsByTagName('webview')[0];
     (<any>webview).send('update-preview', this.getLastTransData());
