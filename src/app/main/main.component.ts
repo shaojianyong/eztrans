@@ -547,8 +547,7 @@ export class MainComponent implements OnInit {
     if (this.cur_page + 1 < this.getPageCount()) {
       this.cur_page++;
       document.getElementById('trans-list').scrollTop = 0;
-      this.cur_index = this.getPageRange()[0];
-      this.rerender();
+      this.onItemClick(this.getPageRange()[0]);
       if (this.search_text) {
         $('#trans-list').highlight(this.search_text);
       }
@@ -559,8 +558,7 @@ export class MainComponent implements OnInit {
     if (this.cur_page > 0) {
       this.cur_page--;
       document.getElementById('trans-list').scrollTop = 0;
-      this.cur_index = this.getPageRange()[0];
-      this.rerender();
+      this.onItemClick(this.getPageRange()[0]);
       if (this.search_text) {
         $('#trans-list').highlight(this.search_text);
       }
