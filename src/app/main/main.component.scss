@@ -14,7 +14,7 @@
     height: auto;
     margin: 0;
     overflow-x: hidden;
-    overflow-y: auto;
+    overflow-y: scroll;
 
     .item {
       padding: 0 12px 0 12px;  // 上右下左
@@ -73,24 +73,11 @@
     width: 50%;
     margin: 0;
 
-    app-panel {
-      position: absolute;
-      top: 0;
-      width: 100%;
-      height: 50%;
-      margin: 0;
-
-      overflow-x: hidden;
-      overflow-y: auto;
-      border-bottom: solid 1px #dcdcdc;
-    }
-
-    webview {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      height: 50%;
-      margin: 0;
+    #webview-area {
+      webview {
+        width: 100%;
+        height: 100%;
+      }
     }
   }
 }

@@ -142,19 +142,24 @@
     </div>
   </div>
 
-  <div id="right-side-pane">
-    <app-panel *ngIf="child_home.cur_doc && child_home.cur_doc.id"
-               [index]="cur_index"
-               [search]="search_text"
-               [sentence]="child_home.cur_doc.sentences[cur_index]"
-               (rerenderEvent)="forceRerender($event)"
-               (targetChangedEvent)="updatePreview()"
-               (refreshEvent)="retranslate()">
-    </app-panel>
-
-    <webview src="data:text/html,<html><body></body></html>"
-             preload="./assets/webview-preload.js">
-    </webview>
+  <div class="ui container" id="right-side-pane">
+    <split direction="vertical" gutterColor="#e5e5e5">
+      <split-area size="50">
+        <app-panel *ngIf="child_home.cur_doc && child_home.cur_doc.id"
+                   [index]="cur_index"
+                   [search]="search_text"
+                   [sentence]="child_home.cur_doc.sentences[cur_index]"
+                   (rerenderEvent)="forceRerender($event)"
+                   (targetChangedEvent)="updatePreview()"
+                   (refreshEvent)="retranslate()">
+        </app-panel>
+      </split-area>
+      <split-area id="webview-area" size="50">
+        <webview src="data:text/html,<html><body></body></html>"
+                 preload="./assets/webview-preload.js">
+        </webview>
+      </split-area>
+    </split>
   </div>
 </div>
 
