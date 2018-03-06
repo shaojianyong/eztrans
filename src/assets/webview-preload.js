@@ -104,7 +104,7 @@ function scrollTo(nodeIndex) {
   // stackoverflow.com/questions/178325/how-do-i-check-if-an-element-is-hidden-in-jquery
   if ($(eleNode).is(":visible")) {
     window.$('html, body').animate({
-      scrollTop: $(eleNode).offset().top  // 绝对(相对页面的)偏移量
+      scrollTop: ($(eleNode).offset().top > 6) ? ($(eleNode).offset().top - 6) : 0  // 绝对(相对页面的)偏移量
     }, 200);
     selectNode(eleNode);
   }
