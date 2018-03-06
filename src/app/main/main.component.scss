@@ -9,7 +9,7 @@
     top: 44px;
     left: 0;
     right: auto;
-    bottom: 44px;
+    bottom: 40px;
     width: 50%;
     height: auto;
     margin: 0;
@@ -68,7 +68,7 @@
   #right-side-pane {
     position: absolute;
     top: 44px;
-    bottom: 44px;
+    bottom: 40px;
     right: 0;
     width: 50%;
     margin: 0;
@@ -84,7 +84,7 @@
 
 #status-bar {
   position: absolute;
-  height: 44px;
+  height: 40px;
   top: auto;
   bottom: 0;
   // width: 100%;  不能加这个，否则右边有空隙！！
