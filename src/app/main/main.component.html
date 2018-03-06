@@ -148,7 +148,7 @@
                [search]="search_text"
                [sentence]="child_home.cur_doc.sentences[cur_index]"
                (rerenderEvent)="forceRerender($event)"
-               (transChangedEvent)="updatePreview()"
+               (targetChangedEvent)="updatePreview()"
                (refreshEvent)="retranslate()">
     </app-panel>
 

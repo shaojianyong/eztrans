@@ -17,6 +17,7 @@ export class PanelComponent implements OnInit {
   @Input() sentence: SentenceModel;
   @Output() rerenderEvent = new EventEmitter<any>();
   @Output() refreshEvent = new EventEmitter<any>();
+  @Output() targetChangedEvent = new EventEmitter<any>();
 
   constructor(private ems: EngineManagerService) {
   }
@@ -25,6 +26,7 @@ export class PanelComponent implements OnInit {
     this.disableHighlight();
     this.sentence.target = refer_index;
     this.rerenderEvent.emit({forceShowSelected: true});
+    this.targetChangedEvent.emit();
     this.enableHighlight();
   }
 
@@ -55,6 +57,7 @@ export class PanelComponent implements OnInit {
     ce.text(this.sentence.custom.target_text);
     ce.attr('contenteditable', 'true');
     ce.focus();
+    this.targetChangedEvent.emit();
     // this.enableHighlight();  不需要重复，onEditBlur将做这个事情
   }
 
@@ -96,10 +99,13 @@ export class PanelComponent implements OnInit {
   removeCustom(): void {
     this.disableHighlight();
     this.sentence.custom = null;
-    if (this.sentence.refers && this.sentence.refers.length > 0) {
-      this.sentence.target = 0;  // TODO: 选中第一个，还是默认引擎？
-    } else {
-      this.sentence.target = -2;
+    if (this.sentence.target === -1) {
+      if (this.sentence.refers && this.sentence.refers.length > 0) {
+        this.sentence.target = 0;
+      } else {
+        this.sentence.target = -2;
+      }
+      this.targetChangedEvent.emit();
     }
     this.rerenderEvent.emit({forceShowSelected: true});
     this.enableHighlight();
@@ -116,6 +122,7 @@ export class PanelComponent implements OnInit {
   skipOver(): void {
     this.sentence.ignore = !this.sentence.ignore;
     this.rerenderEvent.emit({forceShowSelected: true});
+    this.targetChangedEvent.emit();
   }
 
   changeFlagIcon(): void {
@@ -127,7 +134,10 @@ export class PanelComponent implements OnInit {
 
   onEditInput(): void {
     this.sentence.custom.target_text = $('#custom-editor').text();
-    this.rerenderEvent.emit({forceShowSelected: true});
+    if (this.sentence.target === -1) {
+      this.rerenderEvent.emit({forceShowSelected: true});
+      this.targetChangedEvent.emit();
+    }
   }
 
   onEditFocus(): void {

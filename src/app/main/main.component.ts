@@ -106,8 +106,10 @@ export class MainComponent implements OnInit {
     for (let index = 0; index < this.child_home.cur_doc.sentences.length; ++index) {
       let target_text = '';
       const current = this.child_home.cur_doc.sentences[index];
-      if (!current.ignore && current.target !== -2) {
-        if (current.target === -1) {
+      if (current.target !== -2) {
+        if (current.ignore) {
+          target_text = current.source;
+        } else if (current.target === -1) {
           target_text = current.custom.target_text;
         } else {
           target_text = current.refers[current.target].target_text;
