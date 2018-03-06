@@ -1,5 +1,7 @@
 var ipc = require('electron').ipcRenderer;
 
+var SKIP_ELEMENTS = ['style', 'script', 'pre', 'code', 'noscript'];
+
 var selectedNode = null;
 var orgBackColor = null;
 
@@ -20,7 +22,7 @@ function nodeUpdate(node, newData) {
   }
 
   if (node.nodeType === Node.ELEMENT_NODE) {
-    if (['script', 'pre', 'code', 'noscript'].indexOf(node.nodeName.toLowerCase()) === -1) {
+    if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
       for (var i = 0; i < node.childNodes.length; ++i) {
         nodeUpdate(node.childNodes[i], newData);
       }
@@ -48,7 +50,7 @@ function seekNode(node, seekObj) {
   }
 
   if (node.nodeType === Node.ELEMENT_NODE) {
-    if (['script', 'pre', 'code', 'noscript'].indexOf(node.nodeName.toLowerCase()) === -1) {
+    if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
       for (var i = 0; i < node.childNodes.length; ++i) {
         seekNode(node.childNodes[i], seekObj);
       }
@@ -69,7 +71,7 @@ function hitTest(node, hitObj) {
   }
 
   if (node.nodeType === Node.ELEMENT_NODE) {
-    if (['script', 'pre', 'code', 'noscript'].indexOf(node.nodeName.toLowerCase()) === -1) {
+    if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
       for (var i = 0; i < node.childNodes.length; ++i) {
         hitTest(node.childNodes[i], hitObj);
       }
@@ -104,7 +106,7 @@ function scrollTo(nodeIndex) {
   // stackoverflow.com/questions/178325/how-do-i-check-if-an-element-is-hidden-in-jquery
   if ($(eleNode).is(":visible")) {
     window.$('html, body').animate({
-      scrollTop: ($(eleNode).offset().top > 6) ? ($(eleNode).offset().top - 6) : 0  // 绝对(相对页面的)偏移量
+      scrollTop: $(eleNode).offset().top - (document.body.clientHeight - eleNode.clientHeight) / 2  // 绝对(相对页面的)偏移量
     }, 200);
     selectNode(eleNode);
   }
