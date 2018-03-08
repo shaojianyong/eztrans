@@ -11,11 +11,7 @@ function nodeUpdate(node, newData) {
     if (trimmed) {
       var newVal = newData.texts[newData.index];
       if (newVal) {
-        if (trimmed === node.nodeValue) {
-          node.nodeValue = newVal;
-        } else {
-          node.nodeValue = node.nodeValue.replace(trimmed, newVal);
-        }
+        node.nodeValue = newVal.trim();
       }
       newData.index++;
     }

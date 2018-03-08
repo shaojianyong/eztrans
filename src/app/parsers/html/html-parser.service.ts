@@ -40,7 +40,7 @@ export class HtmlParserService extends ParserService {
   traverseR(node: Node, observer): void {
     if (node.nodeType === Node.TEXT_NODE) {
       const trimmed = node.nodeValue.trim();
-      if (trimmed) {  // && trimmed.length > 1
+      if (trimmed) {
         observer.next({
           source: trimmed,
           target: null
@@ -60,14 +60,10 @@ export class HtmlParserService extends ParserService {
   traverseW(node: Node, newData: any): void {
     if (node.nodeType === Node.TEXT_NODE) {
       const trimmed = node.nodeValue.trim();
-      if (trimmed) {  // && trimmed.length > 1
+      if (trimmed) {
         const newVal = newData.texts[newData.index];
         if (newVal) {
-          if (trimmed === node.nodeValue) {
-            node.nodeValue = newVal;
-          } else {
-            node.nodeValue = node.nodeValue.replace(trimmed, newVal);  // 恢复空白字符
-          }
+          node.nodeValue = newVal.trim();
         }
         newData.index++;
       }
