@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 const { JSDOM } = (<any>window).require('jsdom');
-
 import { ParserService } from '../base/parser.service';
-import { FunctionUtils } from '../../services/utils/function-utils';
 
 const SKIP_ELEMENTS = ['style', 'script', 'pre', 'code', 'noscript'];
 
