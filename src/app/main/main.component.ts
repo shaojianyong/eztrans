@@ -782,13 +782,13 @@ export class MainComponent implements OnInit {
     $('#trans-list').unhighlight();
   }
 
-  isSourceVisible(index: number) {
+  isSourceVisible(index: number): boolean {
     // const sentence = this.child_home.cur_doc.sentences[index];
     // return (!sentence.marked || sentence.ignore);
     return true;
   }
 
-  isTargetVisible(index: number) {
+  isTargetVisible(index: number): boolean {
     const sentence = this.child_home.cur_doc.sentences[index];
     return (sentence.target !== -2 && !sentence.ignore);
   }
