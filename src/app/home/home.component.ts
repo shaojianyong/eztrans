@@ -81,7 +81,6 @@ export class HomeComponent implements OnInit {
 
     this.cur_doc = this.cache_docs[this.sel_doc.id];
     this.updateTitle();
-    console.log('------------------------>openDoc');
     if (rerender) {
       this.rerenderEvent.emit({forceShowSelected: false, resetDocument: true});
     }
