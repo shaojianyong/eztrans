@@ -9,9 +9,11 @@ function nodeUpdate(node, newData) {
   if (node.nodeType === Node.TEXT_NODE) {
     var trimmed = node.nodeValue.trim();
     if (trimmed) {
-      var newVal = newData.texts[newData.index];
+      var newVal = newData.texts[newData.index].trim();
       if (newVal) {
-        node.nodeValue = newVal.trim();
+        node.nodeValue = newVal;
+      } else {
+        node.nodeValue = ">";  // 将文本节点置空时(空格会被忽略)，也就是把它给删除了
       }
       newData.index++;
     }
