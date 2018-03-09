@@ -61,10 +61,7 @@ export class HtmlParserService extends ParserService {
     if (node.nodeType === Node.TEXT_NODE) {
       const trimmed = node.nodeValue.trim();
       if (trimmed) {
-        const newVal = newData.texts[newData.index];
-        if (newVal) {
-          node.nodeValue = newVal.trim();
-        }
+        node.nodeValue = newData.texts[newData.index].trim();
         newData.index++;
       }
     }
