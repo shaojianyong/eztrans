@@ -65,7 +65,7 @@ export class HomeComponent implements OnInit {
   }
 
   // 切换当前打开文档前，要先保存
-  openDoc(): void {
+  openDoc(rerender = true): void {
     if (this.cur_doc.id === this.sel_doc.id) {
       return;
     }
@@ -81,7 +81,10 @@ export class HomeComponent implements OnInit {
 
     this.cur_doc = this.cache_docs[this.sel_doc.id];
     this.updateTitle();
-    this.rerenderEvent.emit({forceShowSelected: false, resetDocument: true});
+    console.log('------------------------>openDoc');
+    if (rerender) {
+      this.rerenderEvent.emit({forceShowSelected: false, resetDocument: true});
+    }
   }
 
   renameDoc(): void {
@@ -390,7 +393,7 @@ export class HomeComponent implements OnInit {
     this.cache_docs[docId] = new DocumentModel({id: docId, file_data: fileData, data_type: dataType});
 
     this.select(diNew);
-    this.openDoc();
+    this.openDoc(false);
     this.modified_flag = true;
     return true;
   }

@@ -154,14 +154,6 @@ function saveFile(event, filePath, content) {
   });
 }
 
-function savePreviewFile(event, docId, content) {
-  const filePath = path.join(__dirname, 'preview_cache', docId + '.html');
-  // console.log(content);
-  fs.writeFile(filePath, content, function(err) {
-    event.sender.send('preview-file-saved', err, filePath);
-  });
-}
-
 function retranslate(menuItem, browserWindow) {
   browserWindow.send('retranslate');
 }
@@ -613,7 +605,6 @@ function deleteDocFile(event, doc_id) {
 ipcMain.on('read-file', readFile);
 ipcMain.on('read-file-sync', readFileSync);
 ipcMain.on('save-file', saveFile);
-ipcMain.on('save-preview-file', savePreviewFile);
 ipcMain.on('show-item-context-menu', showItemContextMenu);
 ipcMain.on('show-doc-context-menu', showDocContextMenu);
 ipcMain.on('show-group-context-menu', showGroupContextMenu);

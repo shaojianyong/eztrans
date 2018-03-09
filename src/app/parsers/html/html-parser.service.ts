@@ -60,9 +60,9 @@ export class HtmlParserService extends ParserService {
   traverseW(node: Node, newData: any): void {
     if (node.nodeType === Node.TEXT_NODE) {
       if (node.nodeValue.trim()) {
-        const newVal = newData.texts[newData.index].trim();
-        if (newVal) {
-          node.nodeValue = newVal;
+        const newVal = newData.texts[newData.index];
+        if (newVal !== null) {
+          node.nodeValue = newVal.trim();
         }
         newData.index++;
       }

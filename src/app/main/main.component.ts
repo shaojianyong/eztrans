@@ -104,7 +104,7 @@ export class MainComponent implements OnInit {
   getLastTransData(): Array<string> {
     const segments = [];
     for (let index = 0; index < this.child_home.cur_doc.sentences.length; ++index) {
-      let target_text = '';
+      let target_text = null;
       const current = this.child_home.cur_doc.sentences[index];
       if (current.target !== -2) {
         if (current.ignore) {
@@ -125,32 +125,6 @@ export class MainComponent implements OnInit {
     parser.load(this.child_home.cur_doc.file_data);
     parser.update(this.getLastTransData());
     return parser.getLastData(fileType);
-  }
-
-  savePreviewFile(): void {
-    if (!this.child_home.cur_doc || !this.child_home.cur_doc.id) {
-      return;
-    }
-
-    const segments = [];
-    const parser = this.pms.getParser(this.child_home.cur_doc.data_type);
-    parser.load(this.child_home.cur_doc.file_data);
-
-    for (let index = 0; index < this.child_home.cur_doc.sentences.length; ++index) {
-      let target_text = '';
-      const current = this.child_home.cur_doc.sentences[index];
-      if (!current.ignore && current.target !== -2) {
-        if (current.target === -1) {
-          target_text = current.custom.target_text;
-        } else {
-          target_text = current.refers[current.target].target_text;
-        }
-      }
-      segments[index] = target_text;
-    }
-    parser.update(segments);
-
-    ipcRenderer.send('save-preview-file', this.child_home.cur_doc.id, parser.getLastData('html'));
   }
 
   // ipcRenderer与ipcMain同步通信，在JavaScript中，同步代码好丑陋
@@ -365,27 +339,6 @@ export class MainComponent implements OnInit {
   toggleRightSide(): void {
 
   }
-
-  preview(): void {
-    this.savePreviewFile();
-  }
-
-  /*
-  showPreview(filePath: string): void {
-    filePath.replace(/\\/g, '/');
-    $('#preview-context>webview').attr('src', 'file:///' + filePath);
-
-    $('#preview-side').sidebar({
-      context: 'body',
-      dimPage: true,
-      transition: 'overlay'
-    }).sidebar('toggle');
-
-    $('#preview-close').sticky({
-      context: '#preview-context'
-    });
-  }
-  */
 
   getTargetLeftIcon(index: number): string {
     let res = '';
@@ -865,19 +818,16 @@ export class MainComponent implements OnInit {
           console.log(error);  // TODO: 提供错误信息展示方案
         },
         () => {
+          this.reset();
+          this.showPreview();
           self.rerender();
           $('#trans-list').unhighlight();
         }
       );
-      self.rerender();
     });
 
     ipcRenderer.on('file-saved', (event, err) => {
       console.log('File Saved!');  // TODO: 自动打开文件？
-    });
-
-    ipcRenderer.on('preview-file-saved', (event, err, filePath) => {
-      // self.showPreview(filePath);
     });
 
     ipcRenderer.on('next_page', (event) => {
@@ -886,11 +836,6 @@ export class MainComponent implements OnInit {
 
     ipcRenderer.on('previous_page', (event) => {
       self.prevPage();
-    });
-
-    // 预览视图
-    $('#preview-close-button').on('click', () => {
-      self.preview();
     });
 
     $('#preview-export-button').on('click', () => {
