@@ -13,7 +13,7 @@ function nodeUpdate(node, newData) {
       if (newVal) {
         node.nodeValue = newVal;
       } else {
-        node.nodeValue = ">";  // 将文本节点置空时(空格会被忽略)，也就是把它给删除了
+        node.nodeValue = "[deleted]";  // 将文本节点置空时(空格会被忽略)，也就是把它给删除了
       }
       newData.index++;
     }
