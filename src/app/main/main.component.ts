@@ -152,12 +152,14 @@ export class MainComponent implements OnInit {
   onItemContextMenu(index: number): void {
     this.onItemClick(index);
     const sentence = this.child_home.cur_doc.sentences[index];
+    const status = this.getSentenceStatus(sentence);
     ipcRenderer.send('show-item-context-menu', {
       page_count: this.getPageCount(),
       cur_page: this.cur_page,
       target: sentence.target,
       skipped: sentence.ignore,
-      checked: sentence.marked
+      checked: sentence.marked,
+      retrans: (status === SentenceStatus.WARNING || status === SentenceStatus.FAILURE)
     });
   }
 
@@ -327,7 +329,9 @@ export class MainComponent implements OnInit {
     const status = this.getSentenceStatus(sentence);
     let res = 'placeholder icon';
     if (index === this.cur_index) {
-      if (status === SentenceStatus.INITIAL) {
+      if (sentence.target === -1 || sentence.marked) {
+        res = 'placeholder icon';
+      } else if (status === SentenceStatus.INITIAL) {
         res = 'violet translate link icon';
       } else if (status === SentenceStatus.WARNING || status === SentenceStatus.FAILURE) {
         res = 'violet repeat link icon';

@@ -258,7 +258,7 @@ function showItemContextMenu(event, params) {
     }));
   }
 
-  if (!params.skipped && !params.checked) {
+  if (!params.skipped && !params.checked && params.target !== -1 && (params.target === -2 || params.retrans)) {
     if (contextMenu.items.length) {
       contextMenu.append(new MenuItem({type: 'separator'}));
     }
