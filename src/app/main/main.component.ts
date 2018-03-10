@@ -351,7 +351,7 @@ export class MainComponent implements OnInit {
     const status = this.getSentenceStatus(sentence);
     let res = 'placeholder icon';
     if (index === this.cur_index) {
-      if (sentence.target === -1 || sentence.marked) {
+      if (sentence.target === -1 || sentence.ignore || sentence.marked) {
         res = 'placeholder icon';
       } else if (status === SentenceStatus.INITIAL) {
         res = 'violet translate link icon';

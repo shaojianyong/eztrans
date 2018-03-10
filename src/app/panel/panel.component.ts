@@ -23,8 +23,12 @@ export class PanelComponent implements OnInit {
   }
 
   selectTranslation(refer_index: number): void {
+    if (this.sentence.target === refer_index) {
+      return;
+    }
     this.disableHighlight();
     this.sentence.target = refer_index;
+    this.sentence.marked = false;
     this.rerenderEvent.emit({forceShowSelected: true});
     this.targetChangedEvent.emit();
     this.enableHighlight();
@@ -52,6 +56,7 @@ export class PanelComponent implements OnInit {
     }
 
     this.sentence.target = -1;  // 选中定制翻译
+    this.sentence.marked = false;
     this.rerenderEvent.emit({forceShowSelected: true});
     const ce = $('#custom-editor');
     ce.text(this.sentence.custom.target_text);
@@ -106,6 +111,7 @@ export class PanelComponent implements OnInit {
       } else {
         this.sentence.target = -2;
       }
+      this.sentence.marked = false;
       this.targetChangedEvent.emit();
     }
     this.rerenderEvent.emit({forceShowSelected: true});
