@@ -106,7 +106,7 @@
         <tbody>
         <tr *ngIf="isSourceVisible(idx)">
           <td class="collapsing">
-            <div class="trans-flag-icon">
+            <div class="trans-flag-icon" (click)="onClickSourceLeft(idx)">
               <i class="{{getSourceLeftIcon(idx)}}"></i>
             </div>
           </td>
@@ -114,7 +114,7 @@
             {{child_home.cur_doc.sentences[idx].source}}
           </td>
           <td class="collapsing">
-            <div class="trans-flag-icon">
+            <div class="trans-flag-icon" (click)="onClickSourceRight(idx)">
               <i class="{{getSourceRightIcon(idx)}}"></i>
             </div>
           </td>
@@ -129,7 +129,7 @@
             {{getTargetText(idx)}}
           </td>
           <td class="collapsing">
-            <div class="trans-flag-icon">
+            <div class="trans-flag-icon" (click)="onClickTargetRight(idx)">
               <i class="{{getTargetRightIcon(idx)}}"></i>
             </div>
           </td>

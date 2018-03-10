@@ -300,6 +300,21 @@ export class MainComponent implements OnInit {
     }
   }
 
+  toggleSkipOver(index: number): void {
+    const sentence = this.child_home.cur_doc.sentences[index];
+    sentence.ignore = !sentence.ignore;
+    this.rerender();
+    this.updatePreview();
+  }
+
+  toggleCheckMark(index: number): void {
+    const sentence = this.child_home.cur_doc.sentences[index];
+    if (sentence.target !== -2 && !sentence.ignore) {
+      sentence.marked = !sentence.marked;
+      this.rerender();
+    }
+  }
+
   getSourceLeftIcon(index: number): string {
     const sentence = this.child_home.cur_doc.sentences[index];
     const status = this.getSentenceStatus(sentence);
@@ -324,6 +339,13 @@ export class MainComponent implements OnInit {
     return icon;
   }
 
+  onClickSourceLeft(index: number): void {
+    const icon = this.getSourceLeftIcon(index);
+    if (icon === 'green quote left link icon' || icon === 'violet quote left link icon') {
+      this.toggleSkipOver(index);
+    }
+  }
+
   getSourceRightIcon(index: number): string {
     const sentence = this.child_home.cur_doc.sentences[index];
     const status = this.getSentenceStatus(sentence);
@@ -340,6 +362,13 @@ export class MainComponent implements OnInit {
       }
     }
     return res;
+  }
+
+  onClickSourceRight(index: number): void {
+    const icon = this.getSourceRightIcon(index);
+    if (icon === 'violet translate link icon' || icon === 'violet repeat link icon') {
+      this.translate(index, this.child_home.cur_doc.sentences[index]);
+    }
   }
 
   toggleLeftSide(): void {
@@ -390,6 +419,13 @@ export class MainComponent implements OnInit {
       res = 'placeholder icon';
     }
     return res;
+  }
+
+  onClickTargetRight(index: number): void {
+    const icon = this.getTargetRightIcon(index);
+    if (icon === 'green checkmark link icon' || icon === 'blue asterisk link icon') {
+      this.toggleCheckMark(index);
+    }
   }
 
   getTargetText(index: number): string {
@@ -853,10 +889,6 @@ export class MainComponent implements OnInit {
 
     ipcRenderer.on('previous_page', (event) => {
       self.prevPage();
-    });
-
-    $('#preview-export-button').on('click', () => {
-      self.exportFile();
     });
 
     this.initPreview();
