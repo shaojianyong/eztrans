@@ -101,16 +101,25 @@ export class MainComponent implements OnInit {
     });
   }
 
-  getLastTransData(): Array<string> {
+  getLastTransData(forPreview = false): Array<string> {
     const segments = [];
     for (let index = 0; index < this.child_home.cur_doc.sentences.length; ++index) {
       let target_text = null;
       const current = this.child_home.cur_doc.sentences[index];
-      if (current.target !== -2) {
+      if (current.target === -2) {
+        if (forPreview) {
+          target_text = current.source;
+        }
+      } else {
         if (current.ignore) {
           target_text = current.source;
         } else if (current.target === -1) {
           target_text = current.custom.target_text;
+          if (forPreview) {
+            if (!target_text.trim()) {
+              target_text = '[deleted]';
+            }
+          }
         } else {
           target_text = current.refers[current.target].target_text;
         }
@@ -120,10 +129,10 @@ export class MainComponent implements OnInit {
     return segments;
   }
 
-  getLastFileData(fileType: string): string {
+  getLastFileData(fileType: string, forPreview = false): string {
     const parser = this.pms.getParser(this.child_home.cur_doc.data_type);
     parser.load(this.child_home.cur_doc.file_data);
-    parser.update(this.getLastTransData());
+    parser.update(this.getLastTransData(forPreview));
     return parser.getLastData(fileType);
   }
 
@@ -344,17 +353,21 @@ export class MainComponent implements OnInit {
     let res = '';
     const sentence = this.child_home.cur_doc.sentences[index];
     if (sentence.target === -1) {
-      let fake = false;
-      for (const trans of sentence.refers) {
-        if (trans.target_text === sentence.custom.target_text) {
-          fake = true;
-          break;
+      if (sentence.custom.target_text.trim()) {
+        let fake = false;  // 仅拷贝，没有修改
+        for (const trans of sentence.refers) {
+          if (trans.target_text === sentence.custom.target_text) {
+            fake = true;
+            break;
+          }
         }
-      }
-      if (fake || !sentence.custom.target_text) {
-        res = 'red help icon';
+        if (fake) {
+          res = 'red help icon';
+        } else {
+          res = 'green idea icon';
+        }
       } else {
-        res = 'green idea icon';
+        res = 'teal eraser icon';
       }
     } else {
       res = 'placeholder icon';
@@ -770,7 +783,7 @@ export class MainComponent implements OnInit {
   showPreview(): void {
     const webview = document.getElementsByTagName('webview')[0];
     if (this.child_home.cur_doc && this.child_home.cur_doc.id) {
-      (<any>webview).loadURL(`data:text/html,${this.getLastFileData('html')}`);
+      (<any>webview).loadURL(`data:text/html,${this.getLastFileData('html', true)}`);
     } else {
       (<any>webview).loadURL('data:text/html,<html><body></body></html>');
     }
@@ -778,7 +791,7 @@ export class MainComponent implements OnInit {
 
   updatePreview(): void {
     const webview = document.getElementsByTagName('webview')[0];
-    (<any>webview).send('update-preview', this.getLastTransData());
+    (<any>webview).send('update-preview', this.getLastTransData(true));
   }
 
   syncPreview(): void {

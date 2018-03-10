@@ -77,6 +77,7 @@ export class PanelComponent implements OnInit {
     ce.text(this.sentence.custom.target_text);
     ce.attr('contenteditable', 'true');
     ce.focus();
+    this.targetChangedEvent.emit();
     // this.enableHighlight();  不需要重复，onEditBlur将做这个事情
   }
 
