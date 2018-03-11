@@ -56,6 +56,8 @@ export class PoParserService extends ParserService {
       res = gettextParser.po.compile(this.po);
     } else if (dataType === 'mo') {
       res = gettextParser.mo.compile(this.po);
+    } else if (dataType === 'html') {
+
     }
     return res;
   }
