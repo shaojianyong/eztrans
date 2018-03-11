@@ -54,31 +54,32 @@ export class TextParserService extends ParserService {
     if (dataType === 'txt') {
       res = this.lines.join(this.lfeed);
     } else if (dataType === 'html') {
-      const head = `<html><head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1">
-	        <title>President Donald J. Trump will Protect American</title>
-          <style type="text/css">
-          body {
-            font-family: Microsoft YaHei;
-            font-size: 0.85em;
-            margin: 20px;
-          }
-          p {
-            text-align: justify;
-            text-justify: distribute-all-lines;
-            text-align-last: left;
-            line-height: 1.4285;
-          }
-          </style>
-        </head>`;
-      let body = '<body>';
+      const head = `<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style type="text/css">
+    body {
+      font-family: Microsoft YaHei;
+      font-size: 0.85em;
+      margin: 20px;
+    }
+    p {
+      text-align: justify;
+      text-justify: distribute-all-lines;
+      text-align-last: left;
+      line-height: 1.4285;
+    }
+  </style>
+</head>
+`;
+      let body = '<body>\r\n';
       for (const line of this.lines) {
         if (line.trim()) {
-          body += `<p>${FunctionUtils.htmlEscape(line)}</p>`;
+          body += `  <p>${FunctionUtils.htmlEscape(line)}</p>\r\n`;
         }
       }
-      res = head + body + '</body></html>';
+      res = head + body + '</body>\r\n</html>\r\n';
     }
     return res;
   }

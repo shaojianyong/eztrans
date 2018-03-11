@@ -107,7 +107,7 @@ function scrollTo(nodeIndex) {
   if ($(eleNode).is(":visible")) {
     window.$('html, body').animate({
       scrollTop: $(eleNode).offset().top - (document.body.clientHeight - eleNode.clientHeight) / 2  // 绝对(相对页面的)偏移量
-    }, 100);
+    }, 200);
     selectNode(eleNode);
   }
 }
