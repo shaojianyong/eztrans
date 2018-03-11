@@ -1,13 +1,20 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {ParserService} from '../base/parser.service';
-
+import {FunctionUtils} from '../../services/utils/function-utils';
 
 @Injectable()
 export class TextParserService extends ParserService {
   lines: Array<string>;
+  lfeed: string;
 
   load(data: string): void {
+    if (data.indexOf('\r\n') === -1) {
+      this.lfeed = '\n';
+    } else {
+      this.lfeed = '\r\n';
+    }
+
     this.lines = data.split(/\n|\r\n/g);
   }
 
@@ -43,7 +50,37 @@ export class TextParserService extends ParserService {
   }
 
   getLastData(dataType: string): string {
-    return this.lines.join('\r\n');  // TODO: \n for linux，根据平台选择换行符
+    let res = '';
+    if (dataType === 'txt') {
+      res = this.lines.join(this.lfeed);
+    } else if (dataType === 'html') {
+      const head = `<html><head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+	        <title>President Donald J. Trump will Protect American</title>
+          <style type="text/css">
+          body {
+            font-family: Microsoft YaHei;
+            font-size: 0.85em;
+            margin: 20px;
+          }
+          p {
+            text-align: justify;
+            text-justify: distribute-all-lines;
+            text-align-last: left;
+            line-height: 1.4285;
+          }
+          </style>
+        </head>`;
+      let body = '<body>';
+      for (const line of this.lines) {
+        if (line.trim()) {
+          body += `<p>${FunctionUtils.htmlEscape(line)}</p>`;
+        }
+      }
+      res = head + body + '</body></html>';
+    }
+    return res;
   }
 
 }
