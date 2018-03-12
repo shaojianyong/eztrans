@@ -265,7 +265,7 @@ function showItemContextMenu(event, params) {
     contextMenu.append(new MenuItem({
       label: (params.target === -2) ? 'Translate' : 'Re-translate',
       click: retranslate,
-      icon: './dist/assets/images/icons/repeat.png'
+      icon: params.target === -2 ? './dist/assets/images/icons/translate.png' : './dist/assets/images/icons/repeat.png'
     }));
   }
 
