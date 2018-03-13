@@ -5,9 +5,9 @@ export class FunctionUtils {
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#27;')
-      .replace(/\//g, '&#2f;');
+      .replace(/\"/g, '&quot;')
+      .replace(/\'/g, '&#39;')  // 十进制
+      .replace(/\//g, '&#47;');
   }
 
   static getExtName(filePath: string): string {
