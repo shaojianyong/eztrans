@@ -87,7 +87,14 @@ export class PanelComponent implements OnInit {
   }
 
   onExLink(engine_name: string): void {
-    shell.openExternal(engines[engine_name].site);
+    const srcLang = 'en';
+    const dstLang = 'zh-CN';
+    let link = engines[engine_name].site;
+    if (engine_name === 'Google') {
+      link += `#${srcLang}/${dstLang}/${encodeURIComponent(this.sentence.source)}`;
+    }
+    console.log(link);
+    shell.openExternal(link);
   }
 
   getEngineIcon(engine_name: string): string {

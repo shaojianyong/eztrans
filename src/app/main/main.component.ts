@@ -626,13 +626,8 @@ export class MainComponent implements OnInit {
   }
 
   installPopupTips(): void {
-    $('#import-dropdown').dropdown({
-      action: 'hide',  // 隐藏选中标记
-      on: 'hover'
-    });
-
     $('#more-dropdown').dropdown({
-      action: 'hide',
+      action: 'hide',  // 隐藏选中标记
       on: 'hover'
     });
 
