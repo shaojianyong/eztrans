@@ -36,7 +36,7 @@ export class OpenComponent implements OnInit {
     const options = {
       title: 'Select a Structured Text File',
       filters: [
-        {name: 'Text Files', extensions: ['txt', 'md', 'po']}
+        {name: 'Text Files', extensions: ['txt', 'md']}
       ]
     };
     dialog.showOpenDialog(options, (files) => {
