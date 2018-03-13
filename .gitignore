@@ -8,7 +8,6 @@
 # dependencies
 /node_modules
 /database
-/preview_cache
 semantic-ui/
 
 # IDEs and editors
