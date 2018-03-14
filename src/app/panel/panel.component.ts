@@ -3,6 +3,7 @@ const { shell, ipcRenderer } = (<any>window).require('electron');
 import { SentenceModel } from '../services/model/sentence.model';
 import { TranslateModel } from '../services/model/translate.model';
 import {EngineManagerService} from '../providers/manager/engine-manager.service';
+import {FunctionUtils} from '../services/utils/function-utils';
 import engines from '../providers/manager/engines';
 
 
@@ -91,8 +92,13 @@ export class PanelComponent implements OnInit {
     const dstLang = 'zh-CN';
     let link = engines[engine_name].site;
     if (engine_name === 'Google') {
-      link += `#${srcLang}/${dstLang}/${encodeURIComponent(this.sentence.source)}`;
+      link += `/#${srcLang}/${dstLang}/${encodeURIComponent(this.sentence.source)}`;
+    } else if (engine_name === 'Baidu') {
+      const slc = FunctionUtils.baiduLangCode(srcLang);
+      const dlc = FunctionUtils.baiduLangCode(dstLang);
+      link += `/#${slc}/${dlc}/${encodeURIComponent(this.sentence.source)}`;
     }
+
     console.log(link);
     shell.openExternal(link);
   }

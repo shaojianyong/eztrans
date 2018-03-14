@@ -30,7 +30,7 @@ export class EngineManagerService {
     private baiduvip: BaiduVipfyService,
     private iciba: IcibaTransService
     ) {
-    this.engine_list = [google, iciba];  // google, baidu, baiduvip, iciba
+    this.engine_list = [google, baidu, iciba];  // google, baidu, baiduvip, iciba
   }
 
   setSourceLanguage(language: string): void {

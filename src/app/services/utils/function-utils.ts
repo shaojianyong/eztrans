@@ -23,6 +23,19 @@ export class FunctionUtils {
     return res;
   }
 
+  static baiduLangCode(goLangCode: string): string {
+    let duLangCode = goLangCode;
+    const glc = goLangCode.toLowerCase();
+
+    if (glc === 'zh-cn') {
+      duLangCode = 'zh';
+    }
+    if (glc === 'zh-tw') {
+      duLangCode = 'cht';
+    }
+    return duLangCode;
+  }
+
   // stackoverflow.com/questions/951021/what-is-the-javascript-version-of-sleep
   static sleep(msec: number) {
     return new Promise(resolve => setTimeout(resolve, msec));
