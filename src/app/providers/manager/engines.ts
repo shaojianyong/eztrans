@@ -7,21 +7,21 @@ export default {
   Google: {
     name: 'Google',
     site: 'https://translate.google.cn',
-    icon: 'blue google icon'
+    icon: 'blue cloud icon'
   },
   Baidu: {
     name: 'Baidu',
     site: 'http://fanyi.baidu.com',
-    icon: 'blue paw icon'
+    icon: 'green cloud icon'
   },
   BaiduVIP: {
     name: 'Baidu-VIP',
     site: 'http://api.fanyi.baidu.com/api/trans/vip/translate',
-    icon: 'purple paw icon'
+    icon: 'purple cloud icon'
   },
   iCIBA: {
     name: 'iCiba',
     site: 'http://fy.iciba.com',
-    icon: 'blue cloud icon'
+    icon: 'orange cloud icon'
   }
 };
