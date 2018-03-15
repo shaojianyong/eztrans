@@ -1,7 +1,11 @@
 const moment = (<any>window).require('moment');
 
+export class ArticleModel {
+
+}
+
 // 文档信息
-export class DocInfoModel {
+export class DocumentModel extends ArticleModel {
   id: string;    // 文档标识
   name: string;  // 文档名称，可重命名
   file_path: string;  // 原文档全路径
@@ -23,4 +27,8 @@ export class DocInfoModel {
     this.create_time = obj && obj.create_time || moment().format('YYYY-MM-DD HH:mm:ss');
     this.modify_time = obj && obj.modify_time || this.create_time;
   }
+}
+
+export class ChapterModel extends ArticleModel {
+
 }
