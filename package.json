@@ -25,6 +25,7 @@
     "@angular/router": "^5.0.0",
     "angular-split": "^1.0.0-rc.3",
     "core-js": "^2.4.1",
+    "epub.js": "^0.2.15",
     "jquery": "^3.2.1",
     "jquery-highlight": "^3.4.0",
     "jsdom": "^11.5.1",
