@@ -4,6 +4,7 @@ const moment = (<any>window).require('moment');
 const electron = (<any>window).require('electron');
 const ipc = electron.ipcRenderer;
 
+import { DOMParser } from 'xmldom';
 import { FunctionUtils } from '../services/utils/function-utils';
 import { DocumentModel } from '../services/model/document.model';
 import { GroupModel } from '../services/model/group.model';
@@ -510,6 +511,27 @@ export class HomeComponent implements OnInit {
     tables.unhighlight();
   }
 
+  parseOPF(data: string, bookId: string): void {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(data);
+    const metadata = doc.getElementsByTagName('metadata')[0];
+    const title = metadata.getElementsByTagName('dc:title')[0];
+    console.log('------------>', title.textContent);
+
+    const mfItems = {};
+    const manifest = doc.getElementsByTagName('manifest')[0];
+    const items = manifest.getElementsByTagName('item');
+    for (let i = 0; i < items.length; ++i) {
+      mfItems[items[i].getAttribute('id')] = items[i].getAttribute('href');
+    }
+
+    const spine = doc.getElementsByTagName('spine')[0];
+    const itemrefs = spine.getElementsByTagName('itemref');
+    for (let i = 0; i < itemrefs.length; ++i) {
+      console.log(itemrefs[i].getAttribute('idref'));
+    }
+  }
+
   ngOnInit() {
     $('.ui.accordion')
       .accordion({
@@ -580,6 +602,10 @@ export class HomeComponent implements OnInit {
 
     ipc.on('group-move-down', (event, group_id) => {
       this.moveDownGroup(group_id);
+    });
+
+    ipc.on('epub-read', (event, err, data, opfPath, bookId) => {
+      this.parseOPF(data, bookId);
     });
 
     // auto save all user data

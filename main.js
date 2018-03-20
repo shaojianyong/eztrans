@@ -6,12 +6,9 @@ const url = require('url');
 const path = require('path');
 const find = require('find');
 const loki = require('lokijs');
-const xml2js = require('xml2js');
 const xmldom = require('xmldom');
 const moment = require('moment');
 const unzip = require('extract-zip');
-
-const Packaging = require('./src/app/services/epub/packaging');
 
 // app-settings, app-status
 const appDb = new loki(path.join(__dirname, 'database', 'app.db'), {
@@ -149,7 +146,9 @@ function readFile(event, fileUrl, group_id) {
               if (rfs.length === 1) {
                 const opfFile =  rfs[0].getAttribute('full-path');
                 const opfPath = path.join(bookDir, opfFile);
-                console.log('------------>', opfPath);
+                fs.readFile(opfPath, function(err, data) {
+                  event.sender.send('epub-read', err, data.toString(), opfPath, bookId);
+                });
               } else {
                 // TODO: 报错！
               }

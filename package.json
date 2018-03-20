@@ -23,6 +23,7 @@
     "@angular/platform-browser": "^5.0.0",
     "@angular/platform-browser-dynamic": "^5.0.0",
     "@angular/router": "^5.0.0",
+    "@types/xmldom": "^0.1.29",
     "angular-split": "^1.0.0-rc.3",
     "core-js": "^2.4.1",
     "extract-zip": "^1.6.6",
@@ -38,7 +39,6 @@
     "rxjs": "^5.5.2",
     "showdown": "^1.8.6",
     "turndown": "^4.0.1",
-    "xml2js": "^0.4.19",
     "xmldom": "^0.1.27",
     "zone.js": "^0.8.14"
   },
