@@ -39,6 +39,7 @@
     "showdown": "^1.8.6",
     "turndown": "^4.0.1",
     "xml2js": "^0.4.19",
+    "xmldom": "^0.1.27",
     "zone.js": "^0.8.14"
   },
   "devDependencies": {

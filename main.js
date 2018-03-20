@@ -7,9 +7,11 @@ const path = require('path');
 const find = require('find');
 const loki = require('lokijs');
 const xml2js = require('xml2js');
+const xmldom = require('xmldom');
 const moment = require('moment');
 const unzip = require('extract-zip');
 
+const Packaging = require('./src/app/services/epub/packaging');
 
 // app-settings, app-status
 const appDb = new loki(path.join(__dirname, 'database', 'app.db'), {
@@ -118,7 +120,7 @@ function readFile(event, fileUrl, group_id) {
   if (fileUrl.length > 9
     && (fileUrl.substr(0, 7).toLowerCase() === 'http://'
       || fileUrl.substr(0, 8).toLowerCase() === 'https://')) {
-    JSDOM.fromURL(fileUrl).then(dom => {
+    JSDOM.fromURL(fileUrl).then(function(dom) {
       // TODO: 对dom.window.document.head和firstElementChild做些检查
       const baseNode = dom.window.document.createElement('base');
       baseNode.setAttribute('href', getBaseURL(fileUrl));
@@ -140,11 +142,17 @@ function readFile(event, fileUrl, group_id) {
       } else {
         find.file('container.xml', bookDir, function (files) {
           if (files.length === 1) {
-            const parser = new xml2js.Parser();
+            const parser = new xmldom.DOMParser();
             fs.readFile(files[0], function(err, data) {
-              parser.parseString(data, function (err, result) {
-                console.log(result['container']['rootfiles'][0]['rootfile'][0]['$']['full-path']);
-              });
+              const doc = parser.parseFromString(data.toString());
+              const rfs = doc.getElementsByTagName('rootfile');
+              if (rfs.length === 1) {
+                const opfFile =  rfs[0].getAttribute('full-path');
+                const opfPath = path.join(bookDir, opfFile);
+                console.log('------------>', opfPath);
+              } else {
+                // TODO: 报错！
+              }
             });
 
           } else {
@@ -538,7 +546,7 @@ function saveDocGroups(event, params) {
     }
   }
 
-  dgsDb.saveDatabase(() => {
+  dgsDb.saveDatabase(function() {
     if (params.sync) {
       event.returnValue = 'ok';
       dgsDb.close();
@@ -567,7 +575,7 @@ function reqDocument(event, docId) {
     openedDocs[docId] = docDb;
   }
 
-  docDb.loadDatabase({}, () => {
+  docDb.loadDatabase({}, function() {
     const dsc = docDb.getCollection('documents');
     event.returnValue = dsc ? dsc.data[0] : {id: docId, sentences: []};
   });
@@ -606,7 +614,7 @@ function saveDocument(event, params) {
     dsc.insert(doc);
   }
 
-  docDb.saveDatabase(() => {
+  docDb.saveDatabase(function() {
     if (params.sync) {
     event.returnValue = 'ok';
     docDb.close();
