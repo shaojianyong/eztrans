@@ -5,6 +5,8 @@ const fs = require('fs');
 const url = require('url');
 const path = require('path');
 const loki = require('lokijs');
+const moment = require('moment');
+const unzip = require('extract-zip');
 
 
 // app-settings, app-status
@@ -127,6 +129,16 @@ function readFile(event, fileUrl, group_id) {
       }
       event.sender.send('file-read', null, dom.serialize(), fileUrl, fileName, group_id);
     });
+  } else if (fileUrl.toLowerCase().endsWith('.epub')) {
+    const bookId = 'b' + moment().format('YYYYMMDDHHmmssSSS');
+    unzip(fileUrl, {dir: path.join(__dirname, 'datafile', bookId)}, function (err) {
+      if (err) {
+        // TODO: 报错！
+      } else {
+        console.log('------------>', bookId);
+      }
+    });
+
   } else {
     fs.readFile(fileUrl, 'utf8', function(err, data) {
       event.sender.send('file-read', err, data, fileUrl, getFileName(fileUrl), group_id);
