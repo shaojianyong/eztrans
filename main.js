@@ -4,7 +4,9 @@ const { JSDOM } = require('jsdom');
 const fs = require('fs');
 const url = require('url');
 const path = require('path');
+const find = require('find');
 const loki = require('lokijs');
+const xml2js = require('xml2js');
 const moment = require('moment');
 const unzip = require('extract-zip');
 
@@ -131,11 +133,24 @@ function readFile(event, fileUrl, group_id) {
     });
   } else if (fileUrl.toLowerCase().endsWith('.epub')) {
     const bookId = 'b' + moment().format('YYYYMMDDHHmmssSSS');
-    unzip(fileUrl, {dir: path.join(__dirname, 'datafile', bookId)}, function (err) {
+    const bookDir = path.join(__dirname, 'datafile', bookId);
+    unzip(fileUrl, {dir: bookDir}, function (err) {
       if (err) {
         // TODO: 报错！
       } else {
-        console.log('------------>', bookId);
+        find.file('container.xml', bookDir, function (files) {
+          if (files.length === 1) {
+            const parser = new xml2js.Parser();
+            fs.readFile(files[0], function(err, data) {
+              parser.parseString(data, function (err, result) {
+                console.log(result['container']['rootfiles'][0]['rootfile'][0]['$']['full-path']);
+              });
+            });
+
+          } else {
+            // TODO: 报错！
+          }
+        });
       }
     });
 
