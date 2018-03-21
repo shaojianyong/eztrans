@@ -511,26 +511,55 @@ export class HomeComponent implements OnInit {
     tables.unhighlight();
   }
 
-  parseOPF(data: string, bookId: string): void {
+  parseOPF(data: string, bookId: string, opfPath: string): void {
     const parser = new DOMParser();
     const doc = parser.parseFromString(data);
-    const metadata = doc.getElementsByTagName('metadata')[0];
+    /*const metadata = doc.getElementsByTagName('metadata')[0];
     const title = metadata.getElementsByTagName('dc:title')[0];
-    console.log('------------>', title.textContent);
 
-    const mfItems = {};
+    this.doc_groups.push(new GroupModel({
+      id: bookId,
+      name: title.textContent
+    }));*/
+
+    const manItems = {};
     const manifest = doc.getElementsByTagName('manifest')[0];
     const items = manifest.getElementsByTagName('item');
     for (let i = 0; i < items.length; ++i) {
-      mfItems[items[i].getAttribute('id')] = items[i].getAttribute('href');
+      manItems[items[i].getAttribute('id')] = items[i].getAttribute('href');
     }
 
+    const docs = [];
     const spine = doc.getElementsByTagName('spine')[0];
-    const itemrefs = spine.getElementsByTagName('itemref');
-    for (let i = 0; i < itemrefs.length; ++i) {
-      console.log(itemrefs[i].getAttribute('idref'));
+    const refItems = spine.getElementsByTagName('itemref');
+    for (let i = 0; i < refItems.length; ++i) {
+      const docId = refItems[i].getAttribute('idref');
+      const href = manItems[docId];
+      docs.push({
+        'docId': docId,
+        'href': href
+      });
     }
+
+    const tocPath = doc.getElementById('ncx').getAttribute('href');
+    ipc.send('req-doc-title', bookId, opfPath, tocPath, docs);
   }
+
+  updateBook(bookId: string, docs: string): void {
+    for (const doc of docs) {
+      console.log('--------->', doc);
+      const diNew = new DocInfoModel({
+        id: bookId + '-' + doc['docId'],
+        name: doc['title'],
+        group_id: bookId,
+        file_path: doc['fullPath']
+      });
+      this.getGroup(bookId).documents.push(diNew);
+    }
+
+    this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+  }
+
 
   ngOnInit() {
     $('.ui.accordion')
@@ -604,8 +633,12 @@ export class HomeComponent implements OnInit {
       this.moveDownGroup(group_id);
     });
 
-    ipc.on('epub-read', (event, err, data, opfPath, bookId) => {
-      this.parseOPF(data, bookId);
+    ipc.on('epub-read', (event, data, bookId, opfPath) => {
+      this.parseOPF(data, bookId, opfPath);
+    });
+
+    ipc.on('rsp-doc-title', (event, bookId, docs) => {
+      this.updateBook(bookId, docs);
     });
 
     // auto save all user data

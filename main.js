@@ -100,8 +100,15 @@ app.on('activate', function() {
 // code. You can also put them in separate files and require them here.
 
 function getBaseURL(fileUrl) {
-  const index = fileUrl.lastIndexOf('/');
-  return fileUrl.substr(0, index + 1);
+  let index = fileUrl.lastIndexOf('/');
+  if (index === -1) {
+    index = fileUrl.lastIndexOf('\\');
+  }
+  let res = fileUrl;
+  if (index !== -1) {
+    res = fileUrl.substr(0, index + 1);
+  }
+  return res;
 }
 
 function getFileName(filePath) {
@@ -132,7 +139,7 @@ function readFile(event, fileUrl, group_id) {
     });
   } else if (fileUrl.toLowerCase().endsWith('.epub')) {
     const bookId = 'b' + moment().format('YYYYMMDDHHmmssSSS');
-    const bookDir = path.join(__dirname, 'datafile', bookId);
+    const bookDir = path.join(__dirname, 'datafile', bookId, 'src');  // src, dst, trx
     unzip(fileUrl, {dir: bookDir}, function (err) {
       if (err) {
         // TODO: 报错！
@@ -147,7 +154,7 @@ function readFile(event, fileUrl, group_id) {
                 const opfFile =  rfs[0].getAttribute('full-path');
                 const opfPath = path.join(bookDir, opfFile);
                 fs.readFile(opfPath, function(err, data) {
-                  event.sender.send('epub-read', err, data.toString(), opfPath, bookId);
+                  event.sender.send('epub-read', data.toString(), bookId, opfPath);
                 });
               } else {
                 // TODO: 报错！
@@ -635,6 +642,69 @@ function deleteDocFile(event, doc_id) {
   }
 }
 
+function traverseNavMap(navNode, tocNode) {
+  const navLabel = navNode.getElementsByTagName('navLabel')[0];
+  const labelText = navLabel.getElementsByTagName('text')[0];
+  const content = navNode.getElementsByTagName('content')[0];
+  const contSrc = content.getAttribute('src');
+  if (!tocNode.hasOwnProperty('childNodes')) {
+    tocNode['childNodes'] = [];
+  }
+  tocNode['childNodes'].push({
+    label: labelText.textContent,
+    point: contSrc
+  });
+
+  if (navNode.hasChildNodes()) {
+    for (const node of navNode.childNodes) {
+      traverseNavMap(node, tocNode['childNodes'][tocNode['childNodes'].length - 1]);
+    }
+  }
+}
+
+function reqDocTitle(event, bookId, opfPath, tocPath, docs) {
+  tocInfo = {};
+  const parser = new xmldom.DOMParser();
+  const filePath = path.join(getBaseURL(opfPath), tocPath);
+  fs.readFile(filePath, function(err, data) {
+    const root = parser.parseFromString(data.toString());
+    const docTitle = root.getElementsByTagName('docTitle')[0];
+    const txtTitle = docTitle.getElementsByTagName('text')[0];
+    tocInfo['bookTitle'] = txtTitle.textContent;
+
+    const navMap = root.getElementsByTagName('navMap')[0];
+    if (navMap.hasChildNodes()) {
+      tocInfo['navMap'] = {};
+      for (const node of navMap.childNodes) {
+        traverseNavMap(node, tocInfo['navMap']);
+      }
+    }
+
+
+
+  });
+
+
+
+  for (let i = 0; i < docs.length; ++i) {
+
+    /*
+    const parser = new xmldom.DOMParser();
+    const filePath = path.join(baseDir, docs[i].href);
+    fs.readFile(filePath, function(err, data) {
+      const root = parser.parseFromString(data.toString());
+      const head = root.getElementsByTagName('head')[0];
+      const title = head.getElementsByTagName('title')[0];
+      docs[i]['title'] = title.textContent;
+      docs[i]['fullPath'] = filePath;
+      console.log('--------->', docs[i]);
+    });
+    */
+
+  }
+  event.sender.send('rsp-doc-title', bookId, docs);
+}
+
 // Handles reading the contents of a file
 ipcMain.on('read-file', readFile);
 ipcMain.on('read-file-sync', readFileSync);
@@ -649,3 +719,4 @@ ipcMain.on('save-doc-groups', saveDocGroups);
 ipcMain.on('req-document', reqDocument);
 ipcMain.on('save-document', saveDocument);
 ipcMain.on('delete-document-file', deleteDocFile);
+ipcMain.on('req-doc-title', reqDocTitle);
