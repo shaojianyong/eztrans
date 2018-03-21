@@ -4,7 +4,7 @@ const moment = (<any>window).require('moment');
 const electron = (<any>window).require('electron');
 const ipc = electron.ipcRenderer;
 
-import { DOMParser } from 'xmldom';
+import Packaging from '../services/epub/packaging';
 import { FunctionUtils } from '../services/utils/function-utils';
 import { DocumentModel } from '../services/model/document.model';
 import { GroupModel } from '../services/model/group.model';
@@ -512,8 +512,8 @@ export class HomeComponent implements OnInit {
   }
 
   parseOPF(data: string, bookId: string, opfPath: string): void {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(data);
+    // const parser = new DOMParser();
+    // const doc = parser.parseFromString(data);
     /*const metadata = doc.getElementsByTagName('metadata')[0];
     const title = metadata.getElementsByTagName('dc:title')[0];
 
@@ -522,6 +522,7 @@ export class HomeComponent implements OnInit {
       name: title.textContent
     }));*/
 
+    /*
     const manItems = {};
     const manifest = doc.getElementsByTagName('manifest')[0];
     const items = manifest.getElementsByTagName('item');
@@ -540,9 +541,12 @@ export class HomeComponent implements OnInit {
         'href': href
       });
     }
+    */
+    const pkg = new Packaging(data);
+    const ncxPath = pkg.ncxPath;
+    console.log('--------------->ncxPath=', ncxPath);
 
-    const tocPath = doc.getElementById('ncx').getAttribute('href');
-    ipc.send('req-doc-title', bookId, opfPath, tocPath, docs);
+    // ipc.send('req-doc-title', bookId, opfPath, tocPath, docs);
   }
 
   updateBook(bookId: string, docs: string): void {

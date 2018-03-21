@@ -674,7 +674,7 @@ function reqDocTitle(event, bookId, opfPath, tocPath, docs) {
 
     const navMap = root.getElementsByTagName('navMap')[0];
     if (navMap.hasChildNodes()) {
-      tocInfo['navMap'] = {};
+      tocInfo['navMap'] = [];
       for (const node of navMap.childNodes) {
         traverseNavMap(node, tocInfo['navMap']);
       }
