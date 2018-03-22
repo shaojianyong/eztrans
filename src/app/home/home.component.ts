@@ -540,7 +540,7 @@ export class HomeComponent implements OnInit {
     }
     this.books[bookId].loadNavigation(str);
     const nav = this.books[bookId].navigation;
-    console.log('-------->', nav.id2LabelMap);
+
     this.doc_groups.push(new GroupModel({
       id: bookId,
       name: pkg.metadata.title
@@ -549,9 +549,10 @@ export class HomeComponent implements OnInit {
     for (const itemref of pkg.spine) {
       const docId = itemref['idref'];
       const label = nav.id2LabelMap[docId];
+      const docName = label ? label : docId;
       const diNew = new DocInfoModel({
         id: bookId + '-' + docId,
-        name: label ? label : docId,
+        name: docName.trim(),
         group_id: bookId,
         file_path: pkg.manifest[docId]['href']
       });
