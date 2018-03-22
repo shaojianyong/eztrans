@@ -4,7 +4,7 @@ const moment = (<any>window).require('moment');
 const electron = (<any>window).require('electron');
 const ipc = electron.ipcRenderer;
 
-import Packaging from '../services/epub/packaging';
+import Epub from '../services/epub/epub';
 import { FunctionUtils } from '../services/utils/function-utils';
 import { DocumentModel } from '../services/model/document.model';
 import { GroupModel } from '../services/model/group.model';
@@ -31,6 +31,7 @@ export class HomeComponent implements OnInit {
   modified_flag = false;
   sel_eid = '';  // 当前选中html元素的id
   search_text = '';
+  books = {};
 
   constructor(private title: Title) { }
 
@@ -511,6 +512,25 @@ export class HomeComponent implements OnInit {
     tables.unhighlight();
   }
 
+  loadEpubContainer(data: string, bookId: string): void {
+    this.books[bookId] = new Epub();
+    this.books[bookId].loadContainer(data);
+    ipc.send('read-epub-pkg-file', this.books[bookId].container.packagePath, bookId);
+  }
+
+  loadEpubPackage(data: string, bookId: string): void {
+    this.books[bookId].loadPackaging(data);
+    if (this.books[bookId].packaging.ncxPath) {
+      const pkgDir = FunctionUtils.getBaseDir(this.books[bookId].container.packagePath);
+      ipc.send('read-epub-nav-file', pkgDir, this.books[bookId].packaging.ncxPath, bookId);
+    }
+  }
+
+  loadEpubNavigation(data: string, bookId: string): void {
+    this.books[bookId].loadNavigation(data);
+    console.log('--------->', this.books[bookId].navigation);
+  }
+
   parseOPF(data: string, bookId: string, opfPath: string): void {
     // const parser = new DOMParser();
     // const doc = parser.parseFromString(data);
@@ -542,9 +562,9 @@ export class HomeComponent implements OnInit {
       });
     }
     */
-    const pkg = new Packaging(data);
-    const ncxPath = pkg.ncxPath;
-    console.log('--------------->ncxPath=', ncxPath);
+    // const pkg = new Packaging(data);
+    // const ncxPath = pkg.ncxPath;
+    // console.log('--------------->ncxPath=', ncxPath);
 
     // ipc.send('req-doc-title', bookId, opfPath, tocPath, docs);
   }
@@ -637,12 +657,16 @@ export class HomeComponent implements OnInit {
       this.moveDownGroup(group_id);
     });
 
-    ipc.on('epub-read', (event, data, bookId, opfPath) => {
-      this.parseOPF(data, bookId, opfPath);
+    ipc.on('load-epub-container', (event, data, bookId) => {
+      this.loadEpubContainer(data, bookId);
     });
 
-    ipc.on('rsp-doc-title', (event, bookId, docs) => {
-      this.updateBook(bookId, docs);
+    ipc.on('load-epub-package', (event, data, bookId) => {
+      this.loadEpubPackage(data, bookId);
+    });
+
+    ipc.on('load-epub-navigation', (event, data, bookId) => {
+      this.loadEpubNavigation(data, bookId);
     });
 
     // auto save all user data

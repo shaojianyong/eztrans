@@ -23,6 +23,18 @@ export class FunctionUtils {
     return res;
   }
 
+  static getBaseDir(dir: string): string {
+    let index = dir.lastIndexOf('/');
+    if (index === -1) {
+      index = dir.lastIndexOf('\\');
+    }
+    let res = '.';
+    if (index !== -1) {
+      res = dir.substr(0, index);
+    }
+    return res;
+  }
+
   static baiduLangCode(goLangCode: string): string {
     let duLangCode = goLangCode;
     const glc = goLangCode.toLowerCase();

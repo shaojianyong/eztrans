@@ -10,6 +10,8 @@ const xmldom = require('xmldom');
 const moment = require('moment');
 const unzip = require('extract-zip');
 
+const EPUB_CONTAINER_FILE = 'META-INF/container.xml';
+
 // app-settings, app-status
 const appDb = new loki(path.join(__dirname, 'database', 'app.db'), {
   autoload: true,
@@ -99,14 +101,14 @@ app.on('activate', function() {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
-function getBaseURL(fileUrl) {
-  let index = fileUrl.lastIndexOf('/');
+function getBaseURL(webUrl) {
+  let index = webUrl.lastIndexOf('/');
   if (index === -1) {
-    index = fileUrl.lastIndexOf('\\');
+    index = webUrl.lastIndexOf('\\');
   }
-  let res = fileUrl;
+  let res = webUrl;
   if (index !== -1) {
-    res = fileUrl.substr(0, index + 1);
+    res = webUrl.substr(0, index + 1);
   }
   return res;
 }
@@ -142,27 +144,13 @@ function readFile(event, fileUrl, group_id) {
     const bookDir = path.join(__dirname, 'datafile', bookId, 'src');  // src, dst, trx
     unzip(fileUrl, {dir: bookDir}, function (err) {
       if (err) {
-        // TODO: 报错！
+        throw new Error('Unzip ePub file error: ' + err);
       } else {
-        find.file('container.xml', bookDir, function (files) {
-          if (files.length === 1) {
-            const parser = new xmldom.DOMParser();
-            fs.readFile(files[0], function(err, data) {
-              const doc = parser.parseFromString(data.toString());
-              const rfs = doc.getElementsByTagName('rootfile');
-              if (rfs.length === 1) {
-                const opfFile =  rfs[0].getAttribute('full-path');
-                const opfPath = path.join(bookDir, opfFile);
-                fs.readFile(opfPath, function(err, data) {
-                  event.sender.send('epub-read', data.toString(), bookId, opfPath);
-                });
-              } else {
-                // TODO: 报错！
-              }
-            });
-
+        fs.readFile(path.join(bookDir, EPUB_CONTAINER_FILE), function(err, data) {
+          if (err) {
+            throw new Error('Read container file error: ' + err);
           } else {
-            // TODO: 报错！
+            event.sender.send('load-epub-container', data.toString(), bookId);
           }
         });
       }
@@ -642,67 +630,26 @@ function deleteDocFile(event, doc_id) {
   }
 }
 
-function traverseNavMap(navNode, tocNode) {
-  const navLabel = navNode.getElementsByTagName('navLabel')[0];
-  const labelText = navLabel.getElementsByTagName('text')[0];
-  const content = navNode.getElementsByTagName('content')[0];
-  const contSrc = content.getAttribute('src');
-  if (!tocNode.hasOwnProperty('childNodes')) {
-    tocNode['childNodes'] = [];
-  }
-  tocNode['childNodes'].push({
-    label: labelText.textContent,
-    point: contSrc
-  });
-
-  if (navNode.hasChildNodes()) {
-    for (const node of navNode.childNodes) {
-      traverseNavMap(node, tocNode['childNodes'][tocNode['childNodes'].length - 1]);
+function readEpubPkgFile(event, opfPath, bookId) {
+  const bookDir = path.join(__dirname, 'datafile', bookId, 'src');
+  fs.readFile(path.join(bookDir, opfPath), function(err, data) {
+    if (err) {
+      throw new Error('Read package file error: ' + err);
+    } else {
+      event.sender.send('load-epub-package', data.toString(), bookId);
     }
-  }
+  });
 }
 
-function reqDocTitle(event, bookId, opfPath, tocPath, docs) {
-  tocInfo = {};
-  const parser = new xmldom.DOMParser();
-  const filePath = path.join(getBaseURL(opfPath), tocPath);
-  fs.readFile(filePath, function(err, data) {
-    const root = parser.parseFromString(data.toString());
-    const docTitle = root.getElementsByTagName('docTitle')[0];
-    const txtTitle = docTitle.getElementsByTagName('text')[0];
-    tocInfo['bookTitle'] = txtTitle.textContent;
-
-    const navMap = root.getElementsByTagName('navMap')[0];
-    if (navMap.hasChildNodes()) {
-      tocInfo['navMap'] = [];
-      for (const node of navMap.childNodes) {
-        traverseNavMap(node, tocInfo['navMap']);
-      }
+function readEpubNavFile(event, pkgDir, ncxPath, bookId) {
+  const bookDir = path.join(__dirname, 'datafile', bookId, 'src');
+  fs.readFile(path.join(bookDir, pkgDir, ncxPath), function(err, data) {
+    if (err) {
+      throw new Error('Read navigation file error: ' + err);
+    } else {
+      event.sender.send('load-epub-navigation', data.toString(), bookId);
     }
-
-
-
   });
-
-
-
-  for (let i = 0; i < docs.length; ++i) {
-
-    /*
-    const parser = new xmldom.DOMParser();
-    const filePath = path.join(baseDir, docs[i].href);
-    fs.readFile(filePath, function(err, data) {
-      const root = parser.parseFromString(data.toString());
-      const head = root.getElementsByTagName('head')[0];
-      const title = head.getElementsByTagName('title')[0];
-      docs[i]['title'] = title.textContent;
-      docs[i]['fullPath'] = filePath;
-      console.log('--------->', docs[i]);
-    });
-    */
-
-  }
-  event.sender.send('rsp-doc-title', bookId, docs);
 }
 
 // Handles reading the contents of a file
@@ -719,4 +666,5 @@ ipcMain.on('save-doc-groups', saveDocGroups);
 ipcMain.on('req-document', reqDocument);
 ipcMain.on('save-document', saveDocument);
 ipcMain.on('delete-document-file', deleteDocFile);
-ipcMain.on('req-doc-title', reqDocTitle);
+ipcMain.on('read-epub-pkg-file', readEpubPkgFile);
+ipcMain.on('read-epub-nav-file', readEpubNavFile);

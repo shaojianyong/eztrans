@@ -14,7 +14,7 @@ class Packaging {
   spine = [];
   metadata = {};
 
-  constructor(packageDocument) {
+  constructor() {
     this.manifest = {};
     this.navPath = '';
     this.ncxPath = '';
@@ -22,10 +22,6 @@ class Packaging {
     this.spineNodeIndex = 0;
     this.spine = [];
     this.metadata = {};
-
-    if (packageDocument) {
-      this.parse(packageDocument);
-    }
   }
 
   /**
@@ -131,10 +127,9 @@ class Packaging {
           properties = item.getAttribute('properties') || '';
 
       manifest[id] = {
-        'href' : href,
-        // 'url' : href,
-        'type' : type,
-        'properties' : properties.length ? properties.split(' ') : []
+        href: href,
+        type: type,
+        properties: properties.length ? properties.split(' ') : []
       };
     });
     return manifest;
@@ -152,25 +147,17 @@ class Packaging {
     const selected = qsa(spineXml, 'itemref');
     const items = Array.prototype.slice.call(selected);
 
-    // var epubcfi = new EpubCFI();
-
     // -- Add to array to mantain ordering and cross reference with manifest
     items.forEach(function(item, index) {
       const idref = item.getAttribute('idref');
-      // var cfiBase = epubcfi.generateChapterComponent(spineNodeIndex, index, Id);
       const props = item.getAttribute('properties') || '';
       const propArray = props.length ? props.split(' ') : [];
-      // var manifestProps = manifest[Id].properties;
-      // var manifestPropArray = manifestProps.length ? manifestProps.split(' ') : [];
 
       const itemref = {
-        'idref' : idref,
-        'linear' : item.getAttribute('linear') || 'yes',
-        'properties' : propArray,
-        // 'href' : manifest[Id].href,
-        // 'url' :  manifest[Id].url,
-        'index' : index
-        // 'cfiBase' : cfiBase
+        idref: idref,
+        linear: item.getAttribute('linear') || 'yes',
+        properties: propArray,
+        index: index
       };
       spine.push(itemref);
     });

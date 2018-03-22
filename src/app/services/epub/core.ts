@@ -247,8 +247,7 @@ export function parse(markup, mime, forceXMLDom) {
     markup = markup.slice(1);
   }
 
-  const doc = new Parser().parseFromString(markup, mime);
-  return doc;
+  return new Parser().parseFromString(markup, mime);
 }
 
 /**

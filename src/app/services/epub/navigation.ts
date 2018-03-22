@@ -12,7 +12,7 @@ class Navigation {
   landmarksByType = {};
   length = 0;
 
-  constructor(xml) {
+  constructor() {
     this.toc = [];
     this.tocByHref = {};
     this.tocById = {};
@@ -21,9 +21,6 @@ class Navigation {
     this.landmarksByType = {};
 
     this.length = 0;
-    if (xml) {
-      this.parse(xml);
-    }
   }
 
   /**
