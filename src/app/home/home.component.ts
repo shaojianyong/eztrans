@@ -7,8 +7,8 @@ const ipc = electron.ipcRenderer;
 import Epub from '../services/epub/epub';
 import { FunctionUtils } from '../services/utils/function-utils';
 import { DocumentModel } from '../services/model/document.model';
-import { GroupModel } from '../services/model/group.model';
-import { DocInfoModel } from '../services/model/doc-info.model';
+import { GroupType, GroupModel } from '../services/model/group.model';
+import { DocType, DocInfoModel } from '../services/model/doc-info.model';
 import {MsgboxComponent} from '../msgbox/msgbox.component';
 
 
@@ -543,7 +543,8 @@ export class HomeComponent implements OnInit {
 
     this.doc_groups.push(new GroupModel({
       id: bookId,
-      name: pkg.metadata.title
+      name: pkg.metadata.title,
+      type: GroupType.BOOK
     }));
 
     for (const itemref of pkg.spine) {
@@ -553,6 +554,7 @@ export class HomeComponent implements OnInit {
       const diNew = new DocInfoModel({
         id: bookId + '-' + docId,
         name: docName.trim(),
+        type: DocType.CHAPTER,
         group_id: bookId,
         file_path: pkg.manifest[docId]['href']
       });

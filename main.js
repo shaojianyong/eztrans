@@ -163,20 +163,6 @@ function readFile(event, fileUrl, group_id) {
   }
 }
 
-// 同步通信，如果不设置event.returnValue，界面会僵住
-function readFileSync(event, files) {
-  if (files) {
-    const filePath = files[0];
-    fs.readFile(filePath, 'utf8', function(err, data) {
-      if (err) {
-        event.returnValue = err.message;
-      } else {
-        event.returnValue = data;
-      }
-    });
-  }
-}
-
 function saveFile(event, filePath, content) {
   fs.writeFile(filePath, content, function(err) {
     event.sender.send('file-saved', err);
@@ -654,7 +640,6 @@ function readEpubNavFile(event, pkgDir, ncxPath, bookId) {
 
 // Handles reading the contents of a file
 ipcMain.on('read-file', readFile);
-ipcMain.on('read-file-sync', readFileSync);
 ipcMain.on('save-file', saveFile);
 ipcMain.on('show-item-context-menu', showItemContextMenu);
 ipcMain.on('show-doc-context-menu', showDocContextMenu);

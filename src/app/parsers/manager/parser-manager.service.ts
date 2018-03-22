@@ -16,6 +16,7 @@ export class ParserManagerService {
     ) {
     this.parsers = {
       html: html_parser,
+      xhtml: html_parser,
       txt: text_parser,
       md: md_parser
     };
