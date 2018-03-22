@@ -532,63 +532,34 @@ export class HomeComponent implements OnInit {
   }
 
   loadEpubNavigation(data: string, bookId: string): void {
-    this.books[bookId].loadNavigation(data);
-    console.log('--------->', this.books[bookId].navigation);
-  }
-
-  parseOPF(data: string, bookId: string, opfPath: string): void {
-    // const parser = new DOMParser();
-    // const doc = parser.parseFromString(data);
-    /*const metadata = doc.getElementsByTagName('metadata')[0];
-    const title = metadata.getElementsByTagName('dc:title')[0];
-
+    let str = data;
+    const pkg = this.books[bookId].packaging;
+    if (pkg.ncxPath && str.indexOf('<ncx:') !== -1) {
+      str = data.replace(/<ncx:/g, '<');
+      str = str.replace(/<\/ncx:/g, '</');
+    }
+    this.books[bookId].loadNavigation(str);
+    const nav = this.books[bookId].navigation;
+    console.log('-------->', nav.id2LabelMap);
     this.doc_groups.push(new GroupModel({
       id: bookId,
-      name: title.textContent
-    }));*/
+      name: pkg.metadata.title
+    }));
 
-    /*
-    const manItems = {};
-    const manifest = doc.getElementsByTagName('manifest')[0];
-    const items = manifest.getElementsByTagName('item');
-    for (let i = 0; i < items.length; ++i) {
-      manItems[items[i].getAttribute('id')] = items[i].getAttribute('href');
-    }
-
-    const docs = [];
-    const spine = doc.getElementsByTagName('spine')[0];
-    const refItems = spine.getElementsByTagName('itemref');
-    for (let i = 0; i < refItems.length; ++i) {
-      const docId = refItems[i].getAttribute('idref');
-      const href = manItems[docId];
-      docs.push({
-        'docId': docId,
-        'href': href
-      });
-    }
-    */
-    // const pkg = new Packaging(data);
-    // const ncxPath = pkg.ncxPath;
-    // console.log('--------------->ncxPath=', ncxPath);
-
-    // ipc.send('req-doc-title', bookId, opfPath, tocPath, docs);
-  }
-
-  updateBook(bookId: string, docs: string): void {
-    for (const doc of docs) {
-      console.log('--------->', doc);
+    for (const itemref of pkg.spine) {
+      const docId = itemref['idref'];
+      const label = nav.id2LabelMap[docId];
       const diNew = new DocInfoModel({
-        id: bookId + '-' + doc['docId'],
-        name: doc['title'],
+        id: bookId + '-' + docId,
+        name: label ? label : docId,
         group_id: bookId,
-        file_path: doc['fullPath']
+        file_path: pkg.manifest[docId]['href']
       });
       this.getGroup(bookId).documents.push(diNew);
     }
 
     this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
   }
-
 
   ngOnInit() {
     $('.ui.accordion')

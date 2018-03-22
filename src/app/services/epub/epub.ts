@@ -21,7 +21,8 @@ class Epub {
   }
 
   loadNavigation(ncxData) {
-    const ncxDoc = parse(ncxData, this.packaging.opfMimeType, true);
+    const mimeType = this.packaging.ncxPath ? 'application/x-dtbncx+xml' : 'application/xhtml+xml';
+    const ncxDoc = parse(ncxData, mimeType, true);
     this.navigation = new Navigation();
     this.navigation.parse(ncxDoc);
   }

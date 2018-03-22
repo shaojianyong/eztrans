@@ -6,6 +6,7 @@ import {qs, qsa, querySelectorByType, filterChildren, getParentByTagName} from '
  */
 class Navigation {
   toc = [];
+  id2LabelMap = {};
   tocByHref = {};
   tocById = {};
   landmarks = [];
@@ -14,6 +15,7 @@ class Navigation {
 
   constructor() {
     this.toc = [];
+    this.id2LabelMap = {};
     this.tocByHref = {};
     this.tocById = {};
 
@@ -61,6 +63,7 @@ class Navigation {
       }
       if (item.id) {
         this.tocById[item.id] = i;
+        this.id2LabelMap[item.id] = item.label;
       }
       this.length++;
       if (item.subitems.length) {
