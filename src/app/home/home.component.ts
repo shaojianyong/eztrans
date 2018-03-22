@@ -520,9 +520,14 @@ export class HomeComponent implements OnInit {
 
   loadEpubPackage(data: string, bookId: string): void {
     this.books[bookId].loadPackaging(data);
-    if (this.books[bookId].packaging.ncxPath) {
+    let navFile = this.books[bookId].packaging.ncxPath;
+    if (!navFile) {
+      navFile = this.books[bookId].packaging.navPath;
+    }
+
+    if (navFile) {
       const pkgDir = FunctionUtils.getBaseDir(this.books[bookId].container.packagePath);
-      ipc.send('read-epub-nav-file', pkgDir, this.books[bookId].packaging.ncxPath, bookId);
+      ipc.send('read-epub-nav-file', pkgDir, navFile, bookId);
     }
   }
 
