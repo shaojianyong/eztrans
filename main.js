@@ -570,7 +570,6 @@ function reqDocument(event, groupId, docId, docType, filePath) {
       if (exists) {
         openDocDb(dbFile, docId, event);
       } else {
-        console.log('------>', filePath);
         fs.readFile(filePath, 'utf8', function(err, data) {
           event.sender.send('file-read', err, data, filePath, getFileName(filePath), groupId);
         });
