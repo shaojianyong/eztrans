@@ -848,13 +848,17 @@ export class MainComponent implements OnInit {
       parser.load(data);
       parser.parse().subscribe(
         res => {
-          const sentence = new SentenceModel({source: res.source});
+          let srcText = res.source;
+          srcText = srcText.replace(/\r/g, '');
+          srcText = srcText.replace(/\n/g, ' ');
+          srcText = srcText.replace(/\s{2,}/g, ' ').trim();
+          const sentence = new SentenceModel({source: srcText});
           if (res.target) {
             sentence.target = -1;
             sentence.custom = new TranslateModel({
               source_lang: self.ems.getSourceLanguage(),
               target_lang: self.ems.getTargetLanguage(),
-              source_text: res.source,
+              source_text: srcText,
               target_text: res.target,
               engine_name: 'user'
             });
