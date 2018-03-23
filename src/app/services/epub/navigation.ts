@@ -46,7 +46,12 @@ class Navigation {
     for (let i = 0; i < toc.length; i++) {
       const item = toc[i];
       if (item.href) {
-        this.href2Label[item.href] = item.label;
+        let path = item.href;
+        const sharp = item.href.indexOf('#');
+        if (sharp !== -1) {
+          path = item.href.substr(0, sharp);
+        }
+        this.href2Label[path] = item.label;
       }
       if (item.id) {
         this.id2Label[item.id] = item.label;

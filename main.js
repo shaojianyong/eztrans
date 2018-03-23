@@ -581,9 +581,12 @@ function reqDocument(event, groupId, docId, docType, filePath) {
           } else {
             const dom = new JSDOM(data.toString());  // TODO: 使用XMLDOM
             const baseNode = dom.window.document.createElement('base');
+            const metaNode = dom.window.document.createElement('meta');
             const baseHref = 'file:///' + getBaseURL(filePath).replace(/\\/g, '/');
             baseNode.setAttribute('href', baseHref);
+            metaNode.setAttribute('charset', 'utf-8');
             dom.window.document.head.insertBefore(baseNode, dom.window.document.head.firstElementChild);
+            dom.window.document.head.insertBefore(metaNode, dom.window.document.head.firstElementChild);
             event.sender.send('file-read', dom.serialize(), filePath, getFileName(filePath), groupId, docId);
           }
         });
