@@ -72,19 +72,18 @@ export class HomeComponent implements OnInit {
       return;
     }
 
-    if (!(this.sel_doc.id in this.cache_docs)) {
-      const doc = ipc.sendSync('req-document', this.sel_doc.id);
-      this.cache_docs[this.sel_doc.id] = doc;
-    }
+    if (this.sel_doc.id in this.cache_docs) {
+      if (this.cur_doc && this.cur_doc.id) {
+        this.saveCurDocument(false);
+      }
 
-    if (this.cur_doc && this.cur_doc.id) {
-      this.saveCurDocument(false);
-    }
-
-    this.cur_doc = this.cache_docs[this.sel_doc.id];
-    this.updateTitle();
-    if (rerender) {
-      this.rerenderEvent.emit({forceShowSelected: false, resetDocument: true});
+      this.cur_doc = this.cache_docs[this.sel_doc.id];
+      this.updateTitle();
+      if (rerender) {
+        this.rerenderEvent.emit({forceShowSelected: false, resetDocument: true});
+      }
+    } else {
+      ipc.send('req-document', this.sel_doc.id, this.sel_doc.type);
     }
   }
 
@@ -655,6 +654,11 @@ export class HomeComponent implements OnInit {
 
     ipc.on('load-epub-navigation', (event, data, bookId) => {
       this.loadEpubNavigation(data, bookId);
+    });
+
+    ipc.on('rsp-document', (event, doc) => {
+      this.cache_docs[this.sel_doc.id] = doc;
+      this.openDoc();
     });
 
     // auto save all user data

@@ -543,25 +543,25 @@ function saveDocGroups(event, params) {
 }
 
 // 文档作为单个元素保存，Collection中只有一个元素
-function reqDocument(event, docId) {
+function reqDocument(event, docId, docType) {
   let docDb = null;
   if (docId in openedDocs) {
     docDb = openedDocs[docId];
-  } else {
+  } else if (docType === 'article') {
     docDb = new loki(path.join(__dirname, 'database', docId + '.db'), {
       autoload: false,
       autosave: false
     });
     openedDocs[docId] = docDb;
+    docDb.loadDatabase({}, function() {
+      const dsc = docDb.getCollection('documents');
+      if (dsc) {
+        event.sender.send('rsp-document', dsc.data[0]);
+      }
+    });
+  } else if (docType === 'chapter') {
+
   }
-
-  docDb.loadDatabase({}, function() {
-    const dsc = docDb.getCollection('documents');
-    event.returnValue = dsc ? dsc.data[0] : {id: docId, sentences: []};
-  });
-
-  // const dsc = docDb.getCollection('documents');
-  // event.returnValue = dsc ? dsc.data[0] : {id: docId, sentences: []};
 }
 
 function saveDocument(event, params) {
