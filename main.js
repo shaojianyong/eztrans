@@ -571,7 +571,13 @@ function reqDocument(event, groupId, docId, docType, filePath) {
         openDocDb(dbFile, docId, event);
       } else {
         fs.readFile(filePath, 'utf8', function(err, data) {
-          event.sender.send('file-read', err, data, filePath, getFileName(filePath), groupId);
+          const dom = new JSDOM(data.toString());
+
+          const baseNode = dom.window.document.createElement('base');
+          const baseHref = 'file:///' + getBaseURL(filePath).replace(/\\/g, '/');
+          baseNode.setAttribute('href', baseHref);
+          dom.window.document.head.insertBefore(baseNode, dom.window.document.head.firstElementChild);
+          event.sender.send('file-read', err, dom.serialize(), filePath, getFileName(filePath), groupId);
         });
       }
     });
