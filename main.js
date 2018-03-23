@@ -141,7 +141,7 @@ function readFile(event, fileUrl, group_id) {
     });
   } else if (fileUrl.toLowerCase().endsWith('.epub')) {
     const bookId = 'b' + moment().format('YYYYMMDDHHmmssSSS');
-    const bookSrc = path.join(__dirname, 'datafile', bookId, 'src');  // src, dst, dbs
+    const bookSrc = path.join(__dirname, 'datafile', bookId, 'src');
     unzip(fileUrl, {dir: bookSrc}, function (err) {
       if (err) {
         throw new Error('Unzip ePub file error: ' + err);
@@ -153,6 +153,7 @@ function readFile(event, fileUrl, group_id) {
             event.sender.send('load-epub-container', data.toString(), bookId);
           }
         });
+        fs.mkdirSync(path.join(__dirname, 'datafile', bookId, 'dbs'));
       }
     });
 
