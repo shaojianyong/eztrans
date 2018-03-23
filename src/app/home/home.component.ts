@@ -434,8 +434,11 @@ export class HomeComponent implements OnInit {
           sync: true
         });
       } else {
+        const docInfo = this.getDocInfo(this.cur_doc.id);
         ipc.send('save-document', {
           data: this.cur_doc,
+          type: docInfo.type,
+          group_id: docInfo.group_id,
           sync: false
         });
       }

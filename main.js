@@ -592,9 +592,17 @@ function saveDocument(event, params) {
 
   if (doc.id in openedDocs) {
     docDb = openedDocs[doc.id];
-  } else {
+  } else if (params.type === 'article') {
     docDb = new loki(path.join(__dirname, 'database', doc.id + '.db'), {
       autoload: true,
+      autosave: false
+    });
+    openedDocs[doc.id] = docDb;
+  } else if (params.type === 'chapter') {
+    const bookDbs = path.join(__dirname, 'datafile', params.group_id, 'dbs');
+    const dbFile = path.join(bookDbs, doc.id + '.db');
+    docDb = new loki(dbFile, {
+      autoload: false,
       autosave: false
     });
     openedDocs[doc.id] = docDb;
