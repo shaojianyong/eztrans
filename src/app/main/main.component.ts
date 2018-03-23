@@ -6,6 +6,7 @@ const {dialog, Menu, MenuItem} = remote;
 
 import {ExLinksModule} from '../services/utils/ex-links.module';
 
+import { DocType } from '../services/model/doc-info.model';
 import { FunctionUtils } from '../services/utils/function-utils';
 import {SentenceModel, SentenceStatus} from '../services/model/sentence.model';
 import {TranslateModel, TranslateState} from '../services/model/translate.model';
@@ -818,7 +819,12 @@ export class MainComponent implements OnInit {
   showPreview(): void {
     const webview = document.getElementsByTagName('webview')[0];
     if (this.child_home.cur_doc && this.child_home.cur_doc.id) {
-      (<any>webview).loadURL(`data:text/html,${this.getLastFileData('html', true)}`);
+      const docInfo = this.child_home.getDocInfo(this.child_home.cur_doc.id);
+      if (docInfo.type === DocType.ARTICLE) {
+        (<any>webview).loadURL(`data:text/html,${this.getLastFileData('html', true)}`);
+      } else if (docInfo.type === DocType.CHAPTER) {
+        (<any>webview).loadURL(`data:application/xhtml+xml,${this.getLastFileData('html', true)}`);
+      }
     } else {
       (<any>webview).loadURL('data:text/html,<html><body></body></html>');
     }

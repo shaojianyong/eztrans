@@ -141,12 +141,12 @@ function readFile(event, fileUrl, group_id) {
     });
   } else if (fileUrl.toLowerCase().endsWith('.epub')) {
     const bookId = 'b' + moment().format('YYYYMMDDHHmmssSSS');
-    const bookDir = path.join(__dirname, 'datafile', bookId, 'src');  // src, dst, trx
-    unzip(fileUrl, {dir: bookDir}, function (err) {
+    const bookSrc = path.join(__dirname, 'datafile', bookId, 'src');  // src, dst, dbs
+    unzip(fileUrl, {dir: bookSrc}, function (err) {
       if (err) {
         throw new Error('Unzip ePub file error: ' + err);
       } else {
-        fs.readFile(path.join(bookDir, EPUB_CONTAINER_FILE), function(err, data) {
+        fs.readFile(path.join(bookSrc, EPUB_CONTAINER_FILE), function(err, data) {
           if (err) {
             throw new Error('Read container file error: ' + err);
           } else {
@@ -542,25 +542,40 @@ function saveDocGroups(event, params) {
   */
 }
 
+function openDocDb(fullDbPath, docId, event) {
+  docDb = new loki(fullDbPath, {
+    autoload: false,
+    autosave: false
+  });
+  openedDocs[docId] = docDb;
+  docDb.loadDatabase({}, function() {
+    const dsc = docDb.getCollection('documents');
+    if (dsc) {
+      event.sender.send('rsp-document', dsc.data[0]);
+    }
+  });
+}
+
 // 文档作为单个元素保存，Collection中只有一个元素
-function reqDocument(event, docId, docType) {
+function reqDocument(event, groupId, docId, docType, filePath) {
   let docDb = null;
   if (docId in openedDocs) {
     docDb = openedDocs[docId];
   } else if (docType === 'article') {
-    docDb = new loki(path.join(__dirname, 'database', docId + '.db'), {
-      autoload: false,
-      autosave: false
-    });
-    openedDocs[docId] = docDb;
-    docDb.loadDatabase({}, function() {
-      const dsc = docDb.getCollection('documents');
-      if (dsc) {
-        event.sender.send('rsp-document', dsc.data[0]);
+    openDocDb(path.join(__dirname, 'database', docId + '.db'), docId, event);
+  } else if (docType === 'chapter') {
+    const bookDbs = path.join(__dirname, 'datafile', groupId, 'dbs');
+    const dbFile = path.join(bookDbs, docId + '.db');
+    fs.exists(dbFile, function(exists) {
+      if (exists) {
+        openDocDb(dbFile, docId, event);
+      } else {
+        console.log('------>', filePath);
+        fs.readFile(filePath, 'utf8', function(err, data) {
+          event.sender.send('file-read', err, data, filePath, getFileName(filePath), groupId);
+        });
       }
     });
-  } else if (docType === 'chapter') {
-
   } else {
     throw new Error('Invalid doc type: ' + docType);
   }
@@ -619,8 +634,8 @@ function deleteDocFile(event, doc_id) {
 }
 
 function readEpubPkgFile(event, opfPath, bookId) {
-  const bookDir = path.join(__dirname, 'datafile', bookId, 'src');
-  fs.readFile(path.join(bookDir, opfPath), function(err, data) {
+  const bookSrc = path.join(__dirname, 'datafile', bookId, 'src');
+  fs.readFile(path.join(bookSrc, opfPath), function(err, data) {
     if (err) {
       throw new Error('Read package file error: ' + err);
     } else {
@@ -630,12 +645,13 @@ function readEpubPkgFile(event, opfPath, bookId) {
 }
 
 function readEpubNavFile(event, pkgDir, ncxPath, bookId) {
-  const bookDir = path.join(__dirname, 'datafile', bookId, 'src');
-  fs.readFile(path.join(bookDir, pkgDir, ncxPath), function(err, data) {
+  const bookSrc = path.join(__dirname, 'datafile', bookId, 'src');
+  fs.readFile(path.join(bookSrc, pkgDir, ncxPath), function(err, data) {
     if (err) {
       throw new Error('Read navigation file error: ' + err);
     } else {
-      event.sender.send('load-epub-navigation', data.toString(), bookId);
+      const fullPkgDir = path.join(bookSrc, pkgDir);
+      event.sender.send('load-epub-navigation', data.toString(), bookId, fullPkgDir);
     }
   });
 }

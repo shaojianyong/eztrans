@@ -1,5 +1,6 @@
 import { Component, OnInit, Output, EventEmitter, ViewChild } from '@angular/core';
 import {Title} from '@angular/platform-browser';
+const path = (<any>window).require('path');
 const moment = (<any>window).require('moment');
 const electron = (<any>window).require('electron');
 const ipc = electron.ipcRenderer;
@@ -83,7 +84,7 @@ export class HomeComponent implements OnInit {
         this.rerenderEvent.emit({forceShowSelected: false, resetDocument: true});
       }
     } else {
-      ipc.send('req-document', this.sel_doc.id, this.sel_doc.type);
+      ipc.send('req-document', this.sel_doc.group_id, this.sel_doc.id, this.sel_doc.type, this.sel_doc.file_path);
     }
   }
 
@@ -530,7 +531,7 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  loadEpubNavigation(data: string, bookId: string): void {
+  loadEpubNavigation(data: string, bookId: string, fullPkgDir: string): void {
     let str = data;
     const pkg = this.books[bookId].packaging;
     if (pkg.ncxPath && str.indexOf('<ncx:') !== -1) {
@@ -564,7 +565,7 @@ export class HomeComponent implements OnInit {
         name: label.trim(),
         type: DocType.CHAPTER,
         group_id: bookId,
-        file_path: pkg.manifest[docId]['href']
+        file_path: path.join(fullPkgDir, href)
       });
       this.getGroup(bookId).documents.push(diNew);
     }
@@ -652,8 +653,8 @@ export class HomeComponent implements OnInit {
       this.loadEpubPackage(data, bookId);
     });
 
-    ipc.on('load-epub-navigation', (event, data, bookId) => {
-      this.loadEpubNavigation(data, bookId);
+    ipc.on('load-epub-navigation', (event, data, bookId, fullPkgDir) => {
+      this.loadEpubNavigation(data, bookId, fullPkgDir);
     });
 
     ipc.on('rsp-document', (event, doc) => {
