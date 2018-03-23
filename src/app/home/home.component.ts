@@ -563,20 +563,18 @@ export class HomeComponent implements OnInit {
     }));
 
     for (const itemref of pkg.spine) {
-      const docId = itemref['idref'];
-      const href = pkg.manifest[docId].href;
+      const rid = itemref['idref'];
+      const href = pkg.manifest[rid].href;
 
-      let index = -1;
-      if (href in nav.tocByHref) {
-        index = nav.tocByHref[href];
-      } else {
-        continue;
+      let label = href;
+      if (rid in nav.id2Label) {
+        label = nav.id2Label[rid];
+      } else if (href in nav.href2Label) {
+        label = nav.href2Label[href];
       }
-      const toc = nav.toc[index];
-      const label = toc ? toc.label : href;
 
       const diNew = new DocInfoModel({
-        id: bookId + '-' + docId,
+        id: bookId + '-' + rid,
         name: label.trim(),
         type: DocType.CHAPTER,
         group_id: bookId,

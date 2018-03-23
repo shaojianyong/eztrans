@@ -6,21 +6,12 @@ import {qs, qsa, querySelectorByType, filterChildren, getParentByTagName} from '
  */
 class Navigation {
   toc = [];
-  tocByHref = {};
-  tocById = {};
-  landmarks = [];
-  landmarksByType = {};
+  id2Label = {};
+  href2Label = {};
   length = 0;
 
   constructor() {
     this.toc = [];
-    this.tocByHref = {};
-    this.tocById = {};
-
-    this.landmarks = [];
-    this.landmarksByType = {};
-
-    this.length = 0;
   }
 
   /**
@@ -40,11 +31,9 @@ class Navigation {
       this.toc = this.load(xml);
     } else if (html) {
       this.toc = this.parseNav(xml);
-      this.landmarks = this.parseLandmarks(xml);
     } else if (ncx) {
       this.toc = this.parseNcx(xml);
     }
-    this.length = 0;
     this.unpack(this.toc);
   }
 
@@ -57,50 +46,15 @@ class Navigation {
     for (let i = 0; i < toc.length; i++) {
       const item = toc[i];
       if (item.href) {
-        this.tocByHref[item.href] = i;
+        this.href2Label[item.href] = item.label;
       }
       if (item.id) {
-        this.tocById[item.id] = i;
+        this.id2Label[item.id] = item.label;
       }
-      this.length++;
       if (item.subitems.length) {
         this.unpack(item.subitems);
       }
     }
-  }
-
-  /**
-   * Get an item from the navigation
-   * @param  {string} target
-   * @return {object} navItems
-   */
-  get(target) {
-    let res = this.toc;
-    if (target) {
-      let index = 0;
-      if (target.indexOf('#') === 0) {
-        index = this.tocById[target.substring(1)];
-      } else if (target in this.tocByHref) {
-        index = this.tocByHref[target];
-      }
-      res = this.toc[index];
-    }
-    return res;
-  }
-
-  /**
-   * Get a landmark by type
-   * List of types: https://idpf.github.io/epub-vocabs/structure/
-   * @param  {string} type
-   * @return {object} landmarkItems
-   */
-  landmark(type) {
-    let res = this.landmarks;
-    if (type) {
-      const index = this.landmarksByType[type];
-      res = this.landmarks[index];
-    }
-    return res;
   }
 
   /**
@@ -167,31 +121,6 @@ class Navigation {
       subitems: [],
       parent: parent
     };
-  }
-
-  /**
-   * Parse landmarks from a Epub > 3.0 Nav
-   * @private
-   * @param  {document} navHtml
-   * @return {array} landmarks list
-   */
-  parseLandmarks(navHtml) {
-    const list = [];
-    const navElement = querySelectorByType(navHtml, 'nav', 'landmarks');
-    const navItems = navElement ? qsa(navElement, 'li') : [];
-
-    if (!navItems || navItems.length === 0) {
-      return list;
-    }
-
-    for (let i = 0; i < navItems.length; ++i) {
-      const item = this.landmarkItem(navItems[i]);
-      if (item) {
-        list.push(item);
-        this.landmarksByType[item.type] = i;
-      }
-    }
-    return list;
   }
 
   /**
