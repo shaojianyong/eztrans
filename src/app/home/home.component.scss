@@ -12,8 +12,15 @@
   }
 
   #left-side-list {
+    position: absolute;
+    top: 44px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
     padding-top: 0;
-    margin-top: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
 
     .ui.accordion {
       .title {
