@@ -357,43 +357,52 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  addDocument(filePath: string, fileName: string, fileData: string, group_id: string): boolean {
-    const doc = this.findDocInfo(filePath);
-    if (doc && doc.name.toLowerCase() === fileName.toLowerCase()) {  // 已导入，并且没有重命名
-      if (doc.id === this.cur_doc.id) {
-        this.child_msgbox.setType(1);  // info
-        this.child_msgbox.setHead('Duplicate Documents');
-        this.child_msgbox.setBody(`The file ${fileName} has been imported. It's the current document.`);
-        this.child_msgbox.setButtonStyle('close', 'Close', 'violet');
-        this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
-        this.child_msgbox.show();
-      } else {
-        this.child_msgbox.setType(0);
-        this.child_msgbox.setHead('Duplicate Documents');
-        this.child_msgbox.setBody(`The file ${fileName} has been imported. Open it now?`);
-        this.child_msgbox.setButtonStyle('approve', 'Yes', 'violet');
-        this.child_msgbox.setButtonStyle('deny', 'No', 'green');
-        this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
-        this.child_msgbox.show(() => {
-          this.select(doc);
-          this.openDoc();
-        });
+  addDocument(filePath: string, fileName: string, fileData: string, group_id: string, doc_id: string): boolean {
+    let docId = null;
+    let docInfo = null;
+    if (doc_id) {
+      docId = doc_id;
+      docInfo = this.getDocInfo(docId);
+    } else {
+      const doc = this.findDocInfo(filePath);
+      if (doc && doc.name.toLowerCase() === fileName.toLowerCase()) {  // 已导入，并且没有重命名
+        if (doc.id === this.cur_doc.id) {
+          this.child_msgbox.setType(1);  // info
+          this.child_msgbox.setHead('Duplicate Documents');
+          this.child_msgbox.setBody(`The file ${fileName} has been imported. It's the current document.`);
+          this.child_msgbox.setButtonStyle('close', 'Close', 'violet');
+          this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+          this.child_msgbox.show();
+        } else {
+          this.child_msgbox.setType(0);
+          this.child_msgbox.setHead('Duplicate Documents');
+          this.child_msgbox.setBody(`The file ${fileName} has been imported. Open it now?`);
+          this.child_msgbox.setButtonStyle('approve', 'Yes', 'violet');
+          this.child_msgbox.setButtonStyle('deny', 'No', 'green');
+          this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+          this.child_msgbox.show(() => {
+            this.select(doc);
+            this.openDoc();
+          });
+        }
+        return false;
       }
-      return false;
+
+      docId = 'd' + moment().format('YYYYMMDDHHmmssSSS');
+      docInfo = new DocInfoModel({
+        id: docId,
+        name: fileName,
+        type: DocType.ARTICLE,
+        group_id: group_id,
+        file_path: filePath
+      });
+      this.getGroup(group_id).documents.push(docInfo);
     }
 
-    const docId = 'd' + moment().format('YYYYMMDDHHmmssSSS');
-    const diNew = new DocInfoModel({
-      id: docId,
-      name: fileName,
-      group_id: group_id,
-      file_path: filePath
-    });
-    this.getGroup(group_id).documents.push(diNew);
     const dataType = FunctionUtils.getExtName(fileName).toLowerCase();
     this.cache_docs[docId] = new DocumentModel({id: docId, file_data: fileData, data_type: dataType});
 
-    this.select(diNew);
+    this.select(docInfo);
     this.openDoc(false);
     this.modified_flag = true;
     return true;
@@ -427,21 +436,24 @@ export class HomeComponent implements OnInit {
 
   // save current document
   saveCurDocument(sync: boolean) {
-    if (this.cur_doc.id) {
-      if (sync) {
-        ipc.sendSync('save-document', {
-          data: this.cur_doc,
-          sync: true
-        });
-      } else {
-        const docInfo = this.getDocInfo(this.cur_doc.id);
-        ipc.send('save-document', {
-          data: this.cur_doc,
-          type: docInfo.type,
-          group_id: docInfo.group_id,
-          sync: false
-        });
-      }
+    if (!this.cur_doc.id) {
+      return;
+    }
+    const docInfo = this.getDocInfo(this.cur_doc.id);
+    if (sync) {
+      ipc.sendSync('save-document', {
+        data: this.cur_doc,
+        type: docInfo.type,
+        group_id: docInfo.group_id,
+        sync: true
+      });
+    } else {
+      ipc.send('save-document', {
+        data: this.cur_doc,
+        type: docInfo.type,
+        group_id: docInfo.group_id,
+        sync: false
+      });
     }
   }
 

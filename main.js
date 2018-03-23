@@ -137,7 +137,7 @@ function readFile(event, fileUrl, group_id) {
         const index = fileUrl.lastIndexOf('/');
         fileName = fileUrl.substr(index + 1);
       }
-      event.sender.send('file-read', null, dom.serialize(), fileUrl, fileName, group_id);
+      event.sender.send('file-read', dom.serialize(), fileUrl, fileName, group_id, null);
     });
   } else if (fileUrl.toLowerCase().endsWith('.epub')) {
     const bookId = 'b' + moment().format('YYYYMMDDHHmmssSSS');
@@ -158,7 +158,11 @@ function readFile(event, fileUrl, group_id) {
 
   } else {
     fs.readFile(fileUrl, 'utf8', function(err, data) {
-      event.sender.send('file-read', err, data, fileUrl, getFileName(fileUrl), group_id);
+      if (err) {
+        throw new Error('Read doc file error: ' + err);
+      } else {
+        event.sender.send('file-read', data, fileUrl, getFileName(fileUrl), group_id, null);
+      }
     });
   }
 }
@@ -571,13 +575,16 @@ function reqDocument(event, groupId, docId, docType, filePath) {
         openDocDb(dbFile, docId, event);
       } else {
         fs.readFile(filePath, 'utf8', function(err, data) {
-          const dom = new JSDOM(data.toString());
-
-          const baseNode = dom.window.document.createElement('base');
-          const baseHref = 'file:///' + getBaseURL(filePath).replace(/\\/g, '/');
-          baseNode.setAttribute('href', baseHref);
-          dom.window.document.head.insertBefore(baseNode, dom.window.document.head.firstElementChild);
-          event.sender.send('file-read', err, dom.serialize(), filePath, getFileName(filePath), groupId);
+          if (err) {
+            throw new Error('Read doc file error: ' + err);
+          } else {
+            const dom = new JSDOM(data.toString());  // TODO: 使用XMLDOM
+            const baseNode = dom.window.document.createElement('base');
+            const baseHref = 'file:///' + getBaseURL(filePath).replace(/\\/g, '/');
+            baseNode.setAttribute('href', baseHref);
+            dom.window.document.head.insertBefore(baseNode, dom.window.document.head.firstElementChild);
+            event.sender.send('file-read', dom.serialize(), filePath, getFileName(filePath), groupId, docId);
+          }
         });
       }
     });
@@ -606,6 +613,8 @@ function saveDocument(event, params) {
       autosave: false
     });
     openedDocs[doc.id] = docDb;
+  } else {
+    throw new Error('Invalid doc type: ' + params.type);
   }
 
   let dsc = docDb.getCollection('documents');

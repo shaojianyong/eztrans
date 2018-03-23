@@ -838,8 +838,8 @@ export class MainComponent implements OnInit {
   ngOnInit() {
     const self = this;
 
-    ipcRenderer.on('file-read', (event, err, data, filePath, fileName, group_id) => {
-      if (!this.child_home.addDocument(filePath, fileName, data, group_id)) {
+    ipcRenderer.on('file-read', (event, data, filePath, fileName, group_id, doc_id) => {
+      if (!this.child_home.addDocument(filePath, fileName, data, group_id, doc_id)) {
         return;
       }
       self.reset();
