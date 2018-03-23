@@ -549,11 +549,20 @@ export class HomeComponent implements OnInit {
 
     for (const itemref of pkg.spine) {
       const docId = itemref['idref'];
-      const label = nav.id2LabelMap[docId];
-      const docName = label ? label : docId;
+      const href = pkg.manifest[docId].href;
+
+      let index = -1;
+      if (href in nav.tocByHref) {
+        index = nav.tocByHref[href];
+      } else {
+        continue;
+      }
+      const toc = nav.toc[index];
+      const label = toc ? toc.label : href;
+
       const diNew = new DocInfoModel({
         id: bookId + '-' + docId,
-        name: docName.trim(),
+        name: label.trim(),
         type: DocType.CHAPTER,
         group_id: bookId,
         file_path: pkg.manifest[docId]['href']
