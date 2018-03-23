@@ -561,6 +561,8 @@ function reqDocument(event, docId, docType) {
     });
   } else if (docType === 'chapter') {
 
+  } else {
+    throw new Error('Invalid doc type: ' + docType);
   }
 }
 
