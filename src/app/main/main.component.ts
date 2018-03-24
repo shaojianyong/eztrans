@@ -819,15 +819,16 @@ export class MainComponent implements OnInit {
   showPreview(): void {
     const webview = document.getElementsByTagName('webview')[0];
     if (this.child_home.cur_doc && this.child_home.cur_doc.id) {
-      console.log('1--->', this.getLastFileData('html', true));
-      (<any>webview).loadURL(`data:text/html,${this.getLastFileData('html', true)}`);
+
+      let fileData = this.getLastFileData('html', true);
+      fileData = fileData.replace(/\r\n|\n/g, ' ');  // WebView会把换行符吃掉，导致单词黏连在一起
+      (<any>webview).loadURL(`data:text/html,${fileData}`);
     } else {
       (<any>webview).loadURL('data:text/html,<html><body></body></html>');
     }
   }
 
   updatePreview(): void {
-    console.log('2--->', this.getLastTransData(true));
     const webview = document.getElementsByTagName('webview')[0];
     (<any>webview).send('update-preview', this.getLastTransData(true));
   }
@@ -851,9 +852,8 @@ export class MainComponent implements OnInit {
       parser.parse().subscribe(
         res => {
           let srcText = res.source;
-          // srcText = srcText.replace(/\r/g, '');
-          // srcText = srcText.replace(/\n/g, ' ');
-          // srcText = srcText.replace(/\s{2,}/g, ' ');
+          srcText = srcText.replace(/\r\n|\n/g, ' ');
+          srcText = srcText.replace(/\s{2,}/g, ' ').trim();
           const sentence = new SentenceModel({source: srcText});
           if (res.target) {
             sentence.target = -1;

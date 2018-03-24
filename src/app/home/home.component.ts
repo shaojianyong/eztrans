@@ -555,7 +555,6 @@ export class HomeComponent implements OnInit {
     }
     this.books[bookId].loadNavigation(str);
     const nav = this.books[bookId].navigation;
-    console.log('---->', this.books[bookId]);
 
     this.doc_groups.push(new GroupModel({
       id: bookId,
