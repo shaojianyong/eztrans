@@ -16,6 +16,7 @@ import { BaiduFanyiService } from './providers/baidu/baidu-fanyi.service';
 import { BaiduVipfyService } from './providers/baidu/baidu-vipfy.service';
 import { IcibaTransService } from './providers/iciba/iciba-trans.service';
 import { HtmlParserService } from './parsers/html/html-parser.service';
+import { XhtmlParserService } from './parsers/xhtml/xhtml-parser.service';
 import { TextParserService } from './parsers/text/text-parser.service';
 import { AboutComponent } from './about/about.component';
 import { SettingsComponent } from './settings/settings.component';
@@ -61,6 +62,7 @@ const routes: Routes = [
     BaiduVipfyService,
     IcibaTransService,
     HtmlParserService,
+    XhtmlParserService,
     MarkdownParserService,
     TextParserService
   ],

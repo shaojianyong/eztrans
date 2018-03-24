@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ParserService } from '../base/parser.service';
 import { HtmlParserService } from '../html/html-parser.service';
+import { XhtmlParserService } from '../xhtml/xhtml-parser.service';
 import { TextParserService } from '../text/text-parser.service';
 import { MarkdownParserService } from '../markdown/markdown-parser.service';
 
@@ -11,14 +12,14 @@ export class ParserManagerService {
 
   constructor(
     private html_parser: HtmlParserService,
+    private xhtml_parser: XhtmlParserService,
     private text_parser: TextParserService,
     private md_parser: MarkdownParserService
     ) {
     this.parsers = {
       html: html_parser,
-      xhtml: html_parser,
-      txt: text_parser,
-      md: md_parser
+      xhtml: xhtml_parser,
+      txt: text_parser
     };
   }
 
@@ -41,16 +42,13 @@ export class ParserManagerService {
         dlgTitle = 'Export HTML file';
         xFilters = [{name: `HTML File (*.${dataType})`, extensions: [dataType]}];
         break;
+      case 'xhtml':
+        dlgTitle = 'Export XHTML file';
+        xFilters = [{name: `XHTML File (*.${dataType})`, extensions: [dataType]}];
+        break;
       case 'txt':
         dlgTitle = 'Export Text file';
         xFilters = [{name: `Text File (*.${dataType})`, extensions: [dataType]}];
-        break;
-      case 'md':
-        dlgTitle = 'Export HTML or Markdown file';
-        xFilters = [
-          {name: `HTML File (*.html)`, extensions: ['html']},
-          {name: `Markdown File (*.${dataType})`, extensions: [dataType]}
-          ];
         break;
       default:
         console.log('Export info not found');  // TODO: 抛出异常

@@ -1,22 +1,23 @@
 import { Injectable } from '@angular/core';
 import {Observable} from 'rxjs/Observable';
-const { JSDOM } = (<any>window).require('jsdom');
+const { DOMParser, XMLSerializer } = (<any>window).require('xmldom');
 import { ParserService } from '../base/parser.service';
 
 const SKIP_ELEMENTS = ['style', 'script', 'pre', 'code', 'noscript'];
 
 @Injectable()
-export class HtmlParserService extends ParserService {
-  dom: any;
+export class XhtmlParserService extends ParserService {
+  xmldoc: any;
 
   load(data: string): void {
-    this.dom = new JSDOM(data);
+    const parser = new DOMParser();
+    this.xmldoc = parser.parseFromString(data, 'application/xhtml+xml');
   }
 
   parse(): Observable<any> {
     return Observable.create(observer => {
       try {
-        this.traverseR(this.dom.window.document, observer);
+        this.traverseR(this.xmldoc, observer);
         observer.complete();
       } catch (e) {
         observer.error(e);
@@ -29,13 +30,22 @@ export class HtmlParserService extends ParserService {
       texts: segments,
       index: 0
     };
-    this.traverseW(this.dom.window.document, newData);
+    this.traverseW(this.xmldoc, newData);
   }
 
   getLastData(dataType: string): string {
-    return this.dom.window.document.documentElement.outerHTML;
+    if (dataType === 'xhtml') {
+      const headNode = this.xmldoc.getElementsByTagName('head')[0];
+      if (headNode) {
+        const baseNode = headNode.getElementsByTagName('base')[0];
+        if (baseNode) {
+          headNode.removeChild(baseNode);
+        }
+      }
+    }
+    const serial = new XMLSerializer();
+    return serial.serializeToString(this.xmldoc);
   }
-
 
   traverseR(node: Node, observer): void {
     if (node.nodeType === Node.TEXT_NODE) {
