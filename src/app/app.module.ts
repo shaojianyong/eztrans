@@ -20,7 +20,6 @@ import { XhtmlParserService } from './parsers/xhtml/xhtml-parser.service';
 import { TextParserService } from './parsers/text/text-parser.service';
 import { AboutComponent } from './about/about.component';
 import { SettingsComponent } from './settings/settings.component';
-import { MarkdownParserService } from './parsers/markdown/markdown-parser.service';
 import { HomeComponent } from './home/home.component';
 import { MsgboxComponent } from './msgbox/msgbox.component';
 import { StatsComponent } from './stats/stats.component';
@@ -63,7 +62,6 @@ const routes: Routes = [
     IcibaTransService,
     HtmlParserService,
     XhtmlParserService,
-    MarkdownParserService,
     TextParserService
   ],
   bootstrap: [AppComponent],

@@ -3,7 +3,6 @@ import { ParserService } from '../base/parser.service';
 import { HtmlParserService } from '../html/html-parser.service';
 import { XhtmlParserService } from '../xhtml/xhtml-parser.service';
 import { TextParserService } from '../text/text-parser.service';
-import { MarkdownParserService } from '../markdown/markdown-parser.service';
 
 
 @Injectable()
@@ -13,8 +12,7 @@ export class ParserManagerService {
   constructor(
     private html_parser: HtmlParserService,
     private xhtml_parser: XhtmlParserService,
-    private text_parser: TextParserService,
-    private md_parser: MarkdownParserService
+    private text_parser: TextParserService
     ) {
     this.parsers = {
       html: html_parser,
