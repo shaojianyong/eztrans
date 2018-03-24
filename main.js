@@ -579,15 +579,20 @@ function reqDocument(event, groupId, docId, docType, filePath) {
           if (err) {
             throw new Error('Read doc file error: ' + err);
           } else {
-            const dom = new JSDOM(data.toString());  // TODO: 使用XMLDOM
-            const baseNode = dom.window.document.createElement('base');
-            const metaNode = dom.window.document.createElement('meta');
+            const parser = new xmldom.DOMParser();
+            const xmldoc = parser.parseFromString(data.toString(), 'application/xhtml+xml');
+            const headel = xmldoc.getElementsByTagName('head')[0];
+            const baseel = xmldoc.createElement('base');
+            const metael = xmldoc.createElement('meta');
             const baseHref = 'file:///' + getBaseURL(filePath).replace(/\\/g, '/');
-            baseNode.setAttribute('href', baseHref);
-            metaNode.setAttribute('charset', 'utf-8');
-            dom.window.document.head.insertBefore(baseNode, dom.window.document.head.firstElementChild);
-            dom.window.document.head.insertBefore(metaNode, dom.window.document.head.firstElementChild);
-            event.sender.send('file-read', dom.serialize(), filePath, getFileName(filePath), groupId, docId);
+            baseel.setAttribute('href', baseHref);
+            metael.setAttribute('charset', 'utf-8');
+            headel.insertBefore(baseel, headel.firstChild);
+            headel.insertBefore(metael, headel.firstChild);
+
+            const serial = new xmldom.XMLSerializer();
+            event.sender.send('file-read', serial.serializeToString(xmldoc),
+              filePath, getFileName(filePath), groupId, docId);
           }
         });
       }
