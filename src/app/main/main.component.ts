@@ -133,7 +133,7 @@ export class MainComponent implements OnInit {
   getLastFileData(fileType: string, forPreview = false): string {
     const parser = this.pms.getParser(this.child_home.cur_doc.data_type);
     parser.load(this.child_home.cur_doc.file_data);
-    // parser.update(this.getLastTransData(forPreview));
+    parser.update(this.getLastTransData(forPreview));
     return parser.getLastData(fileType);
   }
 
