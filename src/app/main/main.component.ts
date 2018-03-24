@@ -118,7 +118,7 @@ export class MainComponent implements OnInit {
           target_text = current.custom.target_text;
           if (forPreview) {
             if (!target_text.trim()) {
-              target_text = '[-]';
+              target_text = '[x]';  // 将文本节点置空时(空格会被忽略)，也就是把它给删除了
             }
           }
         } else {

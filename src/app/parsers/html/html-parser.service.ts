@@ -63,11 +63,7 @@ export class HtmlParserService extends ParserService {
       if (trimmed) {
         const newVal = newData.texts[newData.index];
         if (newVal !== null) {
-          if (trimmed === node.nodeValue) {
-            node.nodeValue = newVal;
-          } else {
-            node.nodeValue.replace(trimmed, newVal);  // 保留首尾空白字符
-          }
+          node.nodeValue = node.nodeValue.replace(trimmed, newVal.trim());  // 保留首尾空白字符
         }
         newData.index++;
       }
