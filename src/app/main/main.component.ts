@@ -118,7 +118,7 @@ export class MainComponent implements OnInit {
           target_text = current.custom.target_text;
           if (forPreview) {
             if (!target_text.trim()) {
-              target_text = '[deleted]';
+              target_text = '[-]';
             }
           }
         } else {
@@ -133,7 +133,7 @@ export class MainComponent implements OnInit {
   getLastFileData(fileType: string, forPreview = false): string {
     const parser = this.pms.getParser(this.child_home.cur_doc.data_type);
     parser.load(this.child_home.cur_doc.file_data);
-    parser.update(this.getLastTransData(forPreview));
+    // parser.update(this.getLastTransData(forPreview));
     return parser.getLastData(fileType);
   }
 
@@ -819,6 +819,7 @@ export class MainComponent implements OnInit {
   showPreview(): void {
     const webview = document.getElementsByTagName('webview')[0];
     if (this.child_home.cur_doc && this.child_home.cur_doc.id) {
+      console.log('1--->', this.getLastFileData('html', true));
       (<any>webview).loadURL(`data:text/html,${this.getLastFileData('html', true)}`);
     } else {
       (<any>webview).loadURL('data:text/html,<html><body></body></html>');
@@ -826,6 +827,7 @@ export class MainComponent implements OnInit {
   }
 
   updatePreview(): void {
+    console.log('2--->', this.getLastTransData(true));
     const webview = document.getElementsByTagName('webview')[0];
     (<any>webview).send('update-preview', this.getLastTransData(true));
   }
@@ -849,9 +851,9 @@ export class MainComponent implements OnInit {
       parser.parse().subscribe(
         res => {
           let srcText = res.source;
-          srcText = srcText.replace(/\r/g, '');
-          srcText = srcText.replace(/\n/g, ' ');
-          srcText = srcText.replace(/\s{2,}/g, ' ').trim();
+          // srcText = srcText.replace(/\r/g, '');
+          // srcText = srcText.replace(/\n/g, ' ');
+          // srcText = srcText.replace(/\s{2,}/g, ' ');
           const sentence = new SentenceModel({source: srcText});
           if (res.target) {
             sentence.target = -1;

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {Observable} from 'rxjs/Observable';
+const { JSDOM } = (<any>window).require('jsdom');
 const { DOMParser, XMLSerializer } = (<any>window).require('xmldom');
 import { ParserService } from '../base/parser.service';
 
@@ -34,6 +35,7 @@ export class XhtmlParserService extends ParserService {
   }
 
   getLastData(dataType: string): string {
+    let res = null;
     if (dataType === 'xhtml') {
       const headNode = this.xmldoc.getElementsByTagName('head')[0];
       if (headNode) {
@@ -44,7 +46,12 @@ export class XhtmlParserService extends ParserService {
       }
     }
     const serial = new XMLSerializer();
-    return serial.serializeToString(this.xmldoc);
+    res = serial.serializeToString(this.xmldoc);
+    if (dataType === 'html') {
+      const dom = new JSDOM(res);
+      res = dom.window.document.documentElement.outerHTML;
+    }
+    return res;
   }
 
   traverseR(node: Node, observer): void {
@@ -58,7 +65,7 @@ export class XhtmlParserService extends ParserService {
       }
     }
 
-    if (node.nodeType === Node.ELEMENT_NODE) {
+    if (node.nodeType === Node.DOCUMENT_NODE || node.nodeType === Node.ELEMENT_NODE) {
       if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
         for (let i = 0; i < node.childNodes.length; ++i) {
           this.traverseR(node.childNodes[i], observer);
@@ -69,16 +76,21 @@ export class XhtmlParserService extends ParserService {
 
   traverseW(node: Node, newData: any): void {
     if (node.nodeType === Node.TEXT_NODE) {
-      if (node.nodeValue.trim()) {
+      const trimmed = node.nodeValue.trim();
+      if (trimmed) {
         const newVal = newData.texts[newData.index];
         if (newVal !== null) {
-          node.nodeValue = newVal.trim();
+          if (trimmed === node.nodeValue) {
+            node.nodeValue = newVal;
+          } else {
+            node.nodeValue.replace(trimmed, newVal);  // 保留首尾空白字符
+          }
         }
         newData.index++;
       }
     }
 
-    if (node.nodeType === Node.ELEMENT_NODE) {
+    if (node.nodeType === Node.DOCUMENT_NODE || node.nodeType === Node.ELEMENT_NODE) {
       if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
         for (let i = 0; i < node.childNodes.length; ++i) {
           this.traverseW(node.childNodes[i], newData);

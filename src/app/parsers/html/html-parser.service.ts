@@ -48,7 +48,7 @@ export class HtmlParserService extends ParserService {
       }
     }
 
-    if (node.nodeType === Node.ELEMENT_NODE) {
+    if (node.nodeType === Node.DOCUMENT_NODE || node.nodeType === Node.ELEMENT_NODE) {
       if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
         for (let i = 0; i < node.childNodes.length; ++i) {
           this.traverseR(node.childNodes[i], observer);
@@ -59,16 +59,21 @@ export class HtmlParserService extends ParserService {
 
   traverseW(node: Node, newData: any): void {
     if (node.nodeType === Node.TEXT_NODE) {
-      if (node.nodeValue.trim()) {
+      const trimmed = node.nodeValue.trim();
+      if (trimmed) {
         const newVal = newData.texts[newData.index];
         if (newVal !== null) {
-          node.nodeValue = newVal.trim();
+          if (trimmed === node.nodeValue) {
+            node.nodeValue = newVal;
+          } else {
+            node.nodeValue.replace(trimmed, newVal);  // 保留首尾空白字符
+          }
         }
         newData.index++;
       }
     }
 
-    if (node.nodeType === Node.ELEMENT_NODE) {
+    if (node.nodeType === Node.DOCUMENT_NODE || node.nodeType === Node.ELEMENT_NODE) {
       if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
         for (let i = 0; i < node.childNodes.length; ++i) {
           this.traverseW(node.childNodes[i], newData);

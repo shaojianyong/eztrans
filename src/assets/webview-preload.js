@@ -7,21 +7,25 @@ var orgBackColor = null;
 
 function nodeUpdate(node, newData) {
   if (node.nodeType === Node.TEXT_NODE) {
-    if (node.nodeValue.trim()) {
+    var trimmed = node.nodeValue.trim();
+    if (trimmed) {
       var newVal = newData.texts[newData.index];
       if (newVal !== null) {
-        var trimmed = newVal.trim();
-        if (trimmed) {
-          node.nodeValue = trimmed;
+        if (newVal.trim()) {
+          if (trimmed === node.nodeValue) {
+            node.nodeValue = newVal;
+          } else {
+            node.nodeValue.replace(trimmed, newVal);  // 保留首尾空白字符
+          }
         } else {
-          node.nodeValue = "[deleted]";  // 将文本节点置空时(空格会被忽略)，也就是把它给删除了
+          node.nodeValue = "[-]";  // 将文本节点置空时(空格会被忽略)，也就是把它给删除了
         }
       }
       newData.index++;
     }
   }
 
-  if (node.nodeType === Node.ELEMENT_NODE) {
+  if (node.nodeType === Node.DOCUMENT_NODE || node.nodeType === Node.ELEMENT_NODE) {
     if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
       for (var i = 0; i < node.childNodes.length; ++i) {
         nodeUpdate(node.childNodes[i], newData);
@@ -35,7 +39,7 @@ function htmlUpdate(transData) {
     texts: transData,
     index: 0
   };
-  nodeUpdate(document.body, newData);
+  nodeUpdate(document, newData);
 }
 
 function seekNode(node, seekObj) {
@@ -49,7 +53,7 @@ function seekNode(node, seekObj) {
     }
   }
 
-  if (node.nodeType === Node.ELEMENT_NODE) {
+  if (node.nodeType === Node.DOCUMENT_NODE || node.nodeType === Node.ELEMENT_NODE) {
     if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
       for (var i = 0; i < node.childNodes.length; ++i) {
         seekNode(node.childNodes[i], seekObj);
@@ -70,7 +74,7 @@ function hitTest(node, hitObj) {
     }
   }
 
-  if (node.nodeType === Node.ELEMENT_NODE) {
+  if (node.nodeType === Node.DOCUMENT_NODE || node.nodeType === Node.ELEMENT_NODE) {
     if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
       for (var i = 0; i < node.childNodes.length; ++i) {
         hitTest(node.childNodes[i], hitObj);
@@ -97,7 +101,7 @@ function scrollTo(nodeIndex) {
     tgt: nodeIndex,
     obj: null
   };
-  seekNode(document.body, seekObj);
+  seekNode(document, seekObj);
   var eleNode = seekObj.obj;
   while (eleNode.nodeType !== Node.ELEMENT_NODE) {
     eleNode = eleNode.parentNode;
@@ -146,7 +150,7 @@ document.addEventListener('click', function (event) {
     tgt: -1,
     obj: target
   };
-  hitTest(document.body, hitObj);
+  hitTest(document, hitObj);
 
   if (hitObj.tgt !== -1) {
     var eleNode = hitObj.obj;

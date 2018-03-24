@@ -4,12 +4,10 @@ import { RouterModule, Routes } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
-
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { MainComponent } from './main/main.component';
 import { PanelComponent } from './panel/panel.component';
-
 
 import { GoogleTranslateService } from './providers/google/google-translate.service';
 import { BaiduFanyiService } from './providers/baidu/baidu-fanyi.service';
