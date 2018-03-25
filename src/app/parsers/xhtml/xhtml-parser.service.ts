@@ -74,13 +74,14 @@ export class XhtmlParserService extends ParserService {
     }
   }
 
+  // stackoverflow.com/questions/32850812/node-xmldom-how-do-i-change-the-value-of-a-single-xml-field-in-javascript
   traverseW(node: Node, newData: any): void {
     if (node.nodeType === Node.TEXT_NODE) {
       const trimmed = node.nodeValue.trim();
       if (trimmed) {
         const newVal = newData.texts[newData.index];
         if (newVal !== null) {
-          node.nodeValue = node.nodeValue.replace(trimmed, newVal.trim());  // 保留首尾空白字符
+          (<any>node).data = node.nodeValue.replace(trimmed, newVal.trim());  // 保留首尾空白字符
         }
         newData.index++;
       }
