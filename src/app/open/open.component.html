@@ -4,11 +4,28 @@
   </div>
   <div class="content pt-tab-menu">
     <div class="ui pointing secondary menu">
-      <a class="active item" data-tab="first">Web Page</a>
-      <a class="item" data-tab="second">Local File</a>
-      <a class="item" data-tab="third">Suda Cloud</a>
+      <a class="active item" data-tab="ebook">eBook File</a>
+      <a class="item" data-tab="document">Document File</a>
+      <a class="item" data-tab="web">Web Page</a>
+      <a class="item" data-tab="suda">Suda Cloud</a>
     </div>
-    <div class="ui active tab segment" data-tab="first">
+    <div class="ui active tab segment" data-tab="ebook">
+      <div class="ui fluid action input">
+        <input type="text" #eBookURL placeholder="Local eBook File">
+        <button class="ui icon button" (click)="eBookBrowse(eBookURL)">
+          <i class="ellipsis horizontal icon"></i>
+        </button>
+      </div>
+    </div>
+    <div class="ui tab segment" data-tab="document">
+      <div class="ui fluid action input">
+        <input type="text" #docFileURL placeholder="Local Document File">
+        <button class="ui icon button" (click)="docBrowse(docFileURL)">
+          <i class="ellipsis horizontal icon"></i>
+        </button>
+      </div>
+    </div>
+    <div class="ui tab segment" data-tab="web">
       <div class="ui fluid action input">
         <input type="text" #webPageURL placeholder="Internet Web Page">
         <button class="ui icon button" (click)="paste(webPageURL)">
@@ -16,15 +33,7 @@
         </button>
       </div>
     </div>
-    <div class="ui tab segment" data-tab="second">
-      <div class="ui fluid action input">
-        <input type="text" #localFileURL placeholder="Local Computer File">
-        <button class="ui icon button" (click)="browse(localFileURL)">
-          <i class="ellipsis horizontal icon"></i>
-        </button>
-      </div>
-    </div>
-    <div class="ui tab segment" data-tab="third">
+    <div class="ui tab segment" data-tab="suda">
       <p>Translate Requests on Suda Cloud</p>
     </div>
   </div>

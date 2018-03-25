@@ -32,11 +32,25 @@ export class OpenComponent implements OnInit {
     }
   }
 
-  browse(inputBox: HTMLInputElement): void {
+  eBookBrowse(inputBox: HTMLInputElement): void {
     const options = {
-      title: 'Select a Structured Text File',
+      title: 'Select an eBook File',
       filters: [
-        {name: 'Text Files', extensions: ['epub', 'html', 'txt']}
+        {name: 'eBooks', extensions: ['epub']}
+      ]
+    };
+    dialog.showOpenDialog(options, (files) => {
+      if (files) {
+        inputBox.value = files[0];
+      }
+    });
+  }
+
+  docBrowse(inputBox: HTMLInputElement): void {
+    const options = {
+      title: 'Select a Document File',
+      filters: [
+        {name: 'Documents', extensions: ['html', 'txt']}
       ]
     };
     dialog.showOpenDialog(options, (files) => {
