@@ -587,6 +587,10 @@ export class HomeComponent implements OnInit {
     this.modified_flag = true;
   }
 
+  exportBook(bookId: string): void {
+    ipc.send('export-book', bookId);
+  }
+
   ngOnInit() {
     $('.ui.accordion')
       .accordion({
@@ -674,6 +678,10 @@ export class HomeComponent implements OnInit {
     ipc.on('rsp-document', (event, doc) => {
       this.cache_docs[this.sel_doc.id] = doc;
       this.openDoc();
+    });
+
+    ipc.on('export-book-req', (event, group_id) => {
+      this.exportBook(group_id);
     });
 
     // auto save all user data

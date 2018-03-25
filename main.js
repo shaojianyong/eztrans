@@ -3,8 +3,9 @@ const { JSDOM } = require('jsdom');
 
 const fs = require('fs');
 const url = require('url');
+const del = require('del');
 const path = require('path');
-const find = require('find');
+const { ncp } = require('ncp');
 const loki = require('lokijs');
 const xmldom = require('xmldom');
 const moment = require('moment');
@@ -142,18 +143,28 @@ function readFile(event, fileUrl, group_id) {
   } else if (fileUrl.toLowerCase().endsWith('.epub')) {
     const bookId = 'b' + moment().format('YYYYMMDDHHmmssSSS');
     const bookSrc = path.join(__dirname, 'datafile', bookId, 'src');
+    const bookDst = path.join(__dirname, 'datafile', bookId, 'dst');
     unzip(fileUrl, {dir: bookSrc}, function (err) {
       if (err) {
         throw new Error('Unzip ePub file error: ' + err);
       } else {
-        fs.readFile(path.join(bookSrc, EPUB_CONTAINER_FILE), function(err, data) {
+        ncp.limit = 16;
+        ncp(bookSrc, bookDst, function (err) {
           if (err) {
-            throw new Error('Read container file error: ' + err);
-          } else {
-            event.sender.send('load-epub-container', data.toString(), bookId);
+            throw new Error('Fail to clone book source files: ' + bookSrc);
           }
+          fs.readFile(path.join(bookSrc, EPUB_CONTAINER_FILE), function(err, data) {
+            if (err) {
+              throw new Error('Read container file error: ' + err);
+            }
+            event.sender.send('load-epub-container', data.toString(), bookId);
+          });
+          fs.mkdir(path.join(__dirname, 'datafile', bookId, 'dbs'), 0777, function (err) {
+            if (err) {
+              throw new Error('Fail to mkdir dbs');
+            }
+          });
         });
-        fs.mkdirSync(path.join(__dirname, 'datafile', bookId, 'dbs'));
       }
     });
 
@@ -240,6 +251,10 @@ function groupMoveUp(menuItem, browserWindow) {
 
 function groupMoveDown(menuItem, browserWindow) {
   browserWindow.send('group-move-down', menuItem.group_id);
+}
+
+function exportBookReq(menuItem, browserWindow) {
+  browserWindow.send('export-book-req', menuItem.group_id);
 }
 
 function importDoc(menuItem, browserWindow) {
@@ -411,6 +426,13 @@ function showDocContextMenu(event, curGroup, allGroup, opened) {
 
 function showGroupContextMenu(event, group_id) {
   const contextMenu = new Menu();
+
+  contextMenu.append(new MenuItem({
+    label: 'Export',
+    click: exportBookReq,
+    icon: './dist/assets/images/icons/export.png',
+    group_id: group_id
+  }));
 
   contextMenu.append(new MenuItem({
     label: 'Import',
@@ -691,6 +713,11 @@ function readEpubNavFile(event, pkgDir, ncxPath, bookId) {
   });
 }
 
+function exportBook(event, bookId) {
+  const bookDir = path.join(__dirname, 'datafile', bookId);
+
+}
+
 // Handles reading the contents of a file
 ipcMain.on('read-file', readFile);
 ipcMain.on('save-file', saveFile);
@@ -706,3 +733,4 @@ ipcMain.on('save-document', saveDocument);
 ipcMain.on('delete-document-file', deleteDocFile);
 ipcMain.on('read-epub-pkg-file', readEpubPkgFile);
 ipcMain.on('read-epub-nav-file', readEpubNavFile);
+ipcMain.on('export-book', exportBook);
