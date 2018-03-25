@@ -660,7 +660,9 @@ function deleteDocFile(event, doc_id) {
   // delete db-file
   const filePath = path.join(__dirname, 'database', doc_id + '.db');
   if (fs.existsSync(filePath)) {
-    fs.unlink(filePath);
+    fs.unlink(filePath, function (err) {
+      throw new Error('Fail to delete file: ' + filePath);
+    });
   }
 }
 

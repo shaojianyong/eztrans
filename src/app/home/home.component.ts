@@ -583,7 +583,7 @@ export class HomeComponent implements OnInit {
       this.getGroup(bookId).documents.push(diNew);
     }
 
-    this.rerenderEvent.emit({forceShowSelected: false, resetDocument: true});
+    this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
     this.modified_flag = true;
   }
 
