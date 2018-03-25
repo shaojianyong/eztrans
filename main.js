@@ -182,7 +182,12 @@ function readFile(event, fileUrl, group_id) {
 
 function saveFile(event, filePath, content) {
   fs.writeFile(filePath, content, function(err) {
+    if (err) {
+      event.returnValue = err;
+      throw new Error('Write file error: ' + err);
+    }
     event.sender.send('file-saved', err);
+    event.returnValue = 'ok';
   });
 }
 

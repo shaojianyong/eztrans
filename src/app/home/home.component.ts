@@ -597,7 +597,7 @@ export class HomeComponent implements OnInit {
   }
 
   exportBook(bookId: string): void {
-    // TODO: this.updateTargetFile(true);
+    this.updateTargetFile(true);
     ipc.send('export-book', bookId);
   }
 

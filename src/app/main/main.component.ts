@@ -890,7 +890,7 @@ export class MainComponent implements OnInit {
     });
 
     ipcRenderer.on('file-saved', (event, err) => {
-      console.log('File Saved!');  // TODO: 自动打开文件？
+      console.log('File Saved!');
     });
 
     ipcRenderer.on('next_page', (event) => {
