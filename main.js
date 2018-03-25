@@ -724,7 +724,7 @@ function exportBook(event, bookId) {
   const options = {
     title: 'Export eBook File',
     filters: [{name: 'eBooks (*.epub)', extensions: ['epub']}],
-    defaultPath: 'output_ebook.epub'  // TODO: default name and path
+    defaultPath: 'output_ebook.epub'  // TODO: default name and path!
   };
   dialog.showSaveDialog(options, function(filename) {
     if (filename) {
