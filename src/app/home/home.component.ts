@@ -22,6 +22,7 @@ export class HomeComponent implements OnInit {
   @Output() rerenderEvent = new EventEmitter<any>();
   @Output() exportEvent = new EventEmitter<any>();
   @Output() importEvent = new EventEmitter<any>();
+  @Output() updateTargetFileEvent = new EventEmitter<any>();
 
   @ViewChild(MsgboxComponent) child_msgbox: MsgboxComponent;
 
@@ -455,6 +456,14 @@ export class HomeComponent implements OnInit {
         sync: false
       });
     }
+    // 同步更新翻译结果文件
+    this.updateTargetFile(sync);
+  }
+
+  updateTargetFile(sync: boolean): void {
+    const di = this.getDocInfo(this.cur_doc.id);
+    const filePath = di.file_path.replace(path.join(di.group_id, 'src'), path.join(di.group_id, 'dst'));
+    this.updateTargetFileEvent.emit({sync: sync, target: filePath, type: 'xhtml'});
   }
 
   // save doc-groups
@@ -588,6 +597,7 @@ export class HomeComponent implements OnInit {
   }
 
   exportBook(bookId: string): void {
+    // TODO: this.updateTargetFile(true);
     ipc.send('export-book', bookId);
   }
 

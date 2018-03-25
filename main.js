@@ -9,6 +9,7 @@ const { ncp } = require('ncp');
 const loki = require('lokijs');
 const xmldom = require('xmldom');
 const moment = require('moment');
+var zipFolder = require('zip-folder');
 const unzip = require('extract-zip');
 
 const EPUB_CONTAINER_FILE = 'META-INF/container.xml';
@@ -714,8 +715,21 @@ function readEpubNavFile(event, pkgDir, ncxPath, bookId) {
 }
 
 function exportBook(event, bookId) {
-  const bookDir = path.join(__dirname, 'datafile', bookId);
-
+  const bookDst = path.join(__dirname, 'datafile', bookId, 'dst');
+  const options = {
+    title: 'Export eBook File',
+    filters: [{name: 'eBooks (*.epub)', extensions: ['epub']}],
+    defaultPath: 'output_ebook.epub'  // TODO: default name and path
+  };
+  dialog.showSaveDialog(options, function(filename) {
+    if (filename) {
+      zipFolder(bookDst, filename, function(err) {
+        if(err) {
+          throw new Error('Zip compress error: ' + err);
+        }
+      });
+    }
+  });
 }
 
 // Handles reading the contents of a file

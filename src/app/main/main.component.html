@@ -188,7 +188,8 @@
 <!-- Left Sidebar -->
 <app-home (rerenderEvent)="forceRerender($event)"
           (exportEvent)="exportFile()"
-          (importEvent)="importFile($event)">
+          (importEvent)="importFile($event)"
+          (updateTargetFileEvent)="updateTargetFile($event)">
 </app-home>
 
 <!-- File Open Dialog -->

@@ -41,6 +41,7 @@
     "showdown": "^1.8.6",
     "turndown": "^4.0.1",
     "xmldom": "^0.1.27",
+    "zip-folder": "^1.0.0",
     "zone.js": "^0.8.14"
   },
   "devDependencies": {

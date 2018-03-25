@@ -838,6 +838,14 @@ export class MainComponent implements OnInit {
     (<any>webview).send('scroll-to', this.cur_index);
   }
 
+  updateTargetFile(event: any): void {
+    if (event.sync) {
+      ipcRenderer.sendSync('save-file', event.target, this.getLastFileData(event.type));
+    } else {
+      ipcRenderer.send('save-file', event.target, this.getLastFileData(event.type));
+    }
+  }
+
   ngOnInit() {
     const self = this;
 
