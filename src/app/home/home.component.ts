@@ -457,7 +457,9 @@ export class HomeComponent implements OnInit {
       });
     }
     // 同步更新翻译结果文件
-    this.updateTargetFile(sync);
+    if (docInfo.type === DocType.CHAPTER) {
+      this.updateTargetFile(sync);
+    }
   }
 
   updateTargetFile(sync: boolean): void {
