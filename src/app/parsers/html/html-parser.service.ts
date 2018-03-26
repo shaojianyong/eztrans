@@ -36,9 +36,27 @@ export class HtmlParserService extends ParserService {
     return this.dom.window.document.documentElement.outerHTML;
   }
 
+  hasTextChildNode(node: any): any {
+    let res = false;
+    let src = '';
+    for (let i = 0; i < node.childNodes.length; ++i) {
+      if (node.childNodes[i].nodeType === Node.TEXT_NODE) {
+        if (node.childNodes[i].nodeValue.trim()) {
+          src += node.childNodes[i].nodeValue;
+          res = true;
+        }
+      } else {
+        console.log('====>', node.childNodes[i].outerHTML);
+        if (node.childNodes[i].outerHTML) {
+          src += node.childNodes[i].textContent;
+        }
+      }
+    }
+    return {res: res, src: src};
+  }
 
   traverseR(node: Node, observer): void {
-    if (node.nodeType === Node.TEXT_NODE) {
+    /*if (node.nodeType === Node.TEXT_NODE) {
       const trimmed = node.nodeValue.trim();
       if (trimmed) {
         observer.next({
@@ -46,19 +64,27 @@ export class HtmlParserService extends ParserService {
           target: null
         });
       }
-    }
+    }*/
 
     if (node.nodeType === Node.DOCUMENT_NODE || node.nodeType === Node.ELEMENT_NODE) {
       if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
-        for (let i = 0; i < node.childNodes.length; ++i) {
-          this.traverseR(node.childNodes[i], observer);
+        const ret = this.hasTextChildNode(node);
+        if (ret.res) {
+          observer.next({
+            source: ret.src,
+            target: null
+          });
+        } else {
+          for (let i = 0; i < node.childNodes.length; ++i) {
+            this.traverseR(node.childNodes[i], observer);
+          }
         }
       }
     }
   }
 
   traverseW(node: Node, newData: any): void {
-    if (node.nodeType === Node.TEXT_NODE) {
+    /*if (node.nodeType === Node.TEXT_NODE) {
       const trimmed = node.nodeValue.trim();
       if (trimmed) {
         const newVal = newData.texts[newData.index];
@@ -67,12 +93,17 @@ export class HtmlParserService extends ParserService {
         }
         newData.index++;
       }
-    }
+    }*/
 
     if (node.nodeType === Node.DOCUMENT_NODE || node.nodeType === Node.ELEMENT_NODE) {
       if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
-        for (let i = 0; i < node.childNodes.length; ++i) {
-          this.traverseW(node.childNodes[i], newData);
+        if (this.hasTextChildNode(node)) {
+          node.textContent = newData.texts[newData.index];
+          newData.index++;
+        } else {
+          for (let i = 0; i < node.childNodes.length; ++i) {
+            this.traverseW(node.childNodes[i], newData);
+          }
         }
       }
     }
