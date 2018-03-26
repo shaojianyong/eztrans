@@ -36,42 +36,32 @@ export class HtmlParserService extends ParserService {
     return this.dom.window.document.documentElement.outerHTML;
   }
 
-  hasTextChildNode(node: any): any {
-    let res = false;
-    let src = '';
+  // 匹配最小翻译单元模式
+  matchMiniUnitPattern(node: any): boolean {
+    let hasTextChildNode = false;
+    let hasThirdGenChild = false;
     for (let i = 0; i < node.childNodes.length; ++i) {
-      if (node.childNodes[i].nodeType === Node.TEXT_NODE) {
-        if (node.childNodes[i].nodeValue.trim()) {
-          src += node.childNodes[i].nodeValue;
-          res = true;
+      const childNode = node.childNodes[i];
+      if (childNode.nodeType === Node.TEXT_NODE) {
+        if (childNode.nodeValue.trim()) {
+          hasTextChildNode = true;
         }
       } else {
-        console.log('====>', node.childNodes[i].outerHTML);
-        if (node.childNodes[i].outerHTML) {
-          src += node.childNodes[i].textContent;
+        if (childNode.childNodes.length > 1 || (childNode.childNodes.length
+            && childNode.childNodes[0].nodeType !== Node.TEXT_NODE)) {
+          hasThirdGenChild = true;
         }
       }
     }
-    return {res: res, src: src};
+    return (hasTextChildNode && !hasThirdGenChild);
   }
 
   traverseR(node: Node, observer): void {
-    /*if (node.nodeType === Node.TEXT_NODE) {
-      const trimmed = node.nodeValue.trim();
-      if (trimmed) {
-        observer.next({
-          source: trimmed,
-          target: null
-        });
-      }
-    }*/
-
     if (node.nodeType === Node.DOCUMENT_NODE || node.nodeType === Node.ELEMENT_NODE) {
       if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
-        const ret = this.hasTextChildNode(node);
-        if (ret.res) {
+        if (this.matchMiniUnitPattern(node)) {
           observer.next({
-            source: ret.src,
+            source: node.textContent,
             target: null
           });
         } else {
@@ -95,7 +85,7 @@ export class HtmlParserService extends ParserService {
       }
     }*/
 
-    if (node.nodeType === Node.DOCUMENT_NODE || node.nodeType === Node.ELEMENT_NODE) {
+    /*if (node.nodeType === Node.DOCUMENT_NODE || node.nodeType === Node.ELEMENT_NODE) {
       if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
         if (this.hasTextChildNode(node)) {
           node.textContent = newData.texts[newData.index];
@@ -106,7 +96,7 @@ export class HtmlParserService extends ParserService {
           }
         }
       }
-    }
+    }*/
   }
 
 }
