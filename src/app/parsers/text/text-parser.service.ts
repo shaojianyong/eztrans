@@ -25,8 +25,7 @@ export class TextParserService extends ParserService {
           line = line.trim();
           if (line) {
             observer.next({
-              source: line,
-              target: null
+              source: line
             });
           }
         }

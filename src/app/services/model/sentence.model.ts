@@ -8,8 +8,14 @@ export const SentenceStatus = Object.freeze({
   FAILURE: 'failure'   // 失败
 });
 
+export class ClauseModel {
+  source: string;
+  target: string;
+}
+
 // 句段模型
 export class SentenceModel {
+  clauses: Array<ClauseModel>;
   source: string;
   target: number;
   ignore: boolean;  // 跳过，不需要翻译
@@ -18,6 +24,7 @@ export class SentenceModel {
   refers: Array<TranslateModel>;  // TODO: 把数组改成对象，引擎名称作为key，翻译结果作为value，同时可纳入custom
 
   constructor(obj?: any) {
+    this.clauses = obj && obj.clauses || [];
     this.source = obj && obj.source || '';
     this.target = obj && obj.target || -2;
     this.ignore = obj && obj.ignore || false;

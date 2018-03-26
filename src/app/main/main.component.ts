@@ -863,16 +863,6 @@ export class MainComponent implements OnInit {
           srcText = srcText.replace(/\r\n|\n/g, ' ');
           srcText = srcText.replace(/\s{2,}/g, ' ').trim();
           const sentence = new SentenceModel({source: srcText});
-          if (res.target) {
-            sentence.target = -1;
-            sentence.custom = new TranslateModel({
-              source_lang: self.ems.getSourceLanguage(),
-              target_lang: self.ems.getTargetLanguage(),
-              source_text: srcText,
-              target_text: res.target,
-              engine_name: 'user'
-            });
-          }
 
           // TODO: 返回时，携带文档ID
           self.child_home.cur_doc.sentences[self.child_home.cur_doc.sentences.length] = sentence;

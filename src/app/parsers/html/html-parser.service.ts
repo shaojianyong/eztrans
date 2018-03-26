@@ -36,7 +36,7 @@ export class HtmlParserService extends ParserService {
     return this.dom.window.document.documentElement.outerHTML;
   }
 
-  // 匹配最小翻译单元模式
+  // 最小翻译单元
   matchMiniUnitPattern(node: any): boolean {
     let hasTextChildNode = false;
     let hasThirdGenChild = false;
@@ -56,18 +56,29 @@ export class HtmlParserService extends ParserService {
     return (hasTextChildNode && !hasThirdGenChild);
   }
 
+  getNodeTexts(node: any, nodeTexts: Array<string>): void {
+    for (let i = 0; i < node.childNodes.length; ++i) {
+      const childNode = node.childNodes[i];
+      if (childNode.nodeType === Node.TEXT_NODE && childNode.nodeValue.trim()) {
+        nodeTexts += childNode.nodeValue;
+      } else {
+        this.getNodeTexts(childNode, nodeTexts);
+      }
+    }
+  }
+
   traverseR(node: Node, observer): void {
-    if (node.nodeType === Node.DOCUMENT_NODE || node.nodeType === Node.ELEMENT_NODE) {
-      if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
-        if (this.matchMiniUnitPattern(node)) {
-          observer.next({
-            source: node.textContent,
-            target: null
-          });
-        } else {
-          for (let i = 0; i < node.childNodes.length; ++i) {
-            this.traverseR(node.childNodes[i], observer);
-          }
+    if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
+      if (this.matchMiniUnitPattern(node)) {
+        const nodeTexts = [];
+        this.getNodeTexts(node, nodeTexts);
+        observer.next({
+          sparts: nodeTexts,
+          source: nodeTexts.join(' '),
+        });
+      } else {
+        for (let i = 0; i < node.childNodes.length; ++i) {
+          this.traverseR(node.childNodes[i], observer);
         }
       }
     }

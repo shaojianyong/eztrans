@@ -59,8 +59,7 @@ export class XhtmlParserService extends ParserService {
       const trimmed = node.nodeValue.trim();
       if (trimmed) {
         observer.next({
-          source: trimmed,
-          target: null
+          source: trimmed
         });
       }
     }
