@@ -8,7 +8,7 @@ import {ExLinksModule} from '../services/utils/ex-links.module';
 
 import { DocType } from '../services/model/doc-info.model';
 import { FunctionUtils } from '../services/utils/function-utils';
-import {SentenceModel, SentenceStatus} from '../services/model/sentence.model';
+import {SliceModel, SentenceModel, SentenceStatus} from '../services/model/sentence.model';
 import {TranslateModel, TranslateState} from '../services/model/translate.model';
 import {ParserManagerService} from '../parsers/manager/parser-manager.service';
 import {EngineManagerService} from '../providers/manager/engine-manager.service';
@@ -282,7 +282,6 @@ export class MainComponent implements OnInit {
               this.rerender();
             }
           } else {
-            // TODO: 失败的选项，禁止选用！！
             trans_obj.trans_state = TranslateState.FAILURE;
             if (res.doc_id === this.child_home.cur_doc.id && this.getPageRange().indexOf(index) !== -1) {
               this.rerender();
@@ -850,9 +849,7 @@ export class MainComponent implements OnInit {
     const self = this;
 
     ipcRenderer.on('file-read', (event, data, filePath, fileName, group_id, doc_id) => {
-      if (!this.child_home.addDocument(filePath, fileName, data, group_id, doc_id)) {
-        return;
-      }
+      const docId = this.child_home.addDocument(filePath, fileName, data, group_id, doc_id);
       self.reset();
       const ext_name = FunctionUtils.getExtName(fileName);
       const parser = this.pms.getParser(ext_name);
@@ -863,12 +860,19 @@ export class MainComponent implements OnInit {
           srcText = srcText.replace(/\r\n|\n/g, ' ');
           srcText = srcText.replace(/\s{2,}/g, ' ').trim();
           const sentence = new SentenceModel({source: srcText});
+          if ('slices' in res) {
+            for (const slice of res.slices) {
+              sentence.slices.push(new SliceModel({source: slice}));
+            }
+          }
 
-          // TODO: 返回时，携带文档ID
-          self.child_home.cur_doc.sentences[self.child_home.cur_doc.sentences.length] = sentence;
+          if (docId in self.child_home.cache_docs) {
+            const doc = self.child_home.cache_docs[docId];
+            doc.sentences.push(sentence);
+          }
         },
         error => {
-          console.log(error);  // TODO: 提供错误信息展示方案
+          alert(`${ext_name} parser error: ${error}`);
         },
         () => {
           this.reset();

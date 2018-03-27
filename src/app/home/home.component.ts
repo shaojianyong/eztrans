@@ -358,37 +358,12 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  addDocument(filePath: string, fileName: string, fileData: string, group_id: string, doc_id: string): boolean {
-    let docId = null;
+  addDocument(filePath: string, fileName: string, fileData: string, group_id: string, doc_id: string): string {
+    let docId = doc_id;
     let docInfo = null;
-    if (doc_id) {
-      docId = doc_id;
+    if (docId) {
       docInfo = this.getDocInfo(docId);
     } else {
-      const doc = this.findDocInfo(filePath);
-      if (doc && doc.name.toLowerCase() === fileName.toLowerCase()) {  // 已导入，并且没有重命名
-        if (doc.id === this.cur_doc.id) {
-          this.child_msgbox.setType(1);  // info
-          this.child_msgbox.setHead('Duplicate Documents');
-          this.child_msgbox.setBody(`The file ${fileName} has been imported. It's the current document.`);
-          this.child_msgbox.setButtonStyle('close', 'Close', 'violet');
-          this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
-          this.child_msgbox.show();
-        } else {
-          this.child_msgbox.setType(0);
-          this.child_msgbox.setHead('Duplicate Documents');
-          this.child_msgbox.setBody(`The file ${fileName} has been imported. Open it now?`);
-          this.child_msgbox.setButtonStyle('approve', 'Yes', 'violet');
-          this.child_msgbox.setButtonStyle('deny', 'No', 'green');
-          this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
-          this.child_msgbox.show(() => {
-            this.select(doc);
-            this.openDoc();
-          });
-        }
-        return false;
-      }
-
       docId = 'd' + moment().format('YYYYMMDDHHmmssSSS');
       docInfo = new DocInfoModel({
         id: docId,
@@ -406,20 +381,7 @@ export class HomeComponent implements OnInit {
     this.select(docInfo);
     this.openDoc(false);
     this.modified_flag = true;
-    return true;
-  }
-
-  findDocInfo(filePath: string): DocInfoModel {
-    let res = null;
-    for (const group of this.doc_groups) {
-      for (const doc of group.documents) {
-        if (doc.file_path.toLowerCase() === filePath.toLowerCase() && doc.x_state === 0) {
-          res = doc;
-          break;
-        }
-      }
-    }
-    return res;
+    return docId;
   }
 
   getDocInfo(docId: string): DocInfoModel {

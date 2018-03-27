@@ -73,7 +73,7 @@ export class HtmlParserService extends ParserService {
         const nodeTexts = [];
         this.getNodeTexts(node, nodeTexts);
         observer.next({
-          sparts: nodeTexts,
+          slices: nodeTexts,
           source: nodeTexts.join(' '),
         });
       } else {
