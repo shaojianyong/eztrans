@@ -9,29 +9,33 @@ export const SentenceStatus = Object.freeze({
 });
 
 export class SliceModel {
-  source: string;
-  target: string;
-  xtrans: Array<TranslateModel>;
+  src: string;
+  sel: number;
+  trx: Array<TranslateModel>;
 
   constructor(obj?: any) {
-    this.source = obj && obj.source || '';
-    this.target = obj && obj.target || '';
-    this.xtrans = obj && obj.xtrans || [];
+    this.src = obj && obj.src || '';
+    this.sel = obj && obj.sel || 0;
+    this.trx = obj && obj.trx || [];
   }
+}
+
+export class ReferModel {  // VersionModel ?
+  version: string;  // 翻译版本
+  divides: Array<number>;  // 分隔位置：0，6，9
+  divrefs: Array<SliceModel>;  // 分割依据
 }
 
 // 句段模型
 export class SentenceModel {
-  slices: Array<SliceModel>;
   source: string;
   target: number;
   ignore: boolean;  // 跳过，不需要翻译
   marked: boolean;  // 翻译完成标记
-  custom: TranslateModel;
-  refers: Array<TranslateModel>;  // TODO: 把数组改成对象，引擎名称作为key，翻译结果作为value，同时可纳入custom
+  custom: Array<string>;  // 自定义翻译
+  versions: Array<ReferModel>;  // TODO: 把数组改成对象，引擎名称作为key，翻译结果作为value，同时可纳入custom
 
   constructor(obj?: any) {
-    this.slices = obj && obj.slices || [];
     this.source = obj && obj.source || '';
     this.target = obj && obj.target || -2;
     this.ignore = obj && obj.ignore || false;
