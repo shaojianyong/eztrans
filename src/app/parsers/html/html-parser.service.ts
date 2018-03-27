@@ -67,6 +67,18 @@ export class HtmlParserService extends ParserService {
     }
   }
 
+  setNodeTexts(node: any, newData: any): void {
+    for (let i = 0; i < node.childNodes.length; ++i) {
+      const childNode = node.childNodes[i];
+      if (childNode.nodeType === Node.TEXT_NODE && childNode.nodeValue.trim()) {
+        childNode.nodeValue = newData.texts[newData.index];
+        newData.index++;
+      } else {
+        this.setNodeTexts(childNode, newData);
+      }
+    }
+  }
+
   traverseR(node: Node, observer): void {
     if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
       if (this.matchMiniUnitPattern(node)) {
@@ -85,29 +97,15 @@ export class HtmlParserService extends ParserService {
   }
 
   traverseW(node: Node, newData: any): void {
-    /*if (node.nodeType === Node.TEXT_NODE) {
-      const trimmed = node.nodeValue.trim();
-      if (trimmed) {
-        const newVal = newData.texts[newData.index];
-        if (newVal !== null) {
-          node.nodeValue = node.nodeValue.replace(trimmed, newVal.trim());  // 保留首尾空白字符
-        }
-        newData.index++;
-      }
-    }*/
-
-    /*if (node.nodeType === Node.DOCUMENT_NODE || node.nodeType === Node.ELEMENT_NODE) {
-      if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
-        if (this.hasTextChildNode(node)) {
-          node.textContent = newData.texts[newData.index];
-          newData.index++;
-        } else {
-          for (let i = 0; i < node.childNodes.length; ++i) {
-            this.traverseW(node.childNodes[i], newData);
-          }
+    if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
+      if (this.matchMiniUnitPattern(node)) {
+        this.setNodeTexts(node, newData);
+      } else {
+        for (let i = 0; i < node.childNodes.length; ++i) {
+          this.traverseW(node.childNodes[i], newData);
         }
       }
-    }*/
+    }
   }
 
 }

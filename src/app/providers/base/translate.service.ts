@@ -1,5 +1,6 @@
 import {Observable} from 'rxjs/Observable';
 import { TranslateModel } from '../../services/model/translate.model';
+import { DocInfoModel } from '../../services/model/doc-info.model';
 
 
 export class TranslateResult {
@@ -20,5 +21,5 @@ export abstract class TranslateService {
     return this.engine_name;
   }
 
-  abstract translateX(translate: TranslateModel, doc_id: string): Observable<TranslateResult>;
+  abstract translateX(translate: TranslateModel, docInfo: DocInfoModel): Observable<TranslateResult>;
 }

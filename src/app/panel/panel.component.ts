@@ -41,16 +41,12 @@ export class PanelComponent implements OnInit {
 
     if (this.sentence.custom) {
       this.sentence.custom.engine_name = orig.engine_name;
-      this.sentence.custom.source_lang = orig.source_lang;
-      this.sentence.custom.target_lang = orig.target_lang;
       this.sentence.custom.source_text = orig.source_text;
       this.sentence.custom.target_text = orig.target_text;
 
     } else {
       this.sentence.custom = new TranslateModel({
         engine_name: orig.engine_name,
-        source_lang: orig.source_lang,
-        target_lang: orig.target_lang,
         source_text: orig.source_text,
         target_text: orig.target_text
       });
@@ -72,8 +68,6 @@ export class PanelComponent implements OnInit {
     this.disableHighlight();
     this.sentence.custom = new TranslateModel({
       engine_name: 'user',
-      source_lang: this.ems.getSourceLanguage(),
-      target_lang: this.ems.getTargetLanguage(),
       source_text: this.sentence.source,
     });
 

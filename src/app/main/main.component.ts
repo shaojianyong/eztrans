@@ -246,8 +246,6 @@ export class MainComponent implements OnInit {
       } else {
         trans_obj = new TranslateModel({
           engine_name: engine.getEngineName(),
-          source_lang: this.ems.getSourceLanguage(),
-          target_lang: this.ems.getTargetLanguage(),
           source_text: sentence.source,
           trans_state: TranslateState.REQUESTED
         });
@@ -286,7 +284,7 @@ export class MainComponent implements OnInit {
             if (res.doc_id === this.child_home.cur_doc.id && this.getPageRange().indexOf(index) !== -1) {
               this.rerender();
             }
-            // alert(`Translate failed: ${res.result}`);
+            console.log(`Translate failed: ${res.result}`);
           }
         },
         err => {
@@ -294,7 +292,7 @@ export class MainComponent implements OnInit {
           if (err.doc_id === this.child_home.cur_doc.id && this.getPageRange().indexOf(index) !== -1) {
             this.rerender();
           }
-          // alert(`Translate failed: ${err.result}`);
+          console.log(`Translate failed: ${err.result}`);
         }
       );
     }

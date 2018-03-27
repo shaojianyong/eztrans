@@ -10,8 +10,6 @@ export const TranslateState = Object.freeze({
 
 // 翻译模型
 export class TranslateModel {
-  source_lang: string;
-  target_lang: string;
   source_text: string;
   target_text: string;
   engine_name: string;
@@ -20,8 +18,6 @@ export class TranslateModel {
   attach_data: Object;  // 附加数据
 
   constructor(obj?: any) {
-    this.source_lang = obj && obj.source_lang || 'en';
-    this.target_lang = obj && obj.target_lang || 'zh-cn';
     this.source_text = obj && obj.source_text || '';
     this.target_text = obj && obj.target_text || '';
     this.engine_name = obj && obj.engine_name || 'Google';

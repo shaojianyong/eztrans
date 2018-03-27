@@ -4,6 +4,8 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {TranslateService, TranslateResult} from '../base/translate.service';
 import {TranslateModel} from '../../services/model/translate.model';
 import {FunctionUtils} from '../../services/utils/function-utils';
+import { DocInfoModel } from '../../services/model/doc-info.model';
+
 
 const querystring = (<any>window).require('querystring');
 
@@ -17,7 +19,7 @@ export class BaiduFanyiService extends TranslateService {
     super('Baidu');
   }
 
-  translateX(translate: TranslateModel, doc_id: string): Observable<TranslateResult> {
+  translateX(translate: TranslateModel, docInfo: DocInfoModel): Observable<TranslateResult> {
     return Observable.create(observer => {
       let gtk = '';
       let token = '';
@@ -45,8 +47,8 @@ export class BaiduFanyiService extends TranslateService {
 
         if (token && gtk) {
           const params = {
-            from: FunctionUtils.baiduLangCode(translate.source_lang),
-            to: FunctionUtils.baiduLangCode(translate.target_lang),
+            from: FunctionUtils.baiduLangCode(docInfo.source_lang),
+            to: FunctionUtils.baiduLangCode(docInfo.target_lang),
             query: translate.source_text,
             simple_means_flag: 3,
             sign: hash(translate.source_text, gtk),
@@ -66,19 +68,19 @@ export class BaiduFanyiService extends TranslateService {
             res => {
               if (res['trans_result']['status'] === 0) {
                 translate.target_text = res['trans_result']['data'][0]['dst'];
-                observer.next({result: 'ok', doc_id: doc_id});
+                observer.next({result: 'ok', doc_id: docInfo.id});
               } else {
-                observer.error({result: res['trans_result'], doc_id: doc_id});
+                observer.error({result: res['trans_result'], doc_id: docInfo.id});
               }
             },
             err => {
-              observer.error({result: err, doc_id: doc_id});
+              observer.error({result: err, doc_id: docInfo.id});
             },
             () => {
               observer.complete();
             });
         } else {
-          observer.error({result: 'Get token failed', doc_id: doc_id});
+          observer.error({result: 'Get token failed', doc_id: docInfo.id});
         }
       });
     });
