@@ -16,11 +16,11 @@ export class GoogleTranslateService extends TranslateService {
     super('Google');
   }
 
-  translateX(translate: TranslateModel, docInfo: DocInfoModel): Observable<TranslateResult> {
+  translateX(srcText: string, translate: TranslateModel, docInfo: DocInfoModel): Observable<TranslateResult> {
     return Observable.create(observer => {
       try {
         google_translate({
-          text: translate.source_text,
+          text: srcText,
           source: docInfo.source_lang,
           target: docInfo.target_lang
         }, (result) => {
@@ -35,8 +35,8 @@ export class GoogleTranslateService extends TranslateService {
   }
 
   /*
-  translate(source_text: string, callback: Function): void {
-    google_translate({text: source_text, source: this.source_lang, target: this.target_lang}, (result) => {
+  translate(srcText: string, callback: Function): void {
+    google_translate({text: srcText, source: this.source_lang, target: this.target_lang}, (result) => {
       // 中文拼音： result.sentences[result.sentences.length - 1].translit
       callback(result.translation);
     });

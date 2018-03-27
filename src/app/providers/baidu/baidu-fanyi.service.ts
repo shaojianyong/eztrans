@@ -19,7 +19,7 @@ export class BaiduFanyiService extends TranslateService {
     super('Baidu');
   }
 
-  translateX(translate: TranslateModel, docInfo: DocInfoModel): Observable<TranslateResult> {
+  translateX(srcText: string, translate: TranslateModel, docInfo: DocInfoModel): Observable<TranslateResult> {
     return Observable.create(observer => {
       let gtk = '';
       let token = '';
@@ -49,9 +49,9 @@ export class BaiduFanyiService extends TranslateService {
           const params = {
             from: FunctionUtils.baiduLangCode(docInfo.source_lang),
             to: FunctionUtils.baiduLangCode(docInfo.target_lang),
-            query: translate.source_text,
+            query: srcText,
             simple_means_flag: 3,
-            sign: hash(translate.source_text, gtk),
+            sign: hash(srcText, gtk),
             token: token
           };
 

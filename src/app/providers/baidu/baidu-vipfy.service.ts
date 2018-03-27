@@ -29,15 +29,15 @@ export class BaiduVipfyService extends TranslateService {
     return res;
   }
 
-  translateX(translate: TranslateModel, docInfo: DocInfoModel): Observable<TranslateResult> {
+  translateX(srcText: string, translate: TranslateModel, docInfo: DocInfoModel): Observable<TranslateResult> {
     const tm_now = Date.now().toString();
     const params = {
       from: this.duLangCode(docInfo.source_lang),
       to: this.duLangCode(docInfo.target_lang),
-      q: translate.source_text,
+      q: srcText,
       appid: APPID,
       salt: tm_now,
-      sign: md5(`${APPID}${translate.source_text}${tm_now}${KEY}`)
+      sign: md5(`${APPID}${srcText}${tm_now}${KEY}`)
     };
 
     const data = querystring.stringify(params);

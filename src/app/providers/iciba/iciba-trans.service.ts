@@ -17,11 +17,11 @@ export class IcibaTransService extends TranslateService {
   // JSON is the default expected response type. You can try forcing using "text" instead and print the result
   // just to understand what is happening
   // this.http.get('http://www.iciba.com/index.php', {params: hps, responseType: 'text'}).subscribe
-  translateX(translate: TranslateModel, docInfo: DocInfoModel): Observable<TranslateResult> {
+  translateX(srcText: string, translate: TranslateModel, docInfo: DocInfoModel): Observable<TranslateResult> {
     const params = {
       f: docInfo.source_lang,
       t: docInfo.target_lang,
-      w: translate.source_text
+      w: srcText
     };
 
     const data = querystring.stringify(params);

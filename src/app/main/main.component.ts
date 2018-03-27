@@ -246,7 +246,6 @@ export class MainComponent implements OnInit {
       } else {
         trans_obj = new TranslateModel({
           engine_name: engine.getEngineName(),
-          source_text: sentence.source,
           trans_state: TranslateState.REQUESTED
         });
         refer_idx = sentence.refers.length;
@@ -255,7 +254,8 @@ export class MainComponent implements OnInit {
 
       this.rerender();  // 展示旋转图标
 
-      engine.translateX(trans_obj, this.child_home.cur_doc.id).subscribe(
+      const docId = this.child_home.cur_doc.id;
+      engine.translateX(sentence.source, trans_obj, this.child_home.getCurDocInfo()).subscribe(
         res => {
           if (res.result === 'ok' && trans_obj.target_text) {
             trans_obj.trans_state = TranslateState.SUCCESS;
@@ -263,25 +263,25 @@ export class MainComponent implements OnInit {
             // 根据评分选用最佳翻译
             if (sentence.target === -2) {
               sentence.target = refer_idx;
-              if (res.doc_id === this.child_home.cur_doc.id) {
+              if (res.doc_id === docId) {
                 this.updatePreview();
               }
             } else if (sentence.target !== -1) {
               if (trans_obj.trans_grade > sentence.refers[sentence.target].trans_grade) {
                 sentence.target = refer_idx;
-                if (res.doc_id === this.child_home.cur_doc.id) {
+                if (res.doc_id === docId) {
                   this.updatePreview();
                 }
               }
             }
 
             // 如果文档没有切换，更新视图，否则，不需要更新
-            if (res.doc_id === this.child_home.cur_doc.id && this.getPageRange().indexOf(index) !== -1) {
+            if (res.doc_id === docId && this.getPageRange().indexOf(index) !== -1) {
               this.rerender();
             }
           } else {
             trans_obj.trans_state = TranslateState.FAILURE;
-            if (res.doc_id === this.child_home.cur_doc.id && this.getPageRange().indexOf(index) !== -1) {
+            if (res.doc_id === docId && this.getPageRange().indexOf(index) !== -1) {
               this.rerender();
             }
             console.log(`Translate failed: ${res.result}`);
@@ -289,7 +289,7 @@ export class MainComponent implements OnInit {
         },
         err => {
           trans_obj.trans_state = TranslateState.FAILURE;
-          if (err.doc_id === this.child_home.cur_doc.id && this.getPageRange().indexOf(index) !== -1) {
+          if (err.doc_id === docId && this.getPageRange().indexOf(index) !== -1) {
             this.rerender();
           }
           console.log(`Translate failed: ${err.result}`);

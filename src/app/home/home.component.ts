@@ -397,6 +397,14 @@ export class HomeComponent implements OnInit {
     return res;
   }
 
+  getCurDocInfo(): DocInfoModel {
+    let res = null;
+    if (this.cur_doc.id) {
+      res = this.getDocInfo(this.cur_doc.id);
+    }
+    return res;
+  }
+
   // save current document
   saveCurDocument(sync: boolean) {
     if (!this.cur_doc.id) {

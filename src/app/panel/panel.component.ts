@@ -41,13 +41,11 @@ export class PanelComponent implements OnInit {
 
     if (this.sentence.custom) {
       this.sentence.custom.engine_name = orig.engine_name;
-      this.sentence.custom.source_text = orig.source_text;
       this.sentence.custom.target_text = orig.target_text;
 
     } else {
       this.sentence.custom = new TranslateModel({
         engine_name: orig.engine_name,
-        source_text: orig.source_text,
         target_text: orig.target_text
       });
     }
@@ -68,7 +66,6 @@ export class PanelComponent implements OnInit {
     this.disableHighlight();
     this.sentence.custom = new TranslateModel({
       engine_name: 'user',
-      source_text: this.sentence.source,
     });
 
     this.sentence.target = -1;  // 选中定制翻译

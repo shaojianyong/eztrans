@@ -21,5 +21,5 @@ export abstract class TranslateService {
     return this.engine_name;
   }
 
-  abstract translateX(translate: TranslateModel, docInfo: DocInfoModel): Observable<TranslateResult>;
+  abstract translateX(srcText: string, translate: TranslateModel, docInfo: DocInfoModel): Observable<TranslateResult>;
 }
