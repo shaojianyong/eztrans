@@ -11,7 +11,7 @@ export const SentenceStatus = Object.freeze({
 export class SliceModel {
   source: string;
   target: string;
-  xtrans: Array<string>;
+  xtrans: Array<TranslateModel>;
 
   constructor(obj?: any) {
     this.source = obj && obj.source || '';
