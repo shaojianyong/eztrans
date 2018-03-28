@@ -13,6 +13,13 @@ export class VersionModel {
   target: TranslateModel;  // 译本，整体翻译结果
   slices: Array<TranslateModel>;  // 分片翻译结果，译本切分依据
   divides: Array<number>;  // 译本切分，例如：0，6，9
+
+  constructor(obj?: any) {
+    this.engine = obj && obj.engine || 'Google';
+    this.target = obj && obj.target || null;
+    this.slices = obj && obj.slices || null;
+    this.divides = obj && obj.divides || null;
+  }
 }
 
 // 句段模型
@@ -27,6 +34,7 @@ export class SentenceModel {
 
   constructor(obj?: any) {
     this.source = obj && obj.source || '';
+    this.slices = obj && obj.slices || null;
     this.target = obj && obj.target || -2;
     this.ignore = obj && obj.ignore || false;
     this.marked = obj && obj.marked || false;
