@@ -8,22 +8,22 @@ export const SentenceStatus = Object.freeze({
   FAILURE: 'failure'   // 失败
 });
 
+// 分片在指定引擎的翻译结果
 export class SliceModel {
   src: string;
-  sel: number;
-  trx: Array<TranslateModel>;
+  trx: TranslateModel;
 
   constructor(obj?: any) {
     this.src = obj && obj.src || '';
-    this.sel = obj && obj.sel || 0;
-    this.trx = obj && obj.trx || [];
+    this.trx = obj && obj.trx || null;
   }
 }
 
-export class ReferModel {  // VersionModel ?
-  version: string;  // 翻译版本
-  divides: Array<number>;  // 分隔位置：0，6，9
-  divrefs: Array<SliceModel>;  // 分割依据
+export class VersionModel {
+  engine: string;  // 翻译引擎
+  version: string;  // 译本，整体翻译结果
+  divides: Array<number>;  // 译本切分，例如：0，6，9
+  slices: Array<SliceModel>;  // 分片翻译结果，译本切分依据
 }
 
 // 句段模型
@@ -33,7 +33,7 @@ export class SentenceModel {
   ignore: boolean;  // 跳过，不需要翻译
   marked: boolean;  // 翻译完成标记
   custom: Array<string>;  // 自定义翻译
-  versions: Array<ReferModel>;  // TODO: 把数组改成对象，引擎名称作为key，翻译结果作为value，同时可纳入custom
+  refers: Array<VersionModel>;
 
   constructor(obj?: any) {
     this.source = obj && obj.source || '';
