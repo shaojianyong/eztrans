@@ -8,7 +8,7 @@ import {ExLinksModule} from '../services/utils/ex-links.module';
 
 import { DocType } from '../services/model/doc-info.model';
 import { FunctionUtils } from '../services/utils/function-utils';
-import {SliceModel, SentenceModel, SentenceStatus} from '../services/model/sentence.model';
+import {VersionModel, SentenceModel, SentenceStatus} from '../services/model/sentence.model';
 import {TranslateModel, TranslateState} from '../services/model/translate.model';
 import {ParserManagerService} from '../parsers/manager/parser-manager.service';
 import {EngineManagerService} from '../providers/manager/engine-manager.service';
@@ -226,6 +226,10 @@ export class MainComponent implements OnInit {
   }
 
   translate(index: number, sentence: SentenceModel): void {
+
+  }
+
+  translate0(index: number, sentence: SentenceModel): void {
     for (const engine of this.ems.engine_list) {
       let refer_idx = -1;
       for (let i = 0; i < sentence.refers.length; ++i) {
@@ -235,30 +239,86 @@ export class MainComponent implements OnInit {
         }
       }
 
-      let trans_obj = null;
+      let refer = null;
       if (refer_idx !== -1) {
-        trans_obj = sentence.refers[refer_idx];
-        if (trans_obj.trans_state === TranslateState.SUCCESS && trans_obj.target_text) {  // TODO: 并且翻译语言没有切换
+        refer = sentence.refers[refer_idx];
+        if (refer.target.trans_state === TranslateState.SUCCESS && refer.target.target_text) {
           continue;  // 不发重复请求
         } else {
-          trans_obj.trans_state = TranslateState.REQUESTED;
+          refer.target.trans_state = TranslateState.REQUESTED;
         }
       } else {
-        trans_obj = new TranslateModel({
-          engine_name: engine.getEngineName(),
-          trans_state: TranslateState.REQUESTED
+        refer = new VersionModel({
+          engine: engine,
+          target: new TranslateModel({
+            trans_state: TranslateState.REQUESTED
+          })
         });
         refer_idx = sentence.refers.length;
-        sentence.refers.push(trans_obj);
+        sentence.refers.push(refer);
+      }
+
+      this.rerender();  // 展示旋转图标
+      const docId = this.child_home.cur_doc.id;
+      engine.translateX(sentence.source, refer.target, this.child_home.getCurDocInfo()).subscribe(
+        res => {
+          if (res.result === 'ok' && refer.target.target_text) {
+            refer.target.trans_state = TranslateState.SUCCESS;
+          } else {
+            refer.target.trans_state = TranslateState.FAILURE;
+            if (res.doc_id === docId && this.getPageRange().indexOf(index) !== -1) {
+              this.rerender();
+            }
+            console.log(`Translate failed: ${res.result}`);
+          }
+        },
+        err => {
+          refer.target.trans_state = TranslateState.FAILURE;
+          if (err.doc_id === docId && this.getPageRange().indexOf(index) !== -1) {
+            this.rerender();
+          }
+          console.log(`Translate failed: ${err.result}`);
+        }
+      );
+    }
+  }
+
+  translateSlices(index: number, sentence: SentenceModel): void {
+    for (const engine of this.ems.engine_list) {
+      let refer_idx = -1;
+      for (let i = 0; i < sentence.refers.length; ++i) {
+        if (sentence.refers[i].engine === engine.getEngineName()) {
+          refer_idx = i;
+          break;
+        }
+      }
+
+      let refer = null;
+      if (refer_idx !== -1) {
+        refer = sentence.refers[refer_idx];
+        if (refer.target.trans_state === TranslateState.SUCCESS && refer.target.target_text) {
+          continue;  // 不发重复请求
+        } else {
+          refer.target.trans_state = TranslateState.REQUESTED;
+        }
+      } else {
+        refer = new VersionModel({
+          engine: engine,
+          target: new TranslateModel({
+            trans_state: TranslateState.REQUESTED
+          })
+        });
+        refer_idx = sentence.refers.length;
+        sentence.refers.push(refer);
       }
 
       this.rerender();  // 展示旋转图标
 
       const docId = this.child_home.cur_doc.id;
-      engine.translateX(sentence.source, trans_obj, this.child_home.getCurDocInfo()).subscribe(
+      engine.translateX(sentence.source, refer, this.child_home.getCurDocInfo()).subscribe(
         res => {
-          if (res.result === 'ok' && trans_obj.target_text) {
-            trans_obj.trans_state = TranslateState.SUCCESS;
+          if (res.result === 'ok' && refer.target.target_text) {
+            refer.target.trans_state = TranslateState.SUCCESS;
 
             // 根据评分选用最佳翻译
             if (sentence.target === -2) {
@@ -267,7 +327,7 @@ export class MainComponent implements OnInit {
                 this.updatePreview();
               }
             } else if (sentence.target !== -1) {
-              if (trans_obj.trans_grade > sentence.refers[sentence.target].trans_grade) {
+              if (refer.trans_grade > sentence.refers[sentence.target].trans_grade) {
                 sentence.target = refer_idx;
                 if (res.doc_id === docId) {
                   this.updatePreview();
@@ -280,7 +340,7 @@ export class MainComponent implements OnInit {
               this.rerender();
             }
           } else {
-            trans_obj.trans_state = TranslateState.FAILURE;
+            refer.trans_state = TranslateState.FAILURE;
             if (res.doc_id === docId && this.getPageRange().indexOf(index) !== -1) {
               this.rerender();
             }
@@ -288,7 +348,7 @@ export class MainComponent implements OnInit {
           }
         },
         err => {
-          trans_obj.trans_state = TranslateState.FAILURE;
+          refer.trans_state = TranslateState.FAILURE;
           if (err.doc_id === docId && this.getPageRange().indexOf(index) !== -1) {
             this.rerender();
           }
