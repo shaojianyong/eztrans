@@ -8,27 +8,17 @@ export const SentenceStatus = Object.freeze({
   FAILURE: 'failure'   // 失败
 });
 
-// 分片在指定引擎的翻译结果
-export class SliceModel {
-  src: string;
-  trx: TranslateModel;
-
-  constructor(obj?: any) {
-    this.src = obj && obj.src || '';
-    this.trx = obj && obj.trx || null;
-  }
-}
-
 export class VersionModel {
   engine: string;  // 翻译引擎
-  version: string;  // 译本，整体翻译结果
+  target: TranslateModel;  // 译本，整体翻译结果
+  slices: Array<TranslateModel>;  // 分片翻译结果，译本切分依据
   divides: Array<number>;  // 译本切分，例如：0，6，9
-  slices: Array<SliceModel>;  // 分片翻译结果，译本切分依据
 }
 
 // 句段模型
 export class SentenceModel {
   source: string;
+  slices: Array<string>;
   target: number;
   ignore: boolean;  // 跳过，不需要翻译
   marked: boolean;  // 翻译完成标记
