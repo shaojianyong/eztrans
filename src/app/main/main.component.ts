@@ -229,7 +229,7 @@ export class MainComponent implements OnInit {
     for (const engine of this.ems.engine_list) {
       let refer_idx = -1;
       for (let i = 0; i < sentence.refers.length; ++i) {
-        if (sentence.refers[i].engine_name === engine.getEngineName()) {
+        if (sentence.refers[i].engine === engine.getEngineName()) {
           refer_idx = i;
           break;
         }
@@ -857,17 +857,8 @@ export class MainComponent implements OnInit {
           let srcText = res.source;
           srcText = srcText.replace(/\r\n|\n/g, ' ');
           srcText = srcText.replace(/\s{2,}/g, ' ').trim();
-          const sent = { source: srcText };
-          if (res.slices) {
-            sent['slices'] = res.slices;
-          }
-          const sentence = new SentenceModel(sent);
-          if ('slices' in res) {
-            for (const slice of res.slices) {
-              sentence.slices.push(new SliceModel({source: slice}));
-            }
-          }
 
+          const sentence = new SentenceModel({ source: srcText, slices: res.slices });
           if (docId in self.child_home.cache_docs) {
             const doc = self.child_home.cache_docs[docId];
             doc.sentences.push(sentence);
