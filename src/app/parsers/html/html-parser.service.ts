@@ -60,7 +60,7 @@ export class HtmlParserService extends ParserService {
     for (let i = 0; i < node.childNodes.length; ++i) {
       const childNode = node.childNodes[i];
       if (childNode.nodeType === Node.TEXT_NODE && childNode.nodeValue.trim()) {
-        nodeTexts += childNode.nodeValue;
+        nodeTexts.push(childNode.nodeValue);
       } else {
         this.getNodeTexts(childNode, nodeTexts);
       }
@@ -85,7 +85,7 @@ export class HtmlParserService extends ParserService {
         const nodeTexts = [];
         this.getNodeTexts(node, nodeTexts);
         observer.next({
-          slices: nodeTexts,
+          slices: nodeTexts.length ? nodeTexts : null,
           source: nodeTexts.join(' '),
         });
       } else {

@@ -857,7 +857,11 @@ export class MainComponent implements OnInit {
           let srcText = res.source;
           srcText = srcText.replace(/\r\n|\n/g, ' ');
           srcText = srcText.replace(/\s{2,}/g, ' ').trim();
-          const sentence = new SentenceModel({source: srcText});
+          const sent = { source: srcText };
+          if (res.slices) {
+            sent['slices'] = res.slices;
+          }
+          const sentence = new SentenceModel(sent);
           if ('slices' in res) {
             for (const slice of res.slices) {
               sentence.slices.push(new SliceModel({source: slice}));
