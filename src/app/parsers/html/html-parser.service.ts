@@ -59,8 +59,10 @@ export class HtmlParserService extends ParserService {
   getNodeTexts(node: any, nodeTexts: Array<string>): void {
     for (let i = 0; i < node.childNodes.length; ++i) {
       const childNode = node.childNodes[i];
-      if (childNode.nodeType === Node.TEXT_NODE && childNode.nodeValue.trim()) {
-        nodeTexts.push(childNode.nodeValue);
+      if (childNode.nodeType === Node.TEXT_NODE) {
+        if (childNode.nodeValue.trim()) {
+          nodeTexts.push(childNode.nodeValue);
+        }
       } else {
         this.getNodeTexts(childNode, nodeTexts);
       }
@@ -70,9 +72,11 @@ export class HtmlParserService extends ParserService {
   setNodeTexts(node: any, newData: any): void {
     for (let i = 0; i < node.childNodes.length; ++i) {
       const childNode = node.childNodes[i];
-      if (childNode.nodeType === Node.TEXT_NODE && childNode.nodeValue.trim()) {
-        childNode.nodeValue = newData.texts[newData.index];
-        newData.index++;
+      if (childNode.nodeType === Node.TEXT_NODE) {
+        if (childNode.nodeValue.trim()) {
+          childNode.nodeValue = newData.texts[newData.index];
+          newData.index++;
+        }
       } else {
         this.setNodeTexts(childNode, newData);
       }
@@ -85,8 +89,7 @@ export class HtmlParserService extends ParserService {
         const nodeTexts = [];
         this.getNodeTexts(node, nodeTexts);
         observer.next({
-          slices: nodeTexts.length ? nodeTexts : null,
-          source: nodeTexts.join(' '),
+          source: nodeTexts
         });
       } else {
         for (let i = 0; i < node.childNodes.length; ++i) {

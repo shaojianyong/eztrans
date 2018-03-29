@@ -24,8 +24,7 @@ export class VersionModel {
 
 // 句段模型
 export class SentenceModel {
-  source: string;
-  slices: Array<string>;
+  source: Array<string>;
   target: number;
   ignore: boolean;  // 跳过，不需要翻译
   marked: boolean;  // 翻译完成标记
@@ -33,8 +32,7 @@ export class SentenceModel {
   refers: Array<VersionModel>;
 
   constructor(obj?: any) {
-    this.source = obj && obj.source || '';
-    this.slices = obj && obj.slices || null;
+    this.source = obj && obj.source || [];
     this.target = obj && obj.target || -2;
     this.ignore = obj && obj.ignore || false;
     this.marked = obj && obj.marked || false;

@@ -27,6 +27,17 @@ export class EngineManagerService {
     this.engine_list = [google, baidu, iciba];
   }
 
+  getEngine(name: string) {
+    let res = null;
+    for (const en of this.engine_list) {
+      if (en.getEngineName() === name) {
+        res = en;
+        break;
+      }
+    }
+    return res;
+  }
+
   getEnabledEngineCount(): number {
     return this.engine_list.length;
   }

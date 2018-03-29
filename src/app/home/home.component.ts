@@ -8,6 +8,7 @@ const ipc = electron.ipcRenderer;
 import Epub from '../services/epub/epub';
 import { FunctionUtils } from '../services/utils/function-utils';
 import { DocumentModel } from '../services/model/document.model';
+import { TranslateState } from '../services/model/translate.model';
 import { GroupType, GroupModel } from '../services/model/group.model';
 import { DocType, DocInfoModel } from '../services/model/doc-info.model';
 import {MsgboxComponent} from '../msgbox/msgbox.component';
@@ -573,6 +574,24 @@ export class HomeComponent implements OnInit {
     ipc.send('export-book', bookId);
   }
 
+  // 修正从文件中读取的文档翻译状态
+  reviseTransState(doc: DocumentModel): void {
+    for (const sentence of doc.sentences) {
+      for (const refer of sentence.refers) {
+        if (refer.target.trans_state === TranslateState.REQUESTED
+          || refer.target.trans_state === TranslateState.RECEIVED) {
+          refer.target.trans_state = TranslateState.FAILURE;
+        }
+        for (const slice of refer.slices) {
+          if (slice.trans_state === TranslateState.REQUESTED
+            || slice.trans_state === TranslateState.RECEIVED) {
+            slice.trans_state = TranslateState.FAILURE;
+          }
+        }
+      }
+    }
+  }
+
   ngOnInit() {
     $('.ui.accordion')
       .accordion({
@@ -659,6 +678,7 @@ export class HomeComponent implements OnInit {
 
     ipc.on('rsp-document', (event, doc) => {
       this.cache_docs[this.sel_doc.id] = doc;
+      this.reviseTransState(this.cache_docs[this.sel_doc.id]);
       this.openDoc();
     });
 

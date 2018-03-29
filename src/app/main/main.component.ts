@@ -103,29 +103,40 @@ export class MainComponent implements OnInit {
   }
 
   getLastTransData(forPreview = false): Array<string> {
-    const segments = [];
-    for (let index = 0; index < this.child_home.cur_doc.sentences.length; ++index) {
-      let target_text = null;
-      const current = this.child_home.cur_doc.sentences[index];
-      if (current.target === -2) {
-        if (forPreview) {
-          target_text = current.source;
-        }
+    let segments = [];
+    for (const sentence of this.child_home.cur_doc.sentences) {
+      if (sentence.target === -2) {
+        segments = segments.concat(sentence.source);
       } else {
-        if (current.ignore) {
-          target_text = current.source;
-        } else if (current.target === -1) {
-          target_text = current.custom.target_text;
-          if (forPreview) {
-            if (!target_text.trim()) {
-              target_text = '[x]';  // 将文本节点置空时(空格会被忽略)，也就是把它给删除了
+        if (sentence.ignore) {
+          segments = segments.concat(sentence.source);
+        } else if (sentence.target === -1) {
+          for (const slice of sentence.custom) {
+            if (forPreview && !slice.trim()) {
+              segments.push('[x]');  // 将文本节点置空时(空格会被忽略)，也就是把它给删除了
+            } else {
+              segments.push(slice);
             }
           }
         } else {
-          target_text = current.refers[current.target].target_text;
+          const refer = sentence.refers[sentence.target];
+          if (sentence.source.length === 1) {
+            segments.push(refer.target.target_text);
+          } else if (refer.divides) {
+            for (let i = 0; i < sentence.source.length; ++i) {
+              if (i + 1 < sentence.source.length) {
+                segments.push(refer.target.target_text.substring(refer.divides[i], refer.divides[i + 1]));
+              } else {
+                segments.push(refer.target.target_text.substring(refer.divides[i]));
+              }
+            }
+          } else {
+            for (const slice of refer.slices) {
+              segments.push(slice.target_text);
+            }
+          }
         }
       }
-      segments[index] = target_text;
     }
     return segments;
   }
@@ -197,14 +208,22 @@ export class MainComponent implements OnInit {
     let successNum = 0;
     let failureNum = 0;
     let initialNum = 0;
-    const totalNum = sentence.refers.length;
 
+    const states = [];
     for (const refer of sentence.refers) {
-      if (refer.trans_state === TranslateState.SUCCESS) {
+      states.push(refer.target.trans_state);
+      for (const slice of refer.slices) {
+        states.push(slice.trans_state);
+      }
+    }
+
+    const totalNum = states.length;
+    for (const state of states) {
+      if (state === TranslateState.SUCCESS) {
         ++successNum;
-      } else if (refer.trans_state === TranslateState.FAILURE) {
+      } else if (state === TranslateState.FAILURE) {
         ++failureNum;
-      } else if (refer.trans_state === TranslateState.INITIAL) {
+      } else if (state === TranslateState.INITIAL) {
         ++initialNum;
       }
     }
@@ -226,10 +245,12 @@ export class MainComponent implements OnInit {
   }
 
   translate(index: number, sentence: SentenceModel): void {
-
+    this.translateEntirety(index, sentence);
+    this.translateSlices(index, sentence);
   }
 
   translateEntirety(index: number, sentence: SentenceModel): void {
+    const docId = this.child_home.cur_doc.id;
     for (const engine of this.ems.engine_list) {
       let refer_idx = -1;
       for (let i = 0; i < sentence.refers.length; ++i) {
@@ -259,8 +280,7 @@ export class MainComponent implements OnInit {
       }
 
       this.rerender();  // 展示旋转图标
-      const docId = this.child_home.cur_doc.id;
-      engine.translateX(sentence.source, refer.target, this.child_home.getCurDocInfo()).subscribe(
+      engine.translateX(sentence.source.join(' '), refer.target, this.child_home.getCurDocInfo()).subscribe(
         res => {
           if (res.result === 'ok' && refer.target.target_text) {
             refer.target.trans_state = TranslateState.SUCCESS;
@@ -283,17 +303,30 @@ export class MainComponent implements OnInit {
     }
   }
 
+  checkAllSlices(vm: VersionModel): boolean {
+    let res = true;
+    for (const slice of vm.slices) {
+      if (slice.trans_state !== TranslateState.SUCCESS) {
+        res = false;
+        break;
+      }
+    }
+    return res;
+  }
+
   translateSlices(index: number, sentence: SentenceModel): void {
-    if (!sentence.slices) {
+    if (sentence.source.length === 1) {
       return;
     }
 
-    for (const refer of sentence.refers) {
+    const docId = this.child_home.cur_doc.id;
+    for (let idx = 0; idx < sentence.refers.length; ++idx) {
+      const refer = sentence.refers[idx];
       if (!refer.slices) {
-        refer.slices = new Array<TranslateModel>();
+        refer.slices = [];
       }
 
-      for (let i = 0; i < sentence.slices.length; ++i) {
+      for (let i = 0; i < sentence.source.length; ++i) {
         if (refer.slices[i]) {
           if (refer.slices[i].trans_state === TranslateState.SUCCESS && refer.slices[i].target_text) {
             continue;  // 不发重复请求
@@ -302,71 +335,38 @@ export class MainComponent implements OnInit {
           refer.slices[i] = new TranslateModel({trans_state: TranslateState.REQUESTED});
         }
 
-        engine.translateX(sentence.slices[i], refer.slices[i], this.child_home.getCurDocInfo()).subscribe(
-
-        );
-      }
-    }
-
-
-    for (const slice of sentence.slices) {
-      for (const engine of this.ems.engine_list) {
-        let refer_idx = -1;
-        for (let i = 0; i < sentence.refers.length; ++i) {
-          if (sentence.refers[i].engine === engine.getEngineName()) {
-            refer_idx = i;
-            break;
-          }
-        }
-
-        let refer = null;
-        if (refer_idx !== -1) {
-          refer = sentence.refers[refer_idx];
-          if (refer.target.trans_state === TranslateState.SUCCESS && refer.target.target_text) {
-            continue;  // 不发重复请求
-          } else {
-            refer.target.trans_state = TranslateState.REQUESTED;
-          }
-        } else {
-          refer = new VersionModel({
-            engine: engine,
-            target: new TranslateModel({
-              trans_state: TranslateState.REQUESTED
-            })
-          });
-          refer_idx = sentence.refers.length;
-          sentence.refers.push(refer);
-        }
-
-        this.rerender();  // 展示旋转图标
-
-        const docId = this.child_home.cur_doc.id;
-        engine.translateX(sentence.source, refer, this.child_home.getCurDocInfo()).subscribe(
+        const engine = this.ems.getEngine(refer.engine);
+        engine.translateX(sentence.source[i], refer.slices[i], this.child_home.getCurDocInfo()).subscribe(
           res => {
-            if (res.result === 'ok' && refer.target.target_text) {
-              refer.target.trans_state = TranslateState.SUCCESS;
+            if (res.result === 'ok' && refer.slices[i].target_text) {
+              refer.slices[i].trans_state = TranslateState.SUCCESS;
 
-              // 根据评分选用最佳翻译
-              if (sentence.target === -2) {
-                sentence.target = refer_idx;
-                if (res.doc_id === docId) {
-                  this.updatePreview();
-                }
-              } else if (sentence.target !== -1) {
-                if (refer.trans_grade > sentence.refers[sentence.target].trans_grade) {
-                  sentence.target = refer_idx;
+              // 最后一个分片返回，并且所有分片都翻译成功
+              if (refer.slices.length === sentence.source.length &&
+                refer.target.trans_state === TranslateState.SUCCESS
+                && this.checkAllSlices(refer)) {
+                // 根据评分选用最佳翻译
+                if (sentence.target === -2) {
+                  sentence.target = idx;
                   if (res.doc_id === docId) {
                     this.updatePreview();
                   }
+                } else if (sentence.target !== -1) {
+                  if (refer.target.trans_grade > sentence.refers[sentence.target].target.trans_grade) {
+                    sentence.target = idx;
+                    if (res.doc_id === docId) {
+                      this.updatePreview();
+                    }
+                  }
+                }
+
+                // 如果文档没有切换，更新视图，否则，不需要更新
+                if (res.doc_id === docId && this.getPageRange().indexOf(index) !== -1) {
+                  this.rerender();
                 }
               }
-
-              // 如果文档没有切换，更新视图，否则，不需要更新
-              if (res.doc_id === docId && this.getPageRange().indexOf(index) !== -1) {
-                this.rerender();
-              }
             } else {
-              refer.trans_state = TranslateState.FAILURE;
+              refer.slices[i].trans_state = TranslateState.FAILURE;
               if (res.doc_id === docId && this.getPageRange().indexOf(index) !== -1) {
                 this.rerender();
               }
@@ -374,7 +374,7 @@ export class MainComponent implements OnInit {
             }
           },
           err => {
-            refer.trans_state = TranslateState.FAILURE;
+            refer.slices[i].trans_state = TranslateState.FAILURE;
             if (err.doc_id === docId && this.getPageRange().indexOf(index) !== -1) {
               this.rerender();
             }
@@ -468,7 +468,7 @@ export class MainComponent implements OnInit {
   }
 
   getTargetLeftIcon(index: number): string {
-    let res = '';
+    /*let res = '';
     const sentence = this.child_home.cur_doc.sentences[index];
     if (sentence.target === -1) {
       if (sentence.custom.target_text.trim()) {
@@ -490,7 +490,8 @@ export class MainComponent implements OnInit {
     } else {
       res = 'placeholder icon';
     }
-    return res;
+    return res;*/
+    return 'placeholder icon';
   }
 
   getTargetRightIcon(index: number): string {
@@ -523,9 +524,20 @@ export class MainComponent implements OnInit {
     if (sentence.target === -2) {
       target_text = '';
     } else if (sentence.target === -1) {
-      target_text = sentence.custom.target_text;
+      target_text = sentence.custom.join(' ');
     } else {
-      target_text = sentence.refers[sentence.target].target_text;
+      const refer = sentence.refers[sentence.target];
+      if (sentence.source.length === 1) {
+        target_text = refer.target.target_text;
+      } else if (refer.divides) {
+        target_text = refer.target.target_text;
+      } else {
+        const texts = [];
+        for (const slice of refer.slices) {
+          texts.push(slice.target_text);
+        }
+        target_text = texts.join(' ');
+      }
     }
     return target_text;
   }
@@ -806,7 +818,7 @@ export class MainComponent implements OnInit {
 
   searchTest(index: number): boolean {
     const str = this.search_text.toLowerCase();
-    const source_text = this.child_home.cur_doc.sentences[index].source.toLowerCase();
+    const source_text = this.child_home.cur_doc.sentences[index].source.join(' ').toLowerCase();
     const target_text = this.getTargetText(index).toLowerCase();
     return (source_text.indexOf(str) !== -1 || target_text.indexOf(str) !== -1);
   }
