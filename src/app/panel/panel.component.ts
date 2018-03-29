@@ -47,9 +47,9 @@ export class PanelComponent implements OnInit {
     } else if (orig.divides) {
       for (let i = 0; i < this.sentence.source.length; ++i) {
         if (i + 1 < this.sentence.source.length) {
-          this.sentence.custom[i] = refer.target.target_text.substring(refer.divides[i], refer.divides[i + 1]);
+          this.sentence.custom[i] = orig.target.target_text.substring(orig.divides[i], orig.divides[i + 1]);
         } else {
-          this.sentence.custom[i] = refer.target.target_text.substring(refer.divides[i]);
+          this.sentence.custom[i] = orig.target.target_text.substring(orig.divides[i]);
         }
       }
     } else {
