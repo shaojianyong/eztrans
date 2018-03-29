@@ -1,8 +1,14 @@
 <div id="panel-container" *ngIf="sentence && sentence.target !== -2 && !sentence.ignore" class="ui container">
   <div *ngIf="sentence.custom" class="ui vertical segment">
-    <div id="custom-editor" contenteditable="true" [textContent]="sentence.custom.target_text"
-         (input)="onEditInput()" (focus)="onEditFocus()" (blur)="onEditBlur()"
-         (keydown.enter)="endEditEnterKeyDown($event)"></div>
+    <div class="ui list">
+      <div *ngFor="let nodetext of sentence.custom; let idx = index" class="item">
+        <i class="linkify icon"></i>
+        <div class="content" id="custom-editor-{{idx}}" [textContent]="nodetext"
+             (input)="onEditInput(idx)" (focus)="onEditFocus(idx)" (blur)="onEditBlur(idx)"
+             (keydown.enter)="endEditEnterKeyDown($event)" contenteditable="true">
+        </div>
+      </div>
+    </div>
     <div class="ui small secondary menu">
       <a class="item" (click)="selectTranslation(-1)">
         <i class="{{getHeartIcon(-1)}}"></i> Like
