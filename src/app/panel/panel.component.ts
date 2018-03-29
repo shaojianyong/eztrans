@@ -36,28 +36,36 @@ export class PanelComponent implements OnInit {
   }
 
   clone(refer_index: number): void {
-    /*this.disableHighlight();
+    this.disableHighlight();
     const orig = this.sentence.refers[refer_index];
+    if (!this.sentence.custom) {
+      this.sentence.custom = [];
+    }
 
-    if (this.sentence.custom) {
-      this.sentence.custom.engine_name = orig.engine_name;
-      this.sentence.custom.target_text = orig.target_text;
-
+    if (this.sentence.source.length === 1) {
+      this.sentence.custom[0] = orig.target.target_text;
+    } else if (orig.divides) {
+      for (let i = 0; i < this.sentence.source.length; ++i) {
+        if (i + 1 < this.sentence.source.length) {
+          this.sentence.custom[i] = refer.target.target_text.substring(refer.divides[i], refer.divides[i + 1]);
+        } else {
+          this.sentence.custom[i] = refer.target.target_text.substring(refer.divides[i]);
+        }
+      }
     } else {
-      this.sentence.custom = new TranslateModel({
-        engine_name: orig.engine_name,
-        target_text: orig.target_text
-      });
+      for (let i = 0; i < orig.slices.length; ++i) {
+        this.sentence.custom[i] = orig.slices[i].target_text;
+      }
     }
 
     this.sentence.target = -1;  // 选中定制翻译
     this.sentence.marked = false;
     this.rerenderEvent.emit({forceShowSelected: true});
     const ce = $('#custom-editor');
-    ce.text(this.sentence.custom.target_text);
+    ce.text(this.sentence.custom.join(' '));  // TODO: 每一段需要一个单独的编辑框
     ce.attr('contenteditable', 'true');
     ce.focus();
-    this.targetChangedEvent.emit();*/
+    this.targetChangedEvent.emit();
     // this.enableHighlight();  不需要重复，onEditBlur将做这个事情
   }
 
@@ -79,19 +87,19 @@ export class PanelComponent implements OnInit {
   }
 
   onExLink(engine_name: string): void {
-    /*const srcLang = 'en';
+    const srcLang = 'en';
     const dstLang = 'zh-CN';
     let link = engines[engine_name].site;
     if (engine_name === 'Google') {
-      link += `/#${srcLang}/${dstLang}/${encodeURIComponent(this.sentence.source)}`;
+      link += `/#${srcLang}/${dstLang}/${encodeURIComponent(this.sentence.source.join(' '))}`;
     } else if (engine_name === 'Baidu') {
       const slc = FunctionUtils.baiduLangCode(srcLang);
       const dlc = FunctionUtils.baiduLangCode(dstLang);
-      link += `/#${slc}/${dlc}/${encodeURIComponent(this.sentence.source)}`;
+      link += `/#${slc}/${dlc}/${encodeURIComponent(this.sentence.source.join(' '))}`;
     }
 
     console.log(link);
-    shell.openExternal(link);*/
+    shell.openExternal(link);
   }
 
   getEngineIcon(engine_name: string): string {
