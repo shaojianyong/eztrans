@@ -93,7 +93,7 @@
             </div>
           </td>
           <td class="{{isTargetVisible(idx) ? 'source-cell' : 'source-alone'}}">
-            {{child_home.cur_doc.sentences[idx].source}}
+            {{getSourceText(idx)}}
           </td>
           <td class="collapsing">
             <div class="trans-flag-icon" (click)="onClickSourceRight(idx)">

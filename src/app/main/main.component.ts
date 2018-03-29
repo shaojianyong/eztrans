@@ -514,6 +514,11 @@ export class MainComponent implements OnInit {
     }
   }
 
+  getSourceText(index: number): string {
+    const sentence = this.child_home.cur_doc.sentences[index];
+    return sentence.source.join(' ');
+  }
+
   getTargetText(index: number): string {
     const sentence = this.child_home.cur_doc.sentences[index];
     if (sentence.ignore) {
@@ -925,13 +930,13 @@ export class MainComponent implements OnInit {
   }
 
   updatePreview(): void {
-    const webview = document.getElementsByTagName('webview')[0];
-    (<any>webview).send('update-preview', this.getLastTransData(true));
+    //const webview = document.getElementsByTagName('webview')[0];
+    //(<any>webview).send('update-preview', this.getLastTransData(true));
   }
 
   syncPreview(): void {
-    const webview = document.getElementsByTagName('webview')[0];
-    (<any>webview).send('scroll-to', this.cur_index);
+    //const webview = document.getElementsByTagName('webview')[0];
+    //(<any>webview).send('scroll-to', this.cur_index);
   }
 
   updateTargetFile(event: any): void {
@@ -953,11 +958,11 @@ export class MainComponent implements OnInit {
       parser.load(data);
       parser.parse().subscribe(
         res => {
-          let srcText = res.source;
+          /*let srcText = res.source;
           srcText = srcText.replace(/\r\n|\n/g, ' ');
-          srcText = srcText.replace(/\s{2,}/g, ' ').trim();
+          srcText = srcText.replace(/\s{2,}/g, ' ').trim();*/
 
-          const sentence = new SentenceModel({ source: srcText, slices: res.slices });
+          const sentence = new SentenceModel({ source: res.source });
           if (docId in self.child_home.cache_docs) {
             const doc = self.child_home.cache_docs[docId];
             doc.sentences.push(sentence);

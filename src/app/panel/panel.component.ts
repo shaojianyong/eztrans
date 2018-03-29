@@ -36,7 +36,7 @@ export class PanelComponent implements OnInit {
   }
 
   clone(refer_index: number): void {
-    this.disableHighlight();
+    /*this.disableHighlight();
     const orig = this.sentence.refers[refer_index];
 
     if (this.sentence.custom) {
@@ -57,13 +57,13 @@ export class PanelComponent implements OnInit {
     ce.text(this.sentence.custom.target_text);
     ce.attr('contenteditable', 'true');
     ce.focus();
-    this.targetChangedEvent.emit();
+    this.targetChangedEvent.emit();*/
     // this.enableHighlight();  不需要重复，onEditBlur将做这个事情
   }
 
   // 在网络不可用的情况下，可以纯手工翻译(空手翻)
   emptyHandTrans(): void {
-    this.disableHighlight();
+    /*this.disableHighlight();
     this.sentence.custom = new TranslateModel({
       engine_name: 'user',
     });
@@ -74,12 +74,12 @@ export class PanelComponent implements OnInit {
     ce.text(this.sentence.custom.target_text);
     ce.attr('contenteditable', 'true');
     ce.focus();
-    this.targetChangedEvent.emit();
+    this.targetChangedEvent.emit();*/
     // this.enableHighlight();  不需要重复，onEditBlur将做这个事情
   }
 
   onExLink(engine_name: string): void {
-    const srcLang = 'en';
+    /*const srcLang = 'en';
     const dstLang = 'zh-CN';
     let link = engines[engine_name].site;
     if (engine_name === 'Google') {
@@ -91,7 +91,7 @@ export class PanelComponent implements OnInit {
     }
 
     console.log(link);
-    shell.openExternal(link);
+    shell.openExternal(link);*/
   }
 
   getEngineIcon(engine_name: string): string {
@@ -144,11 +144,11 @@ export class PanelComponent implements OnInit {
   }
 
   onEditInput(): void {
-    this.sentence.custom.target_text = $('#custom-editor').text();
+    /*this.sentence.custom.target_text = $('#custom-editor').text();
     if (this.sentence.target === -1) {
       this.rerenderEvent.emit({forceShowSelected: true});
       this.targetChangedEvent.emit();
-    }
+    }*/
   }
 
   onEditFocus(): void {
