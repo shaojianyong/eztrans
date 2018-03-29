@@ -5,8 +5,6 @@ const {ipcRenderer, remote} = (<any>window).require('electron');
 const {dialog, Menu, MenuItem} = remote;
 
 import {ExLinksModule} from '../services/utils/ex-links.module';
-
-import { DocType } from '../services/model/doc-info.model';
 import { FunctionUtils } from '../services/utils/function-utils';
 import {VersionModel, SentenceModel, SentenceStatus} from '../services/model/sentence.model';
 import {TranslateModel, TranslateState} from '../services/model/translate.model';
@@ -130,7 +128,7 @@ export class MainComponent implements OnInit {
                 segments.push(refer.target.target_text.substring(refer.divides[i]));
               }
             }
-          } else {
+          } else if (refer.slices) {
             for (const slice of refer.slices) {
               segments.push(slice.target_text);
             }
@@ -211,9 +209,13 @@ export class MainComponent implements OnInit {
 
     const states = [];
     for (const refer of sentence.refers) {
-      states.push(refer.target.trans_state);
-      for (const slice of refer.slices) {
-        states.push(slice.trans_state);
+      if (refer.target) {
+        states.push(refer.target.trans_state);
+      }
+      if (refer.slices) {
+        for (const slice of refer.slices) {
+          states.push(slice.trans_state);
+        }
       }
     }
 
@@ -303,7 +305,7 @@ export class MainComponent implements OnInit {
     }
   }
 
-  checkAllSlices(vm: VersionModel): boolean {
+  checkAllSliceStates(vm: VersionModel): boolean {
     let res = true;
     for (const slice of vm.slices) {
       if (slice.trans_state !== TranslateState.SUCCESS) {
@@ -344,7 +346,7 @@ export class MainComponent implements OnInit {
               // 最后一个分片返回，并且所有分片都翻译成功
               if (refer.slices.length === sentence.source.length &&
                 refer.target.trans_state === TranslateState.SUCCESS
-                && this.checkAllSlices(refer)) {
+                && this.checkAllSliceStates(refer)) {
                 // 根据评分选用最佳翻译
                 if (sentence.target === -2) {
                   sentence.target = idx;
@@ -467,31 +469,55 @@ export class MainComponent implements OnInit {
 
   }
 
-  getTargetLeftIcon(index: number): string {
-    /*let res = '';
-    const sentence = this.child_home.cur_doc.sentences[index];
-    if (sentence.target === -1) {
-      if (sentence.custom.target_text.trim()) {
-        let fake = false;  // 仅拷贝，没有修改
-        for (const trans of sentence.refers) {
-          if (trans.target_text === sentence.custom.target_text) {
-            fake = true;
-            break;
+  checkCustomTrans(sentence: SentenceModel): any {
+    const checkResult = { fake: false, empty: false };
+    if (sentence.source.length === 1) {
+      for (const refer of sentence.refers) {
+        if (refer.target && sentence.custom[0] === refer.target.target_text) {
+          checkResult.fake = true;
+          break;
+        }
+      }
+      checkResult.empty = (sentence.custom[0].trim().length === 0);
+    } else {
+      for (const refer of sentence.refers) {
+        if (refer.slices && refer.slices.length === sentence.source.length
+          && sentence.custom.length === sentence.source.length) {
+          let allSame = true;
+          for (let i = 0; i < sentence.source.length; ++i) {
+            if (sentence.custom[i].trim().length === 0) {
+              checkResult.empty = true;
+            }
+            if (sentence.custom[i] !== refer.slices[i].target_text) {
+              allSame = false;
+              break;
+            }
+          }
+          if (allSame) {
+            checkResult.fake = true;
           }
         }
-        if (fake) {
-          res = 'red help icon';
-        } else {
-          res = 'green idea icon';
-        }
-      } else {
-        res = 'teal eraser icon';
       }
-    } else {
-      res = 'placeholder icon';
     }
-    return res;*/
-    return 'placeholder icon';
+    return checkResult;
+  }
+
+  getTargetLeftIcon(index: number): string {
+    const sentence = this.child_home.cur_doc.sentences[index];
+    if (sentence.target !== -1) {
+      return 'placeholder icon';
+    }
+
+    let res = '';
+    const checkRsult = this.checkCustomTrans(sentence);
+    if (checkRsult.empty) {
+      res = 'teal eraser icon';
+    } else if (checkRsult.fake) {
+      res = 'red help icon';
+    } else {
+      res = 'green idea icon';
+    }
+    return res;
   }
 
   getTargetRightIcon(index: number): string {
@@ -536,7 +562,7 @@ export class MainComponent implements OnInit {
         target_text = refer.target.target_text;
       } else if (refer.divides) {
         target_text = refer.target.target_text;
-      } else {
+      } else if (refer.slices) {
         const texts = [];
         for (const slice of refer.slices) {
           texts.push(slice.target_text);
@@ -885,12 +911,6 @@ export class MainComponent implements OnInit {
     $('#trans-list').unhighlight();
   }
 
-  isSourceVisible(index: number): boolean {
-    // const sentence = this.child_home.cur_doc.sentences[index];
-    // return (!sentence.marked || sentence.ignore);
-    return true;
-  }
-
   isTargetVisible(index: number): boolean {
     const sentence = this.child_home.cur_doc.sentences[index];
     return (sentence.target !== -2 && !sentence.ignore);
@@ -930,13 +950,13 @@ export class MainComponent implements OnInit {
   }
 
   updatePreview(): void {
-    //const webview = document.getElementsByTagName('webview')[0];
-    //(<any>webview).send('update-preview', this.getLastTransData(true));
+    const webview = document.getElementsByTagName('webview')[0];
+    (<any>webview).send('update-preview', this.getLastTransData(true));
   }
 
   syncPreview(): void {
-    //const webview = document.getElementsByTagName('webview')[0];
-    //(<any>webview).send('scroll-to', this.cur_index);
+    const webview = document.getElementsByTagName('webview')[0];
+    (<any>webview).send('scroll-to', this.cur_index);
   }
 
   updateTargetFile(event: any): void {

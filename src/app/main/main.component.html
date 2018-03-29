@@ -86,7 +86,7 @@
          class="item {{idx === cur_index ? 'selected_sentence' : ''}}">
       <table id="table-{{idx}}" class="ui very basic compact table">
         <tbody>
-        <tr *ngIf="isSourceVisible(idx)">
+        <tr>
           <td class="collapsing">
             <div class="trans-flag-icon" (click)="onClickSourceLeft(idx)">
               <i class="{{getSourceLeftIcon(idx)}}"></i>
@@ -107,7 +107,7 @@
               <i class="{{getTargetLeftIcon(idx)}}"></i>
             </div>
           </td>
-          <td class="{{isSourceVisible(idx) ? 'target-cell' : 'target-alone'}}">
+          <td class="target-cell">
             {{getTargetText(idx)}}
           </td>
           <td class="collapsing">
