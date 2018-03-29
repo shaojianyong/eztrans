@@ -62,7 +62,7 @@ export class PanelComponent implements OnInit {
   }
 
   // 在网络不可用的情况下，可以纯手工翻译(空手翻)
-  emptyHandTrans() {
+  emptyHandTrans(): void {
     this.disableHighlight();
     this.sentence.custom = new TranslateModel({
       engine_name: 'user',
