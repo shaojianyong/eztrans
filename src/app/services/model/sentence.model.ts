@@ -17,8 +17,8 @@ export class VersionModel {
   constructor(obj?: any) {
     this.engine = obj && obj.engine || 'Google';
     this.target = obj && obj.target || null;
-    this.slices = obj && obj.slices || null;
-    this.divides = obj && obj.divides || null;
+    this.slices = obj && obj.slices || [];
+    this.divides = obj && obj.divides || [];
   }
 }
 
