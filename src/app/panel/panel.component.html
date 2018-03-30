@@ -1,5 +1,5 @@
 <div id="panel-container" *ngIf="sentence && sentence.target !== -2 && !sentence.ignore" class="ui container">
-  <div *ngIf="sentence.custom" class="ui vertical segment">
+  <div *ngIf="sentence.custom.length" class="ui vertical segment">
     <p>
       <span *ngFor="let slice of sentence.custom; let idx = index"
             id="custom-slice-{{idx}}"
@@ -25,10 +25,10 @@
     </div>
   </div>
   <!-- important: idx定义要用let，否则事件处理函数不能用它作为参数 -->
-  <div *ngFor="let refer of sentence.refers" class="ui vertical segment">
+  <div *ngFor="let refer of sentence.refers; let idx = index" class="ui vertical segment">
     <p>
-      <span *ngFor="let slice of getSliceTexts(refer); let idx = index"
-            class="{{(idx % 2) ? 'even-slice-color' : ''}}">
+      <span *ngFor="let slice of getSliceTexts(refer); let sno = index"
+            class="{{(sno % 2) ? 'even-slice-color' : ''}}">
         {{slice}}
       </span>
     </p>
@@ -39,8 +39,8 @@
       <a class="item" (click)="clone(idx)">
         <i class="clone outline icon"></i> Clone
       </a>
-      <a class="right icon item" (click)="onExLink(refer.engine_name)">
-        <i class="{{getEngineIcon(refer.engine_name)}}"></i>
+      <a class="right icon item" (click)="onExLink(refer.engine)">
+        <i class="{{getEngineIcon(refer.engine)}}"></i>
       </a>
     </div>
   </div>

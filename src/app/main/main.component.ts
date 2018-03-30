@@ -270,7 +270,7 @@ export class MainComponent implements OnInit {
         }
       } else {
         refer = new VersionModel({
-          engine: engine,
+          engine: engine.getEngineName(),
           target: new TranslateModel({
             trans_state: TranslateState.REQUESTED
           })
@@ -284,12 +284,24 @@ export class MainComponent implements OnInit {
         res => {
           if (res.result === 'ok' && refer.target.target_text) {
             refer.target.trans_state = TranslateState.SUCCESS;
+            if (sentence.source.length === 1) {
+              // 根据评分选用最佳翻译
+              if (sentence.target === -2) {
+                sentence.target = refer_idx;
+              } else if (sentence.target !== -1) {
+                if (refer.target.trans_grade > sentence.refers[sentence.target].target.trans_grade) {
+                  sentence.target = refer_idx;
+                }
+              }
+              if (sentence.target === refer_idx && res.doc_id === docId) {
+                this.updatePreview();
+              }
+            }
           } else {
             refer.target.trans_state = TranslateState.FAILURE;
-            if (res.doc_id === docId && this.getPageRange().indexOf(index) !== -1) {
-              this.rerender();
-            }
-            console.log(`Translate failed: ${res.result}`);
+          }
+          if (res.doc_id === docId && this.getPageRange().indexOf(index) !== -1) {
+            this.rerender();
           }
         },
         err => {
@@ -297,7 +309,6 @@ export class MainComponent implements OnInit {
           if (err.doc_id === docId && this.getPageRange().indexOf(index) !== -1) {
             this.rerender();
           }
-          console.log(`Translate failed: ${err.result}`);
         }
       );
     }
@@ -345,29 +356,21 @@ export class MainComponent implements OnInit {
                 // 根据评分选用最佳翻译
                 if (sentence.target === -2) {
                   sentence.target = idx;
-                  if (res.doc_id === docId) {
-                    this.updatePreview();
-                  }
                 } else if (sentence.target !== -1) {
                   if (refer.target.trans_grade > sentence.refers[sentence.target].target.trans_grade) {
                     sentence.target = idx;
-                    if (res.doc_id === docId) {
-                      this.updatePreview();
-                    }
                   }
                 }
-
-                // 如果文档没有切换，更新视图，否则，不需要更新
-                if (res.doc_id === docId && this.getPageRange().indexOf(index) !== -1) {
-                  this.rerender();
+                if (sentence.target === idx && res.doc_id === docId) {
+                  this.updatePreview();
                 }
               }
             } else {
               refer.slices[i].trans_state = TranslateState.FAILURE;
-              if (res.doc_id === docId && this.getPageRange().indexOf(index) !== -1) {
-                this.rerender();
-              }
-              console.log(`Translate failed: ${res.result}`);
+            }
+            // 如果文档没有切换，更新视图，否则，不需要更新
+            if (res.doc_id === docId && this.getPageRange().indexOf(index) !== -1) {
+              this.rerender();
             }
           },
           err => {
@@ -375,7 +378,6 @@ export class MainComponent implements OnInit {
             if (err.doc_id === docId && this.getPageRange().indexOf(index) !== -1) {
               this.rerender();
             }
-            console.log(`Translate failed: ${err.result}`);
           }
         );
       }
@@ -552,6 +554,7 @@ export class MainComponent implements OnInit {
     } else if (sentence.target === -1) {
       target_text = sentence.custom.join(' ');
     } else {
+      console.log('----------->', sentence);
       const refer = sentence.refers[sentence.target];
       if (sentence.source.length === 1) {
         target_text = refer.target.target_text;

@@ -58,10 +58,6 @@ export class PanelComponent implements OnInit {
   clone(refer_index: number): void {
     this.disableHighlight();
     const orig = this.sentence.refers[refer_index];
-    if (!this.sentence.custom) {
-      this.sentence.custom = [];
-    }
-
     if (this.sentence.source.length === 1) {
       this.sentence.custom[0] = orig.target.target_text;
     } else if (orig.divides.length) {
@@ -136,7 +132,7 @@ export class PanelComponent implements OnInit {
 
   removeCustom(): void {
     this.disableHighlight();
-    this.sentence.custom = null;
+    this.sentence.custom = [];
     if (this.sentence.target === -1) {
       if (this.sentence.refers && this.sentence.refers.length > 0) {
         this.sentence.target = 0;

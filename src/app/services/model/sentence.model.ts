@@ -36,7 +36,7 @@ export class SentenceModel {
     this.target = obj && obj.target || -2;
     this.ignore = obj && obj.ignore || false;
     this.marked = obj && obj.marked || false;
-    this.custom = obj && obj.custom || null;
+    this.custom = obj && obj.custom || [];
     this.refers = obj && obj.refers || [];
   }
 }
