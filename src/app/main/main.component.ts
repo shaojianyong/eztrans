@@ -247,17 +247,17 @@ export class MainComponent implements OnInit {
   translate(index: number, sentence: SentenceModel): void {
     const docId = this.child_home.cur_doc.id;
     for (const engine of this.ems.engine_list) {
-      let refer_idx = -1;
+      let refIdx = -1;
       for (let i = 0; i < sentence.refers.length; ++i) {
         if (sentence.refers[i].engine === engine.getEngineName()) {
-          refer_idx = i;
+          refIdx = i;
           break;
         }
       }
 
       let refer = null;
-      if (refer_idx !== -1) {
-        refer = sentence.refers[refer_idx];
+      if (refIdx !== -1) {
+        refer = sentence.refers[refIdx];
         if (refer.target.trans_state === TranslateState.SUCCESS && refer.target.target_text) {
           continue;  // 不发重复请求
         } else {
@@ -270,7 +270,7 @@ export class MainComponent implements OnInit {
             trans_state: TranslateState.REQUESTED
           })
         });
-        refer_idx = sentence.refers.length;
+        refIdx = sentence.refers.length;
         sentence.refers.push(refer);
       }
 
@@ -282,17 +282,17 @@ export class MainComponent implements OnInit {
             if (sentence.source.length === 1) {
               // 根据评分选用最佳翻译
               if (sentence.target === -2) {
-                sentence.target = refer_idx;
+                sentence.target = refIdx;
               } else if (sentence.target !== -1) {
                 if (refer.target.trans_grade > sentence.refers[sentence.target].target.trans_grade) {
-                  sentence.target = refer_idx;
+                  sentence.target = refIdx;
                 }
               }
-              if (sentence.target === refer_idx && res.doc_id === docId) {
+              if (sentence.target === refIdx && res.doc_id === docId) {
                 this.updatePreview();
               }
             } else {
-              this.translateReferSlices(index, sentence, refer_idx, docId);
+              this.translateReferSlices(index, sentence, refIdx, docId);
             }
           } else {
             refer.target.trans_state = TranslateState.FAILURE;
@@ -311,8 +311,8 @@ export class MainComponent implements OnInit {
     }
   }
 
-  translateReferSlices(index: number, sentence: SentenceModel, idx: number, docId: string): void {
-    const refer = sentence.refers[idx];
+  translateReferSlices(index: number, sentence: SentenceModel, refIdx: number, docId: string): void {
+    const refer = sentence.refers[refIdx];
     for (let i = 0; i < sentence.source.length; ++i) {
       if (refer.slices[i]) {
         if (refer.slices[i].trans_state === TranslateState.SUCCESS && refer.slices[i].target_text) {
@@ -334,14 +334,14 @@ export class MainComponent implements OnInit {
               && this.checkAllSliceStates(refer)) {
               // 根据评分选用最佳翻译
               if (sentence.target === -2) {
-                sentence.target = idx;
+                sentence.target = refIdx;
               } else if (sentence.target !== -1) {
                 if (refer.target.trans_grade > sentence.refers[sentence.target].target.trans_grade) {
-                  sentence.target = idx;
+                  sentence.target = refIdx;
                 }
               }
-              // TODO: 根据分片翻译，切分整体翻译
-              if (sentence.target === idx && res.doc_id === docId) {
+              this.divideIntegratedTranslation(index, sentence, refIdx, docId);
+              if (sentence.target === refIdx && res.doc_id === docId) {
                 this.updatePreview();
               }
             }
@@ -361,6 +361,17 @@ export class MainComponent implements OnInit {
         }
       );
     }
+  }
+
+  // 根据分片翻译，切分整体翻译，递归算法
+  divideIntegratedTranslation(index: number, sentence: SentenceModel, refIdx: number, docId: string) {
+    const refer = sentence.refers[refIdx];
+    const entirety = refer.target.target_text;
+    const slices = refer.slices;
+    const divdes = refer.divides;
+
+
+
   }
 
   checkAllSliceStates(vm: VersionModel): boolean {

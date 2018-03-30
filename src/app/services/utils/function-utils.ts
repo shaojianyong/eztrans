@@ -48,6 +48,32 @@ export class FunctionUtils {
     return duLangCode;
   }
 
+  static findOverlap1(a: string, b: string) {
+    if (b.length === 0) {
+      return '';
+    }
+    if (a.endsWith(b)) {
+      return b;
+    }
+    if (a.indexOf(b) >= 0) {
+      return b;
+    }
+    return this.findOverlap1(a, b.substring(0, b.length - 1));
+  }
+
+  static findOverlap2(a: string, b: string) {
+    if (b.length === 0) {
+      return '';
+    }
+    if (a.startsWith(b)) {
+      return b;
+    }
+    if (a.indexOf(b) >= 0) {
+      return b;
+    }
+    return this.findOverlap2(a, b.substring(1));
+  }
+
   // stackoverflow.com/questions/951021/what-is-the-javascript-version-of-sleep
   static sleep(msec: number) {
     return new Promise(resolve => setTimeout(resolve, msec));
