@@ -686,11 +686,11 @@ export class HomeComponent implements OnInit {
       this.exportBook(group_id);
     });
 
-    // auto save all user data
+    // TODO: setInterval会导致页面周期性刷新(getTargetText被周期性调用，传入空回调函数也是如此，注释掉这段代码，问题消失)
     const autoSave = setInterval(() => {
       this.saveCurDocument(false);
       this.saveDocGroups(false);
-    }, 1000 * 5);
+    }, 1000 * 10);
 
 
     window.onbeforeunload = () => {

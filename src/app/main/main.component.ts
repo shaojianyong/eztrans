@@ -554,7 +554,6 @@ export class MainComponent implements OnInit {
     } else if (sentence.target === -1) {
       target_text = sentence.custom.join(' ');
     } else {
-      console.log('----------->', sentence);
       const refer = sentence.refers[sentence.target];
       if (sentence.source.length === 1) {
         target_text = refer.target.target_text;
@@ -996,10 +995,6 @@ export class MainComponent implements OnInit {
           $('#trans-list').unhighlight();
         }
       );
-    });
-
-    ipcRenderer.on('file-saved', (event, err) => {
-      console.log('File Saved!');
     });
 
     ipcRenderer.on('next_page', (event) => {

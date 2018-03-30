@@ -186,7 +186,6 @@ function saveFile(event, filePath, content) {
       event.returnValue = err;
       throw new Error('Write file error: ' + err);
     }
-    event.sender.send('file-saved', err);
     event.returnValue = 'ok';
   });
 }
