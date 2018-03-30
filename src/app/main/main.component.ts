@@ -246,7 +246,7 @@ export class MainComponent implements OnInit {
 
   translate(index: number, sentence: SentenceModel): void {
     this.translateEntirety(index, sentence);
-    // this.translateSlices(index, sentence);
+    this.translateSlices(index, sentence);
   }
 
   translateEntirety(index: number, sentence: SentenceModel): void {
