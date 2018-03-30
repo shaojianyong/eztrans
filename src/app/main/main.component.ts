@@ -120,7 +120,7 @@ export class MainComponent implements OnInit {
           const refer = sentence.refers[sentence.target];
           if (sentence.source.length === 1) {
             segments.push(refer.target.target_text);
-          } else if (refer.divides) {
+          } else if (refer.divides.length) {
             for (let i = 0; i < sentence.source.length; ++i) {
               if (i + 1 < sentence.source.length) {
                 segments.push(refer.target.target_text.substring(refer.divides[i], refer.divides[i + 1]));
@@ -128,7 +128,7 @@ export class MainComponent implements OnInit {
                 segments.push(refer.target.target_text.substring(refer.divides[i]));
               }
             }
-          } else if (refer.slices) {
+          } else {
             for (const slice of refer.slices) {
               segments.push(slice.target_text);
             }
@@ -212,10 +212,8 @@ export class MainComponent implements OnInit {
       if (refer.target) {
         states.push(refer.target.trans_state);
       }
-      if (refer.slices) {
-        for (const slice of refer.slices) {
-          states.push(slice.trans_state);
-        }
+      for (const slice of refer.slices) {
+        states.push(slice.trans_state);
       }
     }
 
@@ -248,7 +246,7 @@ export class MainComponent implements OnInit {
 
   translate(index: number, sentence: SentenceModel): void {
     this.translateEntirety(index, sentence);
-    this.translateSlices(index, sentence);
+    // this.translateSlices(index, sentence);
   }
 
   translateEntirety(index: number, sentence: SentenceModel): void {
@@ -324,9 +322,6 @@ export class MainComponent implements OnInit {
     const docId = this.child_home.cur_doc.id;
     for (let idx = 0; idx < sentence.refers.length; ++idx) {
       const refer = sentence.refers[idx];
-      if (!refer.slices) {
-        refer.slices = [];
-      }
 
       for (let i = 0; i < sentence.source.length; ++i) {
         if (refer.slices[i]) {
@@ -481,7 +476,7 @@ export class MainComponent implements OnInit {
       checkResult.empty = (sentence.custom[0].trim().length === 0);
     } else {
       for (const refer of sentence.refers) {
-        if (refer.slices && refer.slices.length === sentence.source.length
+        if (refer.slices.length === sentence.source.length
           && sentence.custom.length === sentence.source.length) {
           let allSame = true;
           for (let i = 0; i < sentence.source.length; ++i) {
@@ -560,9 +555,9 @@ export class MainComponent implements OnInit {
       const refer = sentence.refers[sentence.target];
       if (sentence.source.length === 1) {
         target_text = refer.target.target_text;
-      } else if (refer.divides) {
+      } else if (refer.divides.length) {
         target_text = refer.target.target_text;
-      } else if (refer.slices) {
+      } else {
         const texts = [];
         for (const slice of refer.slices) {
           texts.push(slice.target_text);

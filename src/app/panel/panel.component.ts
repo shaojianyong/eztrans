@@ -27,7 +27,7 @@ export class PanelComponent implements OnInit {
     const res = [];
     if (this.sentence.source.length === 1) {
       res[0] = refer.target.target_text;
-    } else if (refer.divides) {
+    } else if (refer.divides.length) {
       for (let i = 0; i < this.sentence.source.length; ++i) {
         if (i + 1 < this.sentence.source.length) {
           res.push(refer.target.target_text.substring(refer.divides[i], refer.divides[i + 1]));
@@ -35,7 +35,7 @@ export class PanelComponent implements OnInit {
           res.push(refer.target.target_text.substring(refer.divides[i]));
         }
       }
-    } else if (refer.slices) {
+    } else {
       for (const slice of refer.slices) {
         res.push(slice.target_text);
       }
@@ -64,7 +64,7 @@ export class PanelComponent implements OnInit {
 
     if (this.sentence.source.length === 1) {
       this.sentence.custom[0] = orig.target.target_text;
-    } else if (orig.divides) {
+    } else if (orig.divides.length) {
       for (let i = 0; i < this.sentence.source.length; ++i) {
         if (i + 1 < this.sentence.source.length) {
           this.sentence.custom[i] = orig.target.target_text.substring(orig.divides[i], orig.divides[i + 1]);
