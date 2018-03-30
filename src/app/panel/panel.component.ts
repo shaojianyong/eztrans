@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 const { shell, ipcRenderer } = (<any>window).require('electron');
-import { SentenceModel } from '../services/model/sentence.model';
+import { VersionModel, SentenceModel } from '../services/model/sentence.model';
 import { TranslateModel } from '../services/model/translate.model';
 import {EngineManagerService} from '../providers/manager/engine-manager.service';
 import {FunctionUtils} from '../services/utils/function-utils';
@@ -21,6 +21,26 @@ export class PanelComponent implements OnInit {
   @Output() targetChangedEvent = new EventEmitter<any>();
 
   constructor(private ems: EngineManagerService) {
+  }
+
+  getSliceTexts(refer: VersionModel): Array<string> {
+    const res = [];
+    if (this.sentence.source.length === 1) {
+      res[0] = refer.target.target_text;
+    } else if (refer.divides) {
+      for (let i = 0; i < this.sentence.source.length; ++i) {
+        if (i + 1 < this.sentence.source.length) {
+          res.push(refer.target.target_text.substring(refer.divides[i], refer.divides[i + 1]));
+        } else {
+          res.push(refer.target.target_text.substring(refer.divides[i]));
+        }
+      }
+    } else if (refer.slices) {
+      for (const slice of refer.slices) {
+        res.push(slice.target_text);
+      }
+    }
+    return res;
   }
 
   selectTranslation(refer_index: number): void {
@@ -151,12 +171,12 @@ export class PanelComponent implements OnInit {
     }
   }
 
-  onEditInput(): void {
-    /*this.sentence.custom.target_text = $('#custom-editor').text();
+  onEditInput(index: number): void {
+    this.sentence.custom[index] = $(`#custom-slice-${index}`).text();
     if (this.sentence.target === -1) {
       this.rerenderEvent.emit({forceShowSelected: true});
       this.targetChangedEvent.emit();
-    }*/
+    }
   }
 
   onEditFocus(): void {
@@ -171,8 +191,8 @@ export class PanelComponent implements OnInit {
     }
   }
 
-  endEditEnterKeyDown(event: KeyboardEvent): void {
-    $('#custom-editor').blur();
+  endEditEnterKeyDown(index: number, event: KeyboardEvent): void {
+    $(`#custom-slice-${index}`).blur();
     event.preventDefault();
   }
 

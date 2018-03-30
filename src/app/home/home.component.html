@@ -46,7 +46,6 @@
                 </td>
                 <td class="doc-name" contenteditable="false" [textContent]="doc.name"
                     (blur)="endDocRename($event)" (keydown.enter)="endDocRename($event)">
-                  {{doc.name}}
                 </td>
                 <td class="collapsing right-mark" [ngSwitch]="doc.x_state">  <!--TODO: x_state?-->
                   <i *ngSwitchCase="0" class="placeholder icon"></i>

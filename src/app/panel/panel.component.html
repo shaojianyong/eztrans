@@ -1,14 +1,17 @@
 <div id="panel-container" *ngIf="sentence && sentence.target !== -2 && !sentence.ignore" class="ui container">
   <div *ngIf="sentence.custom" class="ui vertical segment">
-    <div class="ui list">
-      <div *ngFor="let nodetext of sentence.custom; let idx = index" class="item">
-        <i class="linkify icon"></i>
-        <div class="content" id="custom-editor-{{idx}}" [textContent]="nodetext"
-             (input)="onEditInput(idx)" (focus)="onEditFocus(idx)" (blur)="onEditBlur(idx)"
-             (keydown.enter)="endEditEnterKeyDown($event)" contenteditable="true">
-        </div>
-      </div>
-    </div>
+    <p>
+      <span *ngFor="let slice of sentence.custom; let idx = index"
+            id="custom-slice-{{idx}}"
+            [textContent]="slice"
+            (input)="onEditInput(idx)"
+            (focus)="onEditFocus()"
+            (blur)="onEditBlur()"
+            (keydown.enter)="endEditEnterKeyDown(idx, $event)"
+            contenteditable="true"
+            class="{{(idx % 2) ? 'even-slice-color' : ''}}">
+      </span>
+    </p>
     <div class="ui small secondary menu">
       <a class="item" (click)="selectTranslation(-1)">
         <i class="{{getHeartIcon(-1)}}"></i> Like
@@ -22,8 +25,13 @@
     </div>
   </div>
   <!-- important: idx定义要用let，否则事件处理函数不能用它作为参数 -->
-  <div *ngFor="let refer of sentence.refers; let idx = index" class="ui vertical segment">
-    <p>{{refer.target_text}}</p>
+  <div *ngFor="let refer of sentence.refers" class="ui vertical segment">
+    <p>
+      <span *ngFor="let slice of getSliceTexts(refer); let idx = index"
+            class="{{(idx % 2) ? 'even-slice-color' : ''}}">
+        {{slice}}
+      </span>
+    </p>
     <div class="ui small secondary menu">
       <a class="item" (click)="selectTranslation(idx)">
         <i class="{{getHeartIcon(idx)}}"></i> Like
