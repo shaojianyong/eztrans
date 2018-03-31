@@ -363,12 +363,17 @@ export class MainComponent implements OnInit {
     }
   }
 
+  // 暂时不考虑引擎之间交叉引用，同义词...
   // 根据分片翻译，切分整体翻译，递归算法
   divideIntegratedTranslation(index: number, sentence: SentenceModel, refIdx: number, docId: string) {
     const refer = sentence.refers[refIdx];
     const entirety = refer.target.target_text;
     const slices = refer.slices;
     const divdes = refer.divides;
+
+    if (slices.length === 2) {
+
+    }
 
 
 
