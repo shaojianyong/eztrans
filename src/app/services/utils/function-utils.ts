@@ -84,10 +84,39 @@ export class FunctionUtils {
     return this.findOverlap2(a, b.substring(1));
   }
 
+  static findOverlap3(a: string, b: string): [number, number] {
+    if (b.length === 0) {
+      return null;
+    }
+    const index = a.lastIndexOf(b);
+    if (index >= 0) {
+      return [index, index + b.length];
+    }
+    return this.findOverlap3(a, b.substring(0, b.length - 1));
+  }
+
+  static findOverlap4(a: string, b: string): [number, number] {
+    if (b.length === 0) {
+      return null;
+    }
+    const index = a.lastIndexOf(b);
+    if (index >= 0) {
+      return [index, index + b.length];
+    }
+    return this.findOverlap4(a, b.substring(1));
+  }
+
   static findLongerOverlap(a: string, b: string): [number, number] {
     const pb = this.pruneSecondStr(a, b);
     const sub1 = this.findOverlap1(a, pb);
     const sub2 = this.findOverlap2(a, pb);
+    return (sub1[1] - sub1[0] >= sub2[1] - sub2[0]) ? sub1 : sub2;
+  }
+
+  static reverseFindLongerOverlap(a: string, b: string): [number, number] {
+    const pb = this.pruneSecondStr(a, b);
+    const sub1 = this.findOverlap3(a, pb);
+    const sub2 = this.findOverlap4(a, pb);
     return (sub1[1] - sub1[0] >= sub2[1] - sub2[0]) ? sub1 : sub2;
   }
 

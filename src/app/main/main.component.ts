@@ -364,7 +364,13 @@ export class MainComponent implements OnInit {
     const sliceStr = refer.slices[index].target_text;
     const oldBegPos = refer.divides[index];
     const oldEndPos = refer.divides[index + 1];
-    const intersection = FunctionUtils.findLongerOverlap(wholeStr, sliceStr);
+    console.log(`wholeStr: ${wholeStr}, sliceStr: ${sliceStr}, oldBegPos: ${oldBegPos}, oldEndPos: ${oldEndPos}`);
+    let intersection = null;
+    if (index <= refer.slices.length / 2) {
+      intersection = FunctionUtils.findLongerOverlap(wholeStr, sliceStr);
+    } else {
+      intersection = FunctionUtils.reverseFindLongerOverlap(wholeStr, sliceStr);
+    }
     if (intersection) {
       let newBegPos = intersection[0];
       let newEndPos = intersection[1];
@@ -418,10 +424,17 @@ export class MainComponent implements OnInit {
   getNextSlice(refer: VersionModel): number {
     let res = -1;
     for (let i = 0; i < refer.slices.length; ++i) {
-      if (refer.divides[i] && refer.divides[i] !== -1) {
-        if (res === -1 || refer.slices[i].target_text.length < refer.slices[res].target_text.length) {
-          res = i;
-        }
+      // 在这个位置切分失败了
+      if (refer.divides[i] === -1) {
+        continue;
+      }
+      // 已经切分过了，并且切分成功了
+      if (refer.divides[i] && (i + 1 >= refer.slices.length || (refer.divides[i + 1] && refer.divides[i + 1] !== -1))) {
+        continue;
+      }
+      // 优先按短片切分
+      if (res === -1 || refer.slices[i].target_text.length < refer.slices[res].target_text.length) {
+        res = i;
       }
     }
     return res;
@@ -435,6 +448,7 @@ export class MainComponent implements OnInit {
       return;
     }
 
+    let count = 0;
     let done = true;
     while (!this.isDivideComplete(refer)) {
       const index = this.getNextSlice(refer);
@@ -443,6 +457,7 @@ export class MainComponent implements OnInit {
         break;
       } else {
         this.oneSliceDivide(refer, index);
+        count++;
       }
     }
 
@@ -450,8 +465,6 @@ export class MainComponent implements OnInit {
       refer.divides[0] = 0;
       refer.divides[refer.slices.length] = refer.target.target_text.length;
     }
-    console.log('target----->', refer.target.target_text);
-    console.log('divides---->', refer.divides);
   }
 
   checkAllSliceStates(vm: VersionModel): boolean {
