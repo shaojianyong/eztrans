@@ -1,4 +1,4 @@
-export default [
+module.exports = [
   {value: 'auto', name: 'Automatic'},
   {value: 'af', name: 'Afrikaans'},
   {value: 'sq', name: 'Albanian'},

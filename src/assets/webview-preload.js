@@ -6,20 +6,44 @@ var selectedNode = null;
 var orgBackColor = null;
 
 
-function nodeUpdate(node, newData) {
-  if (node.nodeType === Node.TEXT_NODE) {
-    var trimmed = node.nodeValue.trim();
-    if (trimmed) {
-      var newVal = newData.texts[newData.index];
-      if (newVal !== null) {
-        node.nodeValue = node.nodeValue.replace(trimmed, newVal.trim());  // 保留首尾空白字符
+function matchMiniUnitPattern(node) {
+  var hasTextChildNode = false;
+  var hasThirdGenChild = false;
+  for (var i = 0; i < node.childNodes.length; ++i) {
+    const childNode = node.childNodes[i];
+    if (childNode.nodeType === Node.TEXT_NODE) {
+      if (childNode.nodeValue.trim()) {
+        hasTextChildNode = true;
       }
-      newData.index++;
+    } else {
+      if (childNode.childNodes.length > 1 || (childNode.childNodes.length
+          && childNode.childNodes[0].nodeType !== Node.TEXT_NODE)) {
+        hasThirdGenChild = true;
+      }
     }
   }
+  return (hasTextChildNode && !hasThirdGenChild);
+}
 
-  if (node.nodeType === Node.DOCUMENT_NODE || node.nodeType === Node.ELEMENT_NODE) {
-    if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
+function setNodeTexts(node, newData) {
+  for (var i = 0; i < node.childNodes.length; ++i) {
+    const childNode = node.childNodes[i];
+    if (childNode.nodeType === Node.TEXT_NODE) {
+      if (childNode.nodeValue.trim()) {
+        childNode.nodeValue = newData.texts[newData.index];
+        newData.index++;
+      }
+    } else {
+      setNodeTexts(childNode, newData);
+    }
+  }
+}
+
+function nodeUpdate(node, newData) {
+  if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
+    if (matchMiniUnitPattern(node)) {
+      setNodeTexts(node, newData);
+    } else {
       for (var i = 0; i < node.childNodes.length; ++i) {
         nodeUpdate(node.childNodes[i], newData);
       }
@@ -36,18 +60,14 @@ function htmlUpdate(transData) {
 }
 
 function seekNode(node, seekObj) {
-  if (node.nodeType === Node.TEXT_NODE) {
-    var trimmed = node.nodeValue.trim();
-    if (trimmed) {
+  if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
+    if (matchMiniUnitPattern(node)) {
       if (seekObj.idx++ === seekObj.tgt) {
         seekObj.obj = node;
         return;
       }
-    }
-  }
-
-  if (node.nodeType === Node.DOCUMENT_NODE || node.nodeType === Node.ELEMENT_NODE) {
-    if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
+      // seekObj.idx++;  WHY not working?
+    } else {
       for (var i = 0; i < node.childNodes.length; ++i) {
         seekNode(node.childNodes[i], seekObj);
       }
@@ -56,19 +76,15 @@ function seekNode(node, seekObj) {
 }
 
 function hitTest(node, hitObj) {
-  if (node.nodeType === Node.TEXT_NODE) {
-    var trimmed = node.nodeValue.trim();
-    if (trimmed) {
+  if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
+    if (matchMiniUnitPattern(node)) {
       if (hitObj.obj === node || hitObj.obj === node.parentNode) {
         hitObj.tgt = hitObj.idx;
+        hitObj.mue = node;
         return;
       }
       hitObj.idx++;
-    }
-  }
-
-  if (node.nodeType === Node.DOCUMENT_NODE || node.nodeType === Node.ELEMENT_NODE) {
-    if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
+    } else {
       for (var i = 0; i < node.childNodes.length; ++i) {
         hitTest(node.childNodes[i], hitObj);
       }
@@ -95,17 +111,12 @@ function scrollTo(nodeIndex) {
     obj: null
   };
   seekNode(document, seekObj);
-  var eleNode = seekObj.obj;
-  while (eleNode.nodeType !== Node.ELEMENT_NODE) {
-    eleNode = eleNode.parentNode;
-  }
-
   // stackoverflow.com/questions/178325/how-do-i-check-if-an-element-is-hidden-in-jquery
-  if ($(eleNode).is(":visible")) {
+  if ($(seekObj.obj).is(":visible")) {
     window.$('html, body').animate({
-      scrollTop: $(eleNode).offset().top - (document.body.clientHeight - eleNode.clientHeight) / 2  // 绝对(相对页面的)偏移量
+      scrollTop: $(seekObj.obj).offset().top - (document.body.clientHeight - seekObj.obj.clientHeight) / 2  // 绝对(相对页面的)偏移量
     }, 200);
-    selectNode(eleNode);
+    selectNode(seekObj.obj);
   }
 }
 
@@ -141,16 +152,13 @@ document.addEventListener('click', function (event) {
   var hitObj = {
     idx: 0,
     tgt: -1,
-    obj: target
+    obj: target,
+    mue: null  // Mini-Unit Element
   };
-  hitTest(document, hitObj);
 
+  hitTest(document, hitObj);
   if (hitObj.tgt !== -1) {
-    var eleNode = hitObj.obj;
-    while (eleNode.nodeType !== Node.ELEMENT_NODE) {
-      eleNode = eleNode.parentNode;
-    }
-    selectNode(eleNode);
+    selectNode(hitObj.mue);
     ipc.sendToHost('hit-item', hitObj.tgt);
   }
 });
