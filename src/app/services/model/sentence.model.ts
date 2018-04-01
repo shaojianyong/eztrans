@@ -30,6 +30,7 @@ export class SentenceModel {
   marked: boolean;  // 翻译完成标记
   custom: Array<string>;  // 自定义翻译
   refers: Array<VersionModel>;
+  inhtml: string;
 
   constructor(obj?: any) {
     this.source = obj && obj.source || [];
@@ -38,5 +39,6 @@ export class SentenceModel {
     this.marked = obj && obj.marked || false;
     this.custom = obj && obj.custom || [];
     this.refers = obj && obj.refers || [];
+    this.inhtml = obj && obj.inhtml || '';
   }
 }

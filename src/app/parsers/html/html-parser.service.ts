@@ -86,11 +86,12 @@ export class HtmlParserService extends ParserService {
   traverseR(node: Node, observer): void {
     if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
       if (this.matchMiniUnitPattern(node)) {
-        const nodeTexts = [];
-        this.getNodeTexts(node, nodeTexts);
-        observer.next({
-          source: nodeTexts
-        });
+        const mue = {source: []};
+        this.getNodeTexts(node, mue.source);
+        if (mue.source.length > 1) {
+          mue['inhtml'] = (<any>node).innerHTML;
+        }
+        observer.next(mue);
       } else {
         for (let i = 0; i < node.childNodes.length; ++i) {
           this.traverseR(node.childNodes[i], observer);
