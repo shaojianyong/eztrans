@@ -120,13 +120,9 @@ export class MainComponent implements OnInit {
           const refer = sentence.refers[sentence.target];
           if (sentence.source.length === 1) {
             segments.push(refer.target.target_text);
-          } else if (refer.divides.length) {
+          } else if (refer.divides.length === sentence.source.length + 1) {
             for (let i = 0; i < sentence.source.length; ++i) {
-              if (i + 1 < sentence.source.length) {
-                segments.push(refer.target.target_text.substring(refer.divides[i], refer.divides[i + 1]));
-              } else {
-                segments.push(refer.target.target_text.substring(refer.divides[i]));
-              }
+              segments.push(refer.target.target_text.substring(refer.divides[i], refer.divides[i + 1]));
             }
           } else {
             for (const slice of refer.slices) {
@@ -340,7 +336,7 @@ export class MainComponent implements OnInit {
                   sentence.target = refIdx;
                 }
               }
-              this.divideIntegratedTranslation(index, sentence, refIdx, docId);
+              this.divideIntegratedTranslation(refer);
               if (sentence.target === refIdx && res.doc_id === docId) {
                 this.updatePreview();
               }
@@ -363,20 +359,99 @@ export class MainComponent implements OnInit {
     }
   }
 
+  oneSliceDivide(refer: VersionModel, index: number): void {
+    const wholeStr = refer.target.target_text;
+    const sliceStr = refer.slices[index].target_text;
+    const oldBegPos = refer.divides[index];
+    const oldEndPos = refer.divides[index + 1];
+    const intersection = FunctionUtils.findLongerOverlap(wholeStr, sliceStr);
+    if (intersection) {
+      let newBegPos = intersection[0];
+      let newEndPos = intersection[1];
+
+      let prevPos = null;
+      if (index > 0) {
+        prevPos = refer.divides[index - 1];
+      }
+      let nextPos = null;
+      if (index + 2 < refer.divides.length) {
+        nextPos = refer.divides[index + 2];
+      }
+
+      // 避免交叉重叠
+      if (index === 0) {
+        newBegPos = 0;
+      } else if (oldBegPos && oldBegPos !== -1) {
+        newBegPos = oldBegPos;
+      } else if (prevPos && newBegPos < prevPos) {
+        newBegPos = prevPos + 1;
+      }
+
+      if (oldEndPos && oldEndPos !== -1) {
+        newEndPos = oldEndPos;
+      } else if (nextPos && newEndPos > nextPos) {
+        newEndPos = nextPos - 1;
+      }
+
+      refer.divides[index] = newBegPos;
+      if (index + 1 !== refer.slices.length) {
+        refer.divides[index + 1] = newEndPos;  // 确认标记：分片完成后才添加
+      }
+    } else {
+      if (!oldBegPos) {
+        refer.divides[index] = -1;
+      }
+    }
+  }
+
+  isDivideComplete(refer: VersionModel): boolean {
+    let res = true;
+    for (let i = 1; i < refer.slices.length; ++i) {
+      if (!refer.divides[i] || refer.divides[i] === -1) {
+        res = false;
+        break;
+      }
+    }
+    return res;
+  }
+
+  getNextSlice(refer: VersionModel): number {
+    let res = -1;
+    for (let i = 0; i < refer.slices.length; ++i) {
+      if (refer.divides[i] && refer.divides[i] !== -1) {
+        if (res === -1 || refer.slices[i].target_text.length < refer.slices[res].target_text.length) {
+          res = i;
+        }
+      }
+    }
+    return res;
+  }
+
   // 暂时不考虑引擎之间交叉引用，同义词...
   // 根据分片翻译，切分整体翻译，递归算法
-  divideIntegratedTranslation(index: number, sentence: SentenceModel, refIdx: number, docId: string) {
-    const refer = sentence.refers[refIdx];
-    const entirety = refer.target.target_text;
-    const slices = refer.slices;
-    const divdes = refer.divides;
-
-    if (slices.length === 2) {
-
+  // 按分片大小顺序切割，直到切分完成
+  divideIntegratedTranslation(refer: VersionModel): void {
+    if (refer.target.target_text.length < refer.slices.length) {
+      return;
     }
 
+    let done = true;
+    while (!this.isDivideComplete(refer)) {
+      const index = this.getNextSlice(refer);
+      if (index === -1) {
+        done = false;
+        break;
+      } else {
+        this.oneSliceDivide(refer, index);
+      }
+    }
 
-
+    if (done) {
+      refer.divides[0] = 0;
+      refer.divides[refer.slices.length] = refer.target.target_text.length;
+    }
+    console.log('target----->', refer.target.target_text);
+    console.log('divides---->', refer.divides);
   }
 
   checkAllSliceStates(vm: VersionModel): boolean {
@@ -563,7 +638,7 @@ export class MainComponent implements OnInit {
       const refer = sentence.refers[sentence.target];
       if (sentence.source.length === 1) {
         target_text = refer.target.target_text;
-      } else if (refer.divides.length) {
+      } else if (refer.divides.length === sentence.source.length + 1) {
         target_text = refer.target.target_text;
       } else {
         const texts = [];

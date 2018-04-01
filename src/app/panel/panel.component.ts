@@ -27,13 +27,9 @@ export class PanelComponent implements OnInit {
     const res = [];
     if (this.sentence.source.length === 1) {
       res[0] = refer.target.target_text;
-    } else if (refer.divides.length) {
+    } else if (refer.divides.length === this.sentence.source.length + 1) {
       for (let i = 0; i < this.sentence.source.length; ++i) {
-        if (i + 1 < this.sentence.source.length) {
-          res.push(refer.target.target_text.substring(refer.divides[i], refer.divides[i + 1]));
-        } else {
-          res.push(refer.target.target_text.substring(refer.divides[i]));
-        }
+        res.push(refer.target.target_text.substring(refer.divides[i], refer.divides[i + 1]));
       }
     } else {
       for (const slice of refer.slices) {
@@ -60,13 +56,9 @@ export class PanelComponent implements OnInit {
     const orig = this.sentence.refers[refer_index];
     if (this.sentence.source.length === 1) {
       this.sentence.custom[0] = orig.target.target_text;
-    } else if (orig.divides.length) {
+    } else if (orig.divides.length === this.sentence.source.length + 1) {
       for (let i = 0; i < this.sentence.source.length; ++i) {
-        if (i + 1 < this.sentence.source.length) {
-          this.sentence.custom[i] = orig.target.target_text.substring(orig.divides[i], orig.divides[i + 1]);
-        } else {
-          this.sentence.custom[i] = orig.target.target_text.substring(orig.divides[i]);
-        }
+        this.sentence.custom[i] = orig.target.target_text.substring(orig.divides[i], orig.divides[i + 1]);
       }
     } else {
       for (let i = 0; i < orig.slices.length; ++i) {

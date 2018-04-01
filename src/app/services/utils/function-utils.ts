@@ -62,37 +62,33 @@ export class FunctionUtils {
     return str2.substring(fr, to);
   }
 
-  static findOverlap1(a: string, b: string): string {
+  static findOverlap1(a: string, b: string): [number, number] {
     if (b.length === 0) {
-      return '';
+      return null;
     }
-    if (a.endsWith(b)) {
-      return b;
-    }
-    if (a.indexOf(b) >= 0) {
-      return b;
+    const index = a.indexOf(b);
+    if (index >= 0) {
+      return [index, index + b.length];
     }
     return this.findOverlap1(a, b.substring(0, b.length - 1));
   }
 
-  static findOverlap2(a: string, b: string): string {
+  static findOverlap2(a: string, b: string): [number, number] {
     if (b.length === 0) {
-      return '';
+      return null;
     }
-    if (a.startsWith(b)) {
-      return b;
-    }
-    if (a.indexOf(b) >= 0) {
-      return b;
+    const index = a.indexOf(b);
+    if (index >= 0) {
+      return [index, index + b.length];
     }
     return this.findOverlap2(a, b.substring(1));
   }
 
-  static findLongerOverlap(a: string, b: string): string {
+  static findLongerOverlap(a: string, b: string): [number, number] {
     const pb = this.pruneSecondStr(a, b);
     const sub1 = this.findOverlap1(a, pb);
     const sub2 = this.findOverlap2(a, pb);
-    return (sub1.length >= sub2.length) ? sub1 : sub2;
+    return (sub1[1] - sub1[0] >= sub2[1] - sub2[0]) ? sub1 : sub2;
   }
 
   // stackoverflow.com/questions/951021/what-is-the-javascript-version-of-sleep

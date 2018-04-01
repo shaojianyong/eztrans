@@ -12,7 +12,7 @@ export class VersionModel {
   engine: string;  // 翻译引擎
   target: TranslateModel;  // 译本，整体翻译结果
   slices: Array<TranslateModel>;  // 分片翻译结果，译本切分依据
-  divides: Array<number>;  // 译本切分，例如：0，6，9
+  divides: Array<number>;  // 译本切分，长度为N+1：0,...target.target_text.length
 
   constructor(obj?: any) {
     this.engine = obj && obj.engine || 'Google';
