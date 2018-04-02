@@ -94,7 +94,7 @@
             </div>
           </td>
           <!-- https://stackoverflow.com/questions/31548311/angular-html-binding -->
-          <td class="{{isTargetVisible(idx) ? 'source-cell' : 'source-alone'}}" [innerHTML]="getSourceHtml(idx)">
+          <td [ngClass]="isTargetVisible(idx) ? 'source-cell' : 'source-alone'" [innerHTML]="getSourceHtml(idx)">
           </td>
           <td class="collapsing">
             <div class="trans-flag-icon" (click)="onClickSourceRight(idx)">
