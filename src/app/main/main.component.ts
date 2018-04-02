@@ -679,7 +679,7 @@ export class MainComponent implements OnInit {
     const tgtTexts = this.getTgtSliceTexts(index);
 
     if (tgtTexts.length === 1) {
-      return `<span contenteditable="true">${tgtTexts[0]}</span>`;
+      return tgtTexts[0];
     }
 
     const frag = JSDOM.fragment(sentence.elhtml);
