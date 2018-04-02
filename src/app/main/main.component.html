@@ -83,7 +83,8 @@
     <div *ngFor="let idx of getPageRange()" id="item-{{idx}}"
          (click)="onItemClick(idx)"
          (contextmenu)="onItemContextMenu(idx)"
-         class="item {{idx === cur_index ? 'selected_sentence' : ''}}">
+         [class.selected-sentence]="idx === cur_index"
+         class="item">
       <table id="table-{{idx}}" class="ui very basic compact table">
         <tbody>
         <tr>
