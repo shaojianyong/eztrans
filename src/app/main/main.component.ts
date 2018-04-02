@@ -633,7 +633,7 @@ export class MainComponent implements OnInit {
 
   getSourceHtml(index: number): string {
     const sentence = this.child_home.cur_doc.sentences[index];
-    return (sentence.source.length > 1) ? sentence.inhtml : sentence.source[0];
+    return (sentence.source.length > 1) ? (<any>sentence.htnode).innerHTML : sentence.source[0];
   }
 
   getTargetText(index: number): string {
@@ -1073,7 +1073,7 @@ export class MainComponent implements OnInit {
           srcText = srcText.replace(/\r\n|\n/g, ' ');
           srcText = srcText.replace(/\s{2,}/g, ' ').trim();*/
 
-          const sentence = new SentenceModel({ source: res.source, inhtml: res.inhtml });
+          const sentence = new SentenceModel({ source: res.source, htnode: res.htnode });
           if (docId in self.child_home.cache_docs) {
             const doc = self.child_home.cache_docs[docId];
             doc.sentences.push(sentence);

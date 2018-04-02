@@ -89,7 +89,7 @@ export class HtmlParserService extends ParserService {
         const mue = {source: []};
         this.getNodeTexts(node, mue.source);
         if (mue.source.length > 1) {
-          mue['inhtml'] = (<any>node).innerHTML;
+          mue['htnode'] = node;
         }
         observer.next(mue);
       } else {
