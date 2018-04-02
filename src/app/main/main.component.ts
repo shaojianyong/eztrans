@@ -1039,6 +1039,27 @@ export class MainComponent implements OnInit {
     $('#trans-list').unhighlight();
   }
 
+  onSliceEditInput(sliceinput: HTMLInputElement, index: number, slieceNo: number): void {
+
+  }
+
+  onSliceEditFocus(index: number): void {
+    if (this.search_text) {
+      $(`#table-${index}>tbody>tr>td.target-cell`).unhighlight();
+    }
+  }
+
+  onSliceEditBlur(index: number): void {
+    if (this.search_text) {
+      $(`#table-${index}>tbody>tr>td.target-cell`).highlight(this.search_text);
+    }
+  }
+
+  endSliceEditEnterKeyDown(sliceinput: HTMLInputElement, event: KeyboardEvent): void {
+    sliceinput.blur();
+    event.preventDefault();
+  }
+
   isTargetVisible(index: number): boolean {
     const sentence = this.child_home.cur_doc.sentences[index];
     return (sentence.target !== -2 && !sentence.ignore);

@@ -111,7 +111,13 @@
           <td *ngIf="idx === cur_index && !child_home.cur_doc.sentences[idx].marked" class="target-cell">
             <span *ngFor="let slice of getTgtSliceTexts(idx); let sno = index"
                   [class.element-slice-color]="!isSliceTextNode(idx, sno)"
-                  [textContent]="slice" contenteditable="true">
+                  [textContent]="slice"
+                  contenteditable="true"
+                  #sliceinput
+                  (input)="onSliceEditInput(sliceinput, idx, sno)"
+                  (focus)="onSliceEditFocus(idx)"
+                  (blur)="onSliceEditBlur(idx)"
+                  (keydown.enter)="endSliceEditEnterKeyDown(sliceinput, $event)">
             </span>
           </td>
           <td *ngIf="idx !== cur_index || child_home.cur_doc.sentences[idx].marked" class="target-cell"
