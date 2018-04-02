@@ -642,28 +642,32 @@ export class MainComponent implements OnInit {
     return frag.firstChild.innerHTML;
   }
 
-  getTargetTexts(index: number): string {
+  getTargetText(index: number): string {
+    if (!this.isTargetVisible(index)) {
+      return '';
+    }
+    return this.getTgtSliceTexts(index).join(' ');
+  }
+
+  getTgtSliceTexts(index: number): Array<string> {
     const sentence = this.child_home.cur_doc.sentences[index];
-    if (sentence.ignore) {
-      return null;
+    if (sentence.target === -1) {
+      return sentence.custom;
     }
 
-    let tgtTexts = null;
-    if (sentence.target === -2) {
-      tgtTexts = null;
-    } else if (sentence.target === -1) {
-      tgtTexts = sentence.custom;
+    const refer = sentence.refers[sentence.target];
+    if (sentence.source.length === 1) {
+      return [refer.target.target_text];
+    }
+
+    const tgtTexts = [];
+    if (refer.divides.length === sentence.source.length + 1) {
+      for (let i = 0; i < sentence.source.length; ++i) {
+        tgtTexts.push(refer.target.target_text.substring(refer.divides[i], refer.divides[i + 1]));
+      }
     } else {
-      const refer = sentence.refers[sentence.target];
-      if (sentence.source.length === 1) {
-        tgtTexts = [refer.target.target_text];
-      } else if (refer.divides.length === sentence.source.length + 1) {
-        tgtTexts = [refer.target.target_text];  // TODO: 记录每个分片...
-      } else {
-        tgtTexts = [];
-        for (const slice of refer.slices) {
-          tgtTexts.push(slice.target_text);
-        }
+      for (const slice of refer.slices) {
+        tgtTexts.push(slice.target_text);
       }
     }
     return tgtTexts;
@@ -691,13 +695,11 @@ export class MainComponent implements OnInit {
     }
 
     const frag = JSDOM.fragment(sentence.elhtml);
-
-
     const newData = {
-      texts: sliceTexts,
+      texts: this.getTgtSliceTexts(index),
       index: 0
     };
-
+    this.setNodeTexts(frag.firstChild, newData);
     return frag.firstChild.innerHTML;
   }
 

@@ -67,7 +67,7 @@ export class PanelComponent implements OnInit {
       index: 0
     };
     const frag = JSDOM.fragment(this.sentence.elhtml);
-    this.setNodeTexts(frag, newData);
+    this.setNodeTexts(frag.firstChild, newData);
     return frag.firstChild.innerHTML;
   }
 
