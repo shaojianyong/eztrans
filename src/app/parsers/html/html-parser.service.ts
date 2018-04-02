@@ -5,6 +5,33 @@ import { ParserService } from '../base/parser.service';
 
 const SKIP_ELEMENTS = ['style', 'script', 'pre', 'code', 'noscript'];
 
+export function getNodeTexts(node: any, nodeTexts: Array<string>): void {
+  for (let i = 0; i < node.childNodes.length; ++i) {
+    const childNode = node.childNodes[i];
+    if (childNode.nodeType === Node.TEXT_NODE) {
+      if (childNode.nodeValue.trim()) {
+        nodeTexts.push(childNode.nodeValue);
+      }
+    } else {
+      getNodeTexts(childNode, nodeTexts);
+    }
+  }
+}
+
+export function setNodeTexts(node: any, newData: any): void {
+  for (let i = 0; i < node.childNodes.length; ++i) {
+    const childNode = node.childNodes[i];
+    if (childNode.nodeType === Node.TEXT_NODE) {
+      if (childNode.nodeValue.trim()) {
+        childNode.nodeValue = newData.texts[newData.index];
+        newData.index++;
+      }
+    } else {
+      setNodeTexts(childNode, newData);
+    }
+  }
+}
+
 @Injectable()
 export class HtmlParserService extends ParserService {
   dom: any;
@@ -56,38 +83,11 @@ export class HtmlParserService extends ParserService {
     return (hasTextChildNode && !hasThirdGenChild);
   }
 
-  getNodeTexts(node: any, nodeTexts: Array<string>): void {
-    for (let i = 0; i < node.childNodes.length; ++i) {
-      const childNode = node.childNodes[i];
-      if (childNode.nodeType === Node.TEXT_NODE) {
-        if (childNode.nodeValue.trim()) {
-          nodeTexts.push(childNode.nodeValue);
-        }
-      } else {
-        this.getNodeTexts(childNode, nodeTexts);
-      }
-    }
-  }
-
-  setNodeTexts(node: any, newData: any): void {
-    for (let i = 0; i < node.childNodes.length; ++i) {
-      const childNode = node.childNodes[i];
-      if (childNode.nodeType === Node.TEXT_NODE) {
-        if (childNode.nodeValue.trim()) {
-          childNode.nodeValue = newData.texts[newData.index];
-          newData.index++;
-        }
-      } else {
-        this.setNodeTexts(childNode, newData);
-      }
-    }
-  }
-
   traverseR(node: Node, observer): void {
     if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
       if (this.matchMiniUnitPattern(node)) {
         const mue = {source: []};
-        this.getNodeTexts(node, mue.source);
+        getNodeTexts(node, mue.source);
         if (mue.source.length > 1) {
           mue['elhtml'] = (<any>node).outerHTML;
         }
@@ -103,7 +103,7 @@ export class HtmlParserService extends ParserService {
   traverseW(node: Node, newData: any): void {
     if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
       if (this.matchMiniUnitPattern(node)) {
-        this.setNodeTexts(node, newData);
+        setNodeTexts(node, newData);
       } else {
         for (let i = 0; i < node.childNodes.length; ++i) {
           this.traverseW(node.childNodes[i], newData);

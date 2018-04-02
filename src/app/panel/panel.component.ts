@@ -4,6 +4,7 @@ const { JSDOM } = (<any>window).require('jsdom');
 import { VersionModel, SentenceModel } from '../services/model/sentence.model';
 import { TranslateModel } from '../services/model/translate.model';
 import {EngineManagerService} from '../providers/manager/engine-manager.service';
+import {setNodeTexts} from '../parsers/html/html-parser.service';
 import {FunctionUtils} from '../services/utils/function-utils';
 import engines from '../providers/manager/engines';
 
@@ -40,21 +41,6 @@ export class PanelComponent implements OnInit {
     return res;
   }
 
-  // TODO: 这个函数拷贝自html-parser.service.ts，考虑提升为公共函数
-  setNodeTexts(node: any, newData: any): void {
-    for (let i = 0; i < node.childNodes.length; ++i) {
-      const childNode = node.childNodes[i];
-      if (childNode.nodeType === Node.TEXT_NODE) {
-        if (childNode.nodeValue.trim()) {
-          childNode.nodeValue = newData.texts[newData.index];
-          newData.index++;
-        }
-      } else {
-        this.setNodeTexts(childNode, newData);
-      }
-    }
-  }
-
   // deep copy: stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-deep-clone-an-object-in-javascript
   getTargetHtml(refer: VersionModel): string {
     const sliceTexts = this.getSliceTexts(refer);
@@ -67,7 +53,7 @@ export class PanelComponent implements OnInit {
       index: 0
     };
     const frag = JSDOM.fragment(this.sentence.elhtml);
-    this.setNodeTexts(frag.firstChild, newData);
+    setNodeTexts(frag.firstChild, newData);
     return frag.firstChild.innerHTML;
   }
 

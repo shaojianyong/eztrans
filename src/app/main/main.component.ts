@@ -16,6 +16,7 @@ import {AboutComponent} from '../about/about.component';
 import {SettingsComponent} from '../settings/settings.component';
 import {StatisticsModel} from '../services/model/statistics.model';
 import {OpenComponent} from '../open/open.component';
+import {setNodeTexts} from '../parsers/html/html-parser.service';
 
 
 @Component({
@@ -673,21 +674,6 @@ export class MainComponent implements OnInit {
     return tgtTexts;
   }
 
-  // TODO: 这个函数拷贝自html-parser.service.ts，考虑提升为公共函数
-  setNodeTexts(node: any, newData: any): void {
-    for (let i = 0; i < node.childNodes.length; ++i) {
-      const childNode = node.childNodes[i];
-      if (childNode.nodeType === Node.TEXT_NODE) {
-        if (childNode.nodeValue.trim()) {
-          childNode.nodeValue = newData.texts[newData.index];
-          newData.index++;
-        }
-      } else {
-        this.setNodeTexts(childNode, newData);
-      }
-    }
-  }
-
   getTargetHtml(index: number): string {
     const sentence = this.child_home.cur_doc.sentences[index];
     if (sentence.source.length === 1) {
@@ -699,7 +685,7 @@ export class MainComponent implements OnInit {
       texts: this.getTgtSliceTexts(index),
       index: 0
     };
-    this.setNodeTexts(frag.firstChild, newData);
+    setNodeTexts(frag.firstChild, newData);
     return frag.firstChild.innerHTML;
   }
 
