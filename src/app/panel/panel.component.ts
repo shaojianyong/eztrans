@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 const { shell, ipcRenderer } = (<any>window).require('electron');
+const { JSDOM } = (<any>window).require('jsdom');
 import { VersionModel, SentenceModel } from '../services/model/sentence.model';
 import { TranslateModel } from '../services/model/translate.model';
 import {EngineManagerService} from '../providers/manager/engine-manager.service';
@@ -65,9 +66,9 @@ export class PanelComponent implements OnInit {
       texts: sliceTexts,
       index: 0
     };
-    const cloneNode = JSON.parse(JSON.stringify(this.sentence.htnode));
-    this.setNodeTexts(cloneNode, newData);
-    return (<any>cloneNode).innerHTML;
+    const frag = JSDOM.fragment(this.sentence.elhtml);
+    this.setNodeTexts(frag, newData);
+    return frag.firstChild.innerHTML;
   }
 
   selectTranslation(refer_index: number): void {

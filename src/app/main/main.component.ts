@@ -3,6 +3,7 @@ import {Title} from '@angular/platform-browser';
 
 const {ipcRenderer, remote} = (<any>window).require('electron');
 const {dialog, Menu, MenuItem} = remote;
+const { JSDOM } = (<any>window).require('jsdom');
 
 import {ExLinksModule} from '../services/utils/ex-links.module';
 import { FunctionUtils } from '../services/utils/function-utils';
@@ -633,7 +634,12 @@ export class MainComponent implements OnInit {
 
   getSourceHtml(index: number): string {
     const sentence = this.child_home.cur_doc.sentences[index];
-    return (sentence.source.length > 1) ? (<any>sentence.htnode).innerHTML : sentence.source[0];
+    if (sentence.source.length === 1) {
+      return sentence.source[0];
+    }
+
+    const frag = JSDOM.fragment(sentence.elhtml);
+    return frag.firstChild.innerHTML;
   }
 
   getTargetText(index: number): string {
@@ -1073,7 +1079,7 @@ export class MainComponent implements OnInit {
           srcText = srcText.replace(/\r\n|\n/g, ' ');
           srcText = srcText.replace(/\s{2,}/g, ' ').trim();*/
 
-          const sentence = new SentenceModel({ source: res.source, htnode: res.htnode });
+          const sentence = new SentenceModel({ source: res.source, elhtml: res.elhtml });
           if (docId in self.child_home.cache_docs) {
             const doc = self.child_home.cache_docs[docId];
             doc.sentences.push(sentence);

@@ -89,7 +89,7 @@ export class HtmlParserService extends ParserService {
         const mue = {source: []};
         this.getNodeTexts(node, mue.source);
         if (mue.source.length > 1) {
-          mue['htnode'] = node;
+          mue['elhtml'] = (<any>node).outerHTML;
         }
         observer.next(mue);
       } else {
