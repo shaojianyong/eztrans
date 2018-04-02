@@ -642,32 +642,63 @@ export class MainComponent implements OnInit {
     return frag.firstChild.innerHTML;
   }
 
-  getTargetText(index: number): string {
+  getTargetTexts(index: number): string {
     const sentence = this.child_home.cur_doc.sentences[index];
     if (sentence.ignore) {
-      return '';
+      return null;
     }
 
-    let target_text = '';
+    let tgtTexts = null;
     if (sentence.target === -2) {
-      target_text = '';
+      tgtTexts = null;
     } else if (sentence.target === -1) {
-      target_text = sentence.custom.join(' ');
+      tgtTexts = sentence.custom;
     } else {
       const refer = sentence.refers[sentence.target];
       if (sentence.source.length === 1) {
-        target_text = refer.target.target_text;
+        tgtTexts = [refer.target.target_text];
       } else if (refer.divides.length === sentence.source.length + 1) {
-        target_text = refer.target.target_text;
+        tgtTexts = [refer.target.target_text];  // TODO: 记录每个分片...
       } else {
-        const texts = [];
+        tgtTexts = [];
         for (const slice of refer.slices) {
-          texts.push(slice.target_text);
+          tgtTexts.push(slice.target_text);
         }
-        target_text = texts.join(' ');
       }
     }
-    return target_text;
+    return tgtTexts;
+  }
+
+  // TODO: 这个函数拷贝自html-parser.service.ts，考虑提升为公共函数
+  setNodeTexts(node: any, newData: any): void {
+    for (let i = 0; i < node.childNodes.length; ++i) {
+      const childNode = node.childNodes[i];
+      if (childNode.nodeType === Node.TEXT_NODE) {
+        if (childNode.nodeValue.trim()) {
+          childNode.nodeValue = newData.texts[newData.index];
+          newData.index++;
+        }
+      } else {
+        this.setNodeTexts(childNode, newData);
+      }
+    }
+  }
+
+  getTargetHtml(index: number): string {
+    const sentence = this.child_home.cur_doc.sentences[index];
+    if (sentence.source.length === 1) {
+      return `<span>`;
+    }
+
+    const frag = JSDOM.fragment(sentence.elhtml);
+
+
+    const newData = {
+      texts: sliceTexts,
+      index: 0
+    };
+
+    return frag.firstChild.innerHTML;
   }
 
   getPageCount(): number {

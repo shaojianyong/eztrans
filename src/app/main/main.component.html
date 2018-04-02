@@ -107,8 +107,7 @@
               <i class="{{getTargetLeftIcon(idx)}}"></i>
             </div>
           </td>
-          <td class="target-cell">
-            {{getTargetText(idx)}}
+          <td class="target-cell" [innerHTML]="getTargetHtml(idx)">
           </td>
           <td class="collapsing">
             <div class="trans-flag-icon" (click)="onClickTargetRight(idx)">
