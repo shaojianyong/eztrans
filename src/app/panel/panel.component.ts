@@ -39,6 +39,37 @@ export class PanelComponent implements OnInit {
     return res;
   }
 
+  // TODO: 这个函数拷贝自html-parser.service.ts，考虑提升为公共函数
+  setNodeTexts(node: any, newData: any): void {
+    for (let i = 0; i < node.childNodes.length; ++i) {
+      const childNode = node.childNodes[i];
+      if (childNode.nodeType === Node.TEXT_NODE) {
+        if (childNode.nodeValue.trim()) {
+          childNode.nodeValue = newData.texts[newData.index];
+          newData.index++;
+        }
+      } else {
+        this.setNodeTexts(childNode, newData);
+      }
+    }
+  }
+
+  // deep copy: stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-deep-clone-an-object-in-javascript
+  getTargetHtml(refer: VersionModel): string {
+    const sliceTexts = this.getSliceTexts(refer);
+    if (sliceTexts.length === 1) {
+      return sliceTexts[0];
+    }
+
+    const newData = {
+      texts: sliceTexts,
+      index: 0
+    };
+    const cloneNode = JSON.parse(JSON.stringify(this.sentence.htnode));
+    this.setNodeTexts(cloneNode, newData);
+    return (<any>cloneNode).innerHTML;
+  }
+
   selectTranslation(refer_index: number): void {
     if (this.sentence.target === refer_index) {
       return;

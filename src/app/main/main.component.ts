@@ -364,7 +364,7 @@ export class MainComponent implements OnInit {
     const sliceStr = refer.slices[index].target_text;
     const oldBegPos = refer.divides[index];
     const oldEndPos = refer.divides[index + 1];
-    console.log(`wholeStr: ${wholeStr}, sliceStr: ${sliceStr}, oldBegPos: ${oldBegPos}, oldEndPos: ${oldEndPos}`);
+
     let intersection = null;
     if (index <= refer.slices.length / 2) {
       intersection = FunctionUtils.findLongerOverlap(wholeStr, sliceStr);

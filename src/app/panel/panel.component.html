@@ -26,11 +26,7 @@
   </div>
   <!-- important: idx定义要用let，否则事件处理函数不能用它作为参数 -->
   <div *ngFor="let refer of sentence.refers; let idx = index" class="ui vertical segment">
-    <p>
-      <span *ngFor="let slice of getSliceTexts(refer); let sno = index"
-            class="{{(sno % 2) ? 'even-slice-color' : ''}}">
-        {{slice}}
-      </span>
+    <p [innerHTML]="getTargetHtml(refer)">
     </p>
     <div class="ui small secondary menu">
       <a class="item" (click)="selectTranslation(idx)">
