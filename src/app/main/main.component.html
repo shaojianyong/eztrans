@@ -107,7 +107,13 @@
               <i class="{{getTargetLeftIcon(idx)}}"></i>
             </div>
           </td>
-          <td class="target-cell" [innerHTML]="getTargetHtml(idx)">
+          <td *ngIf="idx === cur_index" class="target-cell">
+            <span *ngFor="let slice of getTgtSliceTexts(idx); let sno = index"
+                  [class.element-slice-color]="!isSliceTextNode(idx, sno)"
+                  [textContent]="slice" contenteditable="true">
+            </span>
+          </td>
+          <td *ngIf="idx !== cur_index" class="target-cell" [innerHTML]="getTargetHtml(idx)">
           </td>
           <td class="collapsing">
             <div class="trans-flag-icon" (click)="onClickTargetRight(idx)">

@@ -676,17 +676,29 @@ export class MainComponent implements OnInit {
 
   getTargetHtml(index: number): string {
     const sentence = this.child_home.cur_doc.sentences[index];
-    if (sentence.source.length === 1) {
-      return `<span>`;
+    const tgtTexts = this.getTgtSliceTexts(index);
+
+    if (tgtTexts.length === 1) {
+      return `<span contenteditable="true">${tgtTexts[0]}</span>`;
     }
 
     const frag = JSDOM.fragment(sentence.elhtml);
     const newData = {
-      texts: this.getTgtSliceTexts(index),
+      texts: tgtTexts,
       index: 0
     };
     setNodeTexts(frag.firstChild, newData);
     return frag.firstChild.innerHTML;
+  }
+
+  // 根据是否为TEXT_NODE节点设定对应的span背景色
+  isSliceTextNode(index: number, slice: number): boolean {
+    const sentence = this.child_home.cur_doc.sentences[index];
+    if (sentence.source.length === 1) {
+      return true;
+    }
+    const frag = JSDOM.fragment(sentence.elhtml);
+    return (frag.firstChild.childNodes[slice].nodeType === Node.TEXT_NODE);
   }
 
   getPageCount(): number {
