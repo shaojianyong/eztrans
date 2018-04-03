@@ -1039,13 +1039,13 @@ export class MainComponent implements OnInit {
     $('#trans-list').unhighlight();
   }
 
-  onSliceEditInput(sliceInput: HTMLInputElement, index: number, slieceNo: number): void {
+  onSliceEditInput(sliceSpan: HTMLSpanElement, index: number, slieceNo: number): void {
     const sentence = this.child_home.cur_doc.sentences[index];
     if (sentence.target !== -1) {
       sentence.custom = this.getTgtSliceTexts(index);
       sentence.target = -1;
     }
-    sentence.custom[slieceNo] = sliceInput.value;
+    sentence.custom[slieceNo] = sliceSpan.textContent;
     this.forceRerender({forceShowSelected: true});
     this.updatePreview();
   }
@@ -1062,8 +1062,8 @@ export class MainComponent implements OnInit {
     }
   }
 
-  endSliceEditEnterKeyDown(sliceinput: HTMLInputElement, event: KeyboardEvent): void {
-    sliceinput.blur();
+  endSliceEditEnterKeyDown(sliceSpan: HTMLInputElement, event: KeyboardEvent): void {
+    sliceSpan.blur();
     event.preventDefault();
   }
 
