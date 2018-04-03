@@ -1,6 +1,6 @@
 <div id="panel-container" *ngIf="sentence && sentence.target !== -2 && !sentence.ignore" class="ui container">
   <div *ngIf="sentence.custom.length" class="ui vertical segment">
-    <p id="custom-trans-view" [innerHTML]="getCustomHtml()">
+    <p id="custom-trans-view" [innerHTML]="getCustomHtml()" (click)="disableDocLink($event)">
     </p>
     <div class="ui small secondary menu">
       <a class="item" (click)="selectTranslation(-1)">
@@ -16,7 +16,7 @@
   </div>
   <!-- important: idx定义要用let，否则事件处理函数不能用它作为参数 -->
   <div *ngFor="let refer of sentence.refers; let idx = index" class="ui vertical segment">
-    <p [innerHTML]="getTargetHtml(refer)">
+    <p [innerHTML]="getTargetHtml(refer)" (click)="disableDocLink($event)">
     </p>
     <div class="ui small secondary menu">
       <a class="item" (click)="selectTranslation(idx)">

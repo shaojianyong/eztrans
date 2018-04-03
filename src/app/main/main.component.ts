@@ -1126,6 +1126,10 @@ export class MainComponent implements OnInit {
     }
   }
 
+  disableDocLink(event: MouseEvent) {
+    event.preventDefault();
+  }
+
   ngOnInit() {
     const self = this;
 

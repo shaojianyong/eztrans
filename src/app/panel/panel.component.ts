@@ -184,6 +184,10 @@ export class PanelComponent implements OnInit {
     $(`#table-${this.index}>tbody>tr>td.target-cell`).unhighlight();
   }
 
+  disableDocLink(event: MouseEvent) {
+    event.preventDefault();
+  }
+
   ngOnInit() {
     ipcRenderer.on('trans-in-flight', (event) => {
       this.emptyHandTrans();
