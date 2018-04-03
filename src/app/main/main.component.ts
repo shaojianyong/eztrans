@@ -1062,7 +1062,7 @@ export class MainComponent implements OnInit {
     }
   }
 
-  endSliceEditEnterKeyDown(sliceSpan: HTMLInputElement, event: KeyboardEvent): void {
+  endSliceEditEnterKeyDown(sliceSpan: HTMLSpanElement, event: KeyboardEvent): void {
     sliceSpan.blur();
     event.preventDefault();
   }
