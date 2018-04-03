@@ -69,6 +69,20 @@ export class PanelComponent implements OnInit {
     this.enableHighlight();
   }
 
+  getCustomHtml(): string {
+    if (this.sentence.source.length === 1) {
+      return this.sentence.custom[0];
+    }
+
+    const frag = JSDOM.fragment(this.sentence.elhtml);
+    const newData = {
+      texts: this.sentence.custom,
+      index: 0
+    };
+    setNodeTexts(frag.firstChild, newData);
+    return frag.firstChild.innerHTML;
+  }
+
   // 在网络不可用的情况下，可以纯手工翻译(空手翻)
   emptyHandTrans(): void {
     /*this.disableHighlight();
