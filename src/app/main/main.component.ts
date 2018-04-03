@@ -1151,8 +1151,8 @@ export class MainComponent implements OnInit {
           alert(`${ext_name} parser error: ${error}`);
         },
         () => {
-          this.reset();
-          this.showPreview();
+          self.reset();
+          self.showPreview();
           self.rerender();
           $('#trans-list').unhighlight();
         }
