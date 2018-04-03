@@ -83,6 +83,13 @@ export class PanelComponent implements OnInit {
     return frag.firstChild.innerHTML;
   }
 
+  updateCustomView(): void {
+    const customView = document.getElementById('custom-trans-view');
+    if (customView) {
+      customView.innerHTML = this.getCustomHtml();
+    }
+  }
+
   // 在网络不可用的情况下，可以纯手工翻译(空手翻)
   emptyHandTrans(): void {
     /*this.disableHighlight();

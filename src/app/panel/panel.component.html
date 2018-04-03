@@ -1,6 +1,6 @@
 <div id="panel-container" *ngIf="sentence && sentence.target !== -2 && !sentence.ignore" class="ui container">
   <div *ngIf="sentence.custom.length" class="ui vertical segment">
-    <p [innerHTML]="getCustomHtml()">
+    <p id="custom-trans-view" [innerHTML]="getCustomHtml()">
     </p>
     <div class="ui small secondary menu">
       <a class="item" (click)="selectTranslation(-1)">

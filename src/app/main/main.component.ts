@@ -12,6 +12,7 @@ import {TranslateModel, TranslateState} from '../services/model/translate.model'
 import {ParserManagerService} from '../parsers/manager/parser-manager.service';
 import {EngineManagerService} from '../providers/manager/engine-manager.service';
 import {HomeComponent} from '../home/home.component';
+import {PanelComponent} from '../panel/panel.component';
 import {AboutComponent} from '../about/about.component';
 import {SettingsComponent} from '../settings/settings.component';
 import {StatisticsModel} from '../services/model/statistics.model';
@@ -35,6 +36,7 @@ export class MainComponent implements OnInit {
   visibility = 0;  // 0-显示所有 1-只显示原文 2-只显示译文，搜索时visibility自动重置
 
   @ViewChild(HomeComponent) child_home: HomeComponent;
+  @ViewChild(PanelComponent) child_pane: PanelComponent;
   @ViewChild(OpenComponent) child_open: OpenComponent;
   @ViewChild(SettingsComponent) child_settings: SettingsComponent;
   @ViewChild(AboutComponent) child_about: AboutComponent;
@@ -1046,7 +1048,7 @@ export class MainComponent implements OnInit {
       sentence.target = -1;
     }
     sentence.custom[slieceNo] = sliceSpan.textContent;
-    this.forceRerender({forceShowSelected: true});
+    this.child_pane.updateCustomView();  // 调用this.rerender()会使span编辑框失去焦点
     this.updatePreview();
   }
 
@@ -1057,6 +1059,7 @@ export class MainComponent implements OnInit {
   }
 
   onSliceEditBlur(index: number): void {
+    this.rerender();
     if (this.search_text) {
       $(`#table-${index}>tbody>tr>td.target-cell`).highlight(this.search_text);
     }
