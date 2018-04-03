@@ -69,32 +69,6 @@ export class PanelComponent implements OnInit {
     this.enableHighlight();
   }
 
-  clone(refer_index: number): void {
-    this.disableHighlight();
-    const orig = this.sentence.refers[refer_index];
-    if (this.sentence.source.length === 1) {
-      this.sentence.custom[0] = orig.target.target_text;
-    } else if (orig.divides.length === this.sentence.source.length + 1) {
-      for (let i = 0; i < this.sentence.source.length; ++i) {
-        this.sentence.custom[i] = orig.target.target_text.substring(orig.divides[i], orig.divides[i + 1]);
-      }
-    } else {
-      for (let i = 0; i < orig.slices.length; ++i) {
-        this.sentence.custom[i] = orig.slices[i].target_text;
-      }
-    }
-
-    this.sentence.target = -1;  // 选中定制翻译
-    this.sentence.marked = false;
-    this.rerenderEvent.emit({forceShowSelected: true});
-    const ce = $('#custom-editor');
-    ce.text(this.sentence.custom.join(' '));  // TODO: 每一段需要一个单独的编辑框
-    ce.attr('contenteditable', 'true');
-    ce.focus();
-    this.targetChangedEvent.emit();
-    // this.enableHighlight();  不需要重复，onEditBlur将做这个事情
-  }
-
   // 在网络不可用的情况下，可以纯手工翻译(空手翻)
   emptyHandTrans(): void {
     /*this.disableHighlight();
