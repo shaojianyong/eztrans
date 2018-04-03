@@ -4,10 +4,6 @@
       <span *ngFor="let slice of sentence.custom; let idx = index"
             id="custom-slice-{{idx}}"
             [textContent]="slice"
-            (input)="onEditInput(idx)"
-            (focus)="onEditFocus()"
-            (blur)="onEditBlur()"
-            (keydown.enter)="endEditEnterKeyDown(idx, $event)"
             contenteditable="true"
             class="{{(idx % 2) ? 'even-slice-color' : ''}}">
       </span>
@@ -31,9 +27,6 @@
     <div class="ui small secondary menu">
       <a class="item" (click)="selectTranslation(idx)">
         <i class="{{getHeartIcon(idx)}}"></i> Like
-      </a>
-      <a class="item" (click)="clone(idx)">
-        <i class="clone outline icon"></i> Clone
       </a>
       <a class="right icon item" (click)="onExLink(refer.engine)">
         <i class="{{getEngineIcon(refer.engine)}}"></i>

@@ -177,31 +177,6 @@ export class PanelComponent implements OnInit {
     }
   }
 
-  onEditInput(index: number): void {
-    this.sentence.custom[index] = $(`#custom-slice-${index}`).text();
-    if (this.sentence.target === -1) {
-      this.rerenderEvent.emit({forceShowSelected: true});
-      this.targetChangedEvent.emit();
-    }
-  }
-
-  onEditFocus(): void {
-    if (this.search && this.sentence.target === -1) {
-      this.disableHighlight();
-    }
-  }
-
-  onEditBlur(): void {
-    if (this.search && this.sentence.target === -1) {
-      this.enableHighlight();
-    }
-  }
-
-  endEditEnterKeyDown(index: number, event: KeyboardEvent): void {
-    $(`#custom-slice-${index}`).blur();
-    event.preventDefault();
-  }
-
   reTranslate(): void {
     this.refreshEvent.emit({forceShowSelected: true});
   }
