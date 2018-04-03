@@ -1047,7 +1047,13 @@ export class MainComponent implements OnInit {
       sentence.custom = this.getTgtSliceTexts(index);
       sentence.target = -1;
     }
-    sentence.custom[slieceNo] = sliceSpan.textContent;
+    if (sliceSpan.textContent.trim()) {
+      sentence.custom[slieceNo] = sliceSpan.textContent;
+    } else {
+      sliceSpan.textContent = sentence.custom[slieceNo];
+      alert('Document structure cannot be changed!');
+    }
+
     this.child_pane.updateCustomView();  // 调用this.rerender()会使span编辑框失去焦点
     this.updatePreview();
   }
