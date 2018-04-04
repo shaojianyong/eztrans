@@ -111,7 +111,8 @@ export class XhtmlParserService extends ParserService {
         const mue = {source: []};
         getHtmlNodeTexts(node, mue.source);
         if (mue.source.length > 1) {
-          mue['elhtml'] = (<any>node).outerHTML;
+          const serial = new XMLSerializer();
+          mue['elhtml'] = serial.serializeToString(node);
         }
         observer.next(mue);
       } else {
