@@ -35,7 +35,6 @@ function setHtmlNodeTexts(node: any, newData: any): void {
   }
 }
 
-// 最小翻译单元
 function isMiniTranslateUnit(node: any): boolean {
   let hasTextChildNode = false;
   let hasThirdGenChild = false;
