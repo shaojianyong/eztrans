@@ -17,7 +17,7 @@ import {AboutComponent} from '../about/about.component';
 import {SettingsComponent} from '../settings/settings.component';
 import {StatisticsModel} from '../services/model/statistics.model';
 import {OpenComponent} from '../open/open.component';
-import {HtmlParserService} from '../parsers/html/html-parser.service';
+import {setHtmlNodeTexts} from '../parsers/html/html-parser.service';
 
 
 @Component({
@@ -689,7 +689,7 @@ export class MainComponent implements OnInit {
       texts: tgtTexts,
       index: 0
     };
-    HtmlParserService.setNodeTexts(frag.firstChild, newData);
+    setHtmlNodeTexts(frag.firstChild, newData);
     return frag.firstChild.innerHTML;
   }
 

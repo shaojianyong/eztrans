@@ -5,56 +5,58 @@ import { ParserService } from '../base/parser.service';
 
 const SKIP_ELEMENTS = ['style', 'script', 'pre', 'code', 'noscript'];
 
+
+function getHtmlNodeTexts(node: any, nodeTexts: Array<string>): void {
+  for (let i = 0; i < node.childNodes.length; ++i) {
+    const childNode = node.childNodes[i];
+    if (childNode.nodeType === Node.TEXT_NODE) {
+      if (childNode.nodeValue.trim()) {
+        nodeTexts.push(childNode.nodeValue);
+      }
+    } else if (childNode.hasChildNodes()) {
+      getHtmlNodeTexts(childNode, nodeTexts);
+    }
+  }
+}
+
+export function setHtmlNodeTexts(node: any, newData: any): void {
+  for (let i = 0; i < node.childNodes.length; ++i) {
+    const childNode = node.childNodes[i];
+    if (childNode.nodeType === Node.TEXT_NODE) {
+      if (childNode.nodeValue.trim()) {
+        childNode.nodeValue = newData.texts[newData.index];
+        newData.index++;
+      }
+    } else if (childNode.hasChildNodes()) {
+      setHtmlNodeTexts(childNode, newData);
+    }
+  }
+}
+
+// 最小翻译单元
+function isMiniTranslateUnit(node: any): boolean {
+  let hasTextChildNode = false;
+  let hasThirdGenChild = false;
+  for (let i = 0; i < node.childNodes.length; ++i) {
+    const childNode = node.childNodes[i];
+    if (childNode.nodeType === Node.TEXT_NODE) {
+      if (childNode.nodeValue.trim()) {
+        hasTextChildNode = true;
+      }
+    } else if (childNode.hasChildNodes()) {
+      if (childNode.childNodes.length > 1 || (childNode.childNodes.length
+          && childNode.childNodes[0].nodeType !== Node.TEXT_NODE)) {
+        hasThirdGenChild = true;
+      }
+    }
+  }
+  return (hasTextChildNode && !hasThirdGenChild);
+}
+
+
 @Injectable()
 export class HtmlParserService extends ParserService {
   dom: any;
-
-  static getNodeTexts(node: any, nodeTexts: Array<string>): void {
-    for (let i = 0; i < node.childNodes.length; ++i) {
-      const childNode = node.childNodes[i];
-      if (childNode.nodeType === Node.TEXT_NODE) {
-        if (childNode.nodeValue.trim()) {
-          nodeTexts.push(childNode.nodeValue);
-        }
-      } else {
-        HtmlParserService.getNodeTexts(childNode, nodeTexts);
-      }
-    }
-  }
-
-  static setNodeTexts(node: any, newData: any): void {
-    for (let i = 0; i < node.childNodes.length; ++i) {
-      const childNode = node.childNodes[i];
-      if (childNode.nodeType === Node.TEXT_NODE) {
-        if (childNode.nodeValue.trim()) {
-          childNode.nodeValue = newData.texts[newData.index];
-          newData.index++;
-        }
-      } else {
-        HtmlParserService.setNodeTexts(childNode, newData);
-      }
-    }
-  }
-
-  // 最小翻译单元
-  static matchMiniUnitPattern(node: any): boolean {
-    let hasTextChildNode = false;
-    let hasThirdGenChild = false;
-    for (let i = 0; i < node.childNodes.length; ++i) {
-      const childNode = node.childNodes[i];
-      if (childNode.nodeType === Node.TEXT_NODE) {
-        if (childNode.nodeValue.trim()) {
-          hasTextChildNode = true;
-        }
-      } else {
-        if (childNode.childNodes.length > 1 || (childNode.childNodes.length
-            && childNode.childNodes[0].nodeType !== Node.TEXT_NODE)) {
-          hasThirdGenChild = true;
-        }
-      }
-    }
-    return (hasTextChildNode && !hasThirdGenChild);
-  }
 
   load(data: string): void {
     this.dom = new JSDOM(data);
@@ -84,10 +86,13 @@ export class HtmlParserService extends ParserService {
   }
 
   traverseR(node: Node, observer): void {
+    if (!node.hasChildNodes()) {
+      return;
+    }
     if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
-      if (HtmlParserService.matchMiniUnitPattern(node)) {
+      if (isMiniTranslateUnit(node)) {
         const mue = {source: []};
-        HtmlParserService.getNodeTexts(node, mue.source);
+        getHtmlNodeTexts(node, mue.source);
         if (mue.source.length > 1) {
           mue['elhtml'] = (<any>node).outerHTML;
         }
@@ -101,9 +106,12 @@ export class HtmlParserService extends ParserService {
   }
 
   traverseW(node: Node, newData: any): void {
+    if (!node.hasChildNodes()) {
+      return;
+    }
     if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
-      if (HtmlParserService.matchMiniUnitPattern(node)) {
-        HtmlParserService.setNodeTexts(node, newData);
+      if (isMiniTranslateUnit(node)) {
+        setHtmlNodeTexts(node, newData);
       } else {
         for (let i = 0; i < node.childNodes.length; ++i) {
           this.traverseW(node.childNodes[i], newData);
