@@ -3,6 +3,7 @@ import {Observable} from 'rxjs/Observable';
 const { JSDOM } = (<any>window).require('jsdom');
 const { DOMParser, XMLSerializer } = (<any>window).require('xmldom');
 import { ParserService } from '../base/parser.service';
+import {HtmlParserService} from '../html/html-parser.service';
 
 const SKIP_ELEMENTS = ['style', 'script', 'pre', 'code', 'noscript'];
 
@@ -55,17 +56,15 @@ export class XhtmlParserService extends ParserService {
   }
 
   traverseR(node: Node, observer): void {
-    if (node.nodeType === Node.TEXT_NODE) {
-      const trimmed = node.nodeValue.trim();
-      if (trimmed) {
-        observer.next({
-          source: trimmed
-        });
-      }
-    }
-
-    if (node.nodeType === Node.DOCUMENT_NODE || node.nodeType === Node.ELEMENT_NODE) {
-      if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
+    if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
+      if (HtmlParserService.matchMiniUnitPattern(node)) {
+        const mue = {source: []};
+        HtmlParserService.getNodeTexts(node, mue.source);
+        if (mue.source.length > 1) {
+          mue['elhtml'] = (<any>node).outerHTML;
+        }
+        observer.next(mue);
+      } else {
         for (let i = 0; i < node.childNodes.length; ++i) {
           this.traverseR(node.childNodes[i], observer);
         }
@@ -75,19 +74,10 @@ export class XhtmlParserService extends ParserService {
 
   // stackoverflow.com/questions/32850812/node-xmldom-how-do-i-change-the-value-of-a-single-xml-field-in-javascript
   traverseW(node: Node, newData: any): void {
-    if (node.nodeType === Node.TEXT_NODE) {
-      const trimmed = node.nodeValue.trim();
-      if (trimmed) {
-        const newVal = newData.texts[newData.index];
-        if (newVal !== null) {
-          (<any>node).data = node.nodeValue.replace(trimmed, newVal.trim());  // 保留首尾空白字符
-        }
-        newData.index++;
-      }
-    }
-
-    if (node.nodeType === Node.DOCUMENT_NODE || node.nodeType === Node.ELEMENT_NODE) {
-      if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
+    if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
+      if (HtmlParserService.matchMiniUnitPattern(node)) {
+        HtmlParserService.setNodeTexts(node, newData);
+      } else {
         for (let i = 0; i < node.childNodes.length; ++i) {
           this.traverseW(node.childNodes[i], newData);
         }

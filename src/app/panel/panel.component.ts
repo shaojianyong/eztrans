@@ -4,7 +4,7 @@ const { JSDOM } = (<any>window).require('jsdom');
 import { VersionModel, SentenceModel } from '../services/model/sentence.model';
 import { TranslateModel } from '../services/model/translate.model';
 import {EngineManagerService} from '../providers/manager/engine-manager.service';
-import {setNodeTexts} from '../parsers/html/html-parser.service';
+import {HtmlParserService} from '../parsers/html/html-parser.service';
 import {FunctionUtils} from '../services/utils/function-utils';
 import engines from '../providers/manager/engines';
 
@@ -53,7 +53,7 @@ export class PanelComponent implements OnInit {
       index: 0
     };
     const frag = JSDOM.fragment(this.sentence.elhtml);
-    setNodeTexts(frag.firstChild, newData);
+    HtmlParserService.setNodeTexts(frag.firstChild, newData);
     return frag.firstChild.innerHTML;
   }
 
@@ -79,7 +79,7 @@ export class PanelComponent implements OnInit {
       texts: this.sentence.custom,
       index: 0
     };
-    setNodeTexts(frag.firstChild, newData);
+    HtmlParserService.setNodeTexts(frag.firstChild, newData);
     return frag.firstChild.innerHTML;
   }
 
