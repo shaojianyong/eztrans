@@ -1041,16 +1041,16 @@ export class MainComponent implements OnInit {
     $('#trans-list').unhighlight();
   }
 
-  onSliceEditInput(sliceSpan: HTMLSpanElement, index: number, slieceNo: number): void {
+  onSliceEditInput(sliceInput: HTMLElement, index: number, slieceNo: number): void {
     const sentence = this.child_home.cur_doc.sentences[index];
     if (sentence.target !== -1) {
       sentence.custom = this.getTgtSliceTexts(index);
       sentence.target = -1;
     }
-    if (sliceSpan.textContent.trim()) {
-      sentence.custom[slieceNo] = sliceSpan.textContent;
+    if (sliceInput.textContent.trim()) {
+      sentence.custom[slieceNo] = sliceInput.textContent;
     } else {
-      sliceSpan.textContent = sentence.custom[slieceNo];
+      sliceInput.textContent = sentence.custom[slieceNo];
       alert('Document structure cannot be changed!');
     }
 
@@ -1071,8 +1071,8 @@ export class MainComponent implements OnInit {
     }
   }
 
-  endSliceEditEnterKeyDown(sliceSpan: HTMLSpanElement, event: KeyboardEvent): void {
-    sliceSpan.blur();
+  endSliceEditEnterKeyDown(sliceInput: HTMLElement, event: KeyboardEvent): void {
+    sliceInput.blur();
     event.preventDefault();
   }
 
