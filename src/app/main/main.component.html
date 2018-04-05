@@ -110,17 +110,18 @@
               <i class="{{getTargetLeftIcon(idx)}}"></i>
             </div>
           </td>
-          <td *ngIf="idx === cur_index && !child_home.cur_doc.sentences[idx].marked" class="target-cell">
-            <span *ngFor="let slice of getTgtSliceTexts(idx); let sno = index"
-                  [class.element-slice-color]="!isSliceTextNode(idx, sno)"
-                  [textContent]="slice"
-                  contenteditable="true"
-                  #sliceinput
-                  (input)="onSliceEditInput(sliceinput, idx, sno)"
-                  (focus)="onSliceEditFocus(idx)"
-                  (blur)="onSliceEditBlur(idx)"
-                  (keydown.enter)="endSliceEditEnterKeyDown(sliceinput, $event)">
-            </span>
+          <td *ngIf="idx === cur_index && !child_home.cur_doc.sentences[idx].marked" class="ui list target-cell">
+            <div *ngFor="let slice of getTgtSliceTexts(idx); let sno = index"
+                 [ngStyle]="{'background-color': isSliceTextNode(idx, sno) ? '#f0f8ff' : '#d3fdc8'}"
+                 [textContent]="slice"
+                 contenteditable="true"
+                 #sliceinput
+                 (input)="onSliceEditInput(sliceinput, idx, sno)"
+                 (focus)="onSliceEditFocus(idx)"
+                 (blur)="onSliceEditBlur(idx)"
+                 (keydown.enter)="endSliceEditEnterKeyDown(sliceinput, $event)"
+                 class="item">
+            </div>
           </td>
           <td *ngIf="idx !== cur_index || child_home.cur_doc.sentences[idx].marked" class="target-cell"
               [innerHTML]="getTargetHtml(idx)" (click)="disableDocLink($event)">
