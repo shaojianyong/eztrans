@@ -1058,17 +1058,19 @@ export class MainComponent implements OnInit {
     this.updatePreview();
   }
 
-  onSliceEditFocus(index: number): void {
+  onSliceEditFocus(index: number, sno: number): void {
     if (this.search_text) {
       $(`#table-${index}>tbody>tr>td.target-cell`).unhighlight();
     }
+    $(`#table-${index}>tbody>tr>td>span#slice-${index}-${sno}`).toggleClass('focused-slice');
   }
 
-  onSliceEditBlur(index: number): void {
+  onSliceEditBlur(index: number, sno: number): void {
     this.rerender();
     if (this.search_text) {
       $(`#table-${index}>tbody>tr>td.target-cell`).highlight(this.search_text);
     }
+    $(`#table-${index}>tbody>tr>td>span#slice-${index}-${sno}`).toggleClass('focused-slice');
   }
 
   endSliceEditEnterKeyDown(sliceInput: HTMLElement, event: KeyboardEvent): void {

@@ -117,8 +117,8 @@
                  contenteditable="true"
                  #sliceinput
                  (input)="onSliceEditInput(sliceinput, idx, sno)"
-                 (focus)="onSliceEditFocus(idx)"
-                 (blur)="onSliceEditBlur(idx)"
+                 (focus)="onSliceEditFocus(idx, sno)"
+                 (blur)="onSliceEditBlur(idx, sno)"
                  (keydown.enter)="endSliceEditEnterKeyDown(sliceinput, $event)"
                  class="item">
             </div>
