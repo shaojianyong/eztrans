@@ -8,51 +8,50 @@ const SKIP_ELEMENTS = ['style', 'script', 'pre', 'code', 'noscript'];
 
 
 function getHtmlNodeTexts(node: any, nodeTexts: Array<string>): void {
-  for (let i = 0; i < node.childNodes.length; ++i) {
-    const childNode = node.childNodes[i];
-    if (childNode.nodeType === Node.TEXT_NODE) {
-      if (childNode.nodeValue.trim()) {
-        nodeTexts.push(childNode.nodeValue);
-      }
-    } else if (childNode.hasChildNodes()) {
-      getHtmlNodeTexts(childNode, nodeTexts);
+  if (node.nodeType === Node.TEXT_NODE) {
+    if (node.nodeValue.trim()) {
+      nodeTexts.push(node.nodeValue);
     }
+    return;
+  }
+
+  for (let i = 0; i < node.childNodes.length; ++i) {
+    getHtmlNodeTexts(node.childNodes[i], nodeTexts);
   }
 }
 
 // stackoverflow.com/questions/32850812/node-xmldom-how-do-i-change-the-value-of-a-single-xml-field-in-javascript
 function setHtmlNodeTexts(node: any, newData: any): void {
-  for (let i = 0; i < node.childNodes.length; ++i) {
-    const childNode = node.childNodes[i];
-    if (childNode.nodeType === Node.TEXT_NODE) {
-      if (childNode.nodeValue.trim()) {
-        (<any>childNode).data = newData.texts[newData.index];
-        newData.index++;
+  if (node.nodeType === Node.TEXT_NODE) {
+    if (node.nodeValue.trim()) {
+      const newVal = newData.texts[newData.index];
+      if (newVal && newVal.trim()) {
+        (<any>node).data = newVal;
       }
-    } else if (childNode.hasChildNodes()) {
-      setHtmlNodeTexts(childNode, newData);
+      newData.index++;
     }
+    return;
+  }
+
+  for (let i = 0; i < node.childNodes.length; ++i) {
+    setHtmlNodeTexts(node.childNodes[i], newData);
   }
 }
 
-function isMiniTranslateUnit(node: any): boolean {
+function testMiniTranslateUnit(node: any): number {
+  if (node.nodeType !== Node.DOCUMENT_NODE && !(node.textContent && node.textContent.trim())) {
+    return 0;  // non translate-unit, no text node, no translate need
+  }
   let hasTextChildNode = false;
-  let hasThirdGenChild = false;
   for (let i = 0; i < node.childNodes.length; ++i) {
-    const childNode = node.childNodes[i];
-    if (childNode.nodeType === Node.TEXT_NODE) {
-      if (childNode.nodeValue.trim()) {
-        hasTextChildNode = true;
-      }
-    } else if (childNode.hasChildNodes()) {
-      if (childNode.childNodes.length > 1 || (childNode.childNodes.length
-          && childNode.childNodes[0].nodeType !== Node.TEXT_NODE)) {
-        hasThirdGenChild = true;
-      }
+    if (node.childNodes[i].nodeType === Node.TEXT_NODE && node.childNodes[i].nodeValue.trim()) {
+      hasTextChildNode = true;
+      break;
     }
   }
-  return (hasTextChildNode && !hasThirdGenChild);
+  return hasTextChildNode ? 1 : 2;  // 1-mini translate-unit 2-non-mini translate-unit
 }
+
 
 @Injectable()
 export class XhtmlParserService extends ParserService {
@@ -103,11 +102,10 @@ export class XhtmlParserService extends ParserService {
   }
 
   traverseR(node: Node, observer): void {
-    if (!node.hasChildNodes()) {
-      return;
-    }
-    if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
-      if (isMiniTranslateUnit(node)) {
+    if ((node.nodeType === Node.DOCUMENT_NODE || node.nodeType === Node.ELEMENT_NODE)
+      && SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
+      const testRes = testMiniTranslateUnit(node);
+      if (testRes === 1) {
         const mue = {source: []};
         getHtmlNodeTexts(node, mue.source);
         if (mue.source.length > 1) {
@@ -115,7 +113,7 @@ export class XhtmlParserService extends ParserService {
           mue['elhtml'] = serial.serializeToString(node);
         }
         observer.next(mue);
-      } else {
+      } else if (testRes === 2) {
         for (let i = 0; i < node.childNodes.length; ++i) {
           this.traverseR(node.childNodes[i], observer);
         }
@@ -124,13 +122,12 @@ export class XhtmlParserService extends ParserService {
   }
 
   traverseW(node: Node, newData: any): void {
-    if (!node.hasChildNodes()) {
-      return;
-    }
-    if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
-      if (isMiniTranslateUnit(node)) {
+    if ((node.nodeType === Node.DOCUMENT_NODE || node.nodeType === Node.ELEMENT_NODE)
+      && SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
+      const testRes = testMiniTranslateUnit(node);
+      if (testRes === 1) {
         setHtmlNodeTexts(node, newData);
-      } else {
+      } else if (testRes === 2) {
         for (let i = 0; i < node.childNodes.length; ++i) {
           this.traverseW(node.childNodes[i], newData);
         }

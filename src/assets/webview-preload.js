@@ -5,45 +5,44 @@ var SKIP_ELEMENTS = ['style', 'script', 'pre', 'code', 'noscript'];
 var selectedNode = null;
 var orgBackColor = null;
 
-
-function matchMiniUnitPattern(node) {
+function testMiniTranslateUnit(node) {
+  if (node.nodeType !== Node.DOCUMENT_NODE && !(node.textContent && node.textContent.trim())) {
+    return 0;  // non translate-unit, no text node, no translate need
+  }
   var hasTextChildNode = false;
-  var hasThirdGenChild = false;
   for (var i = 0; i < node.childNodes.length; ++i) {
-    const childNode = node.childNodes[i];
-    if (childNode.nodeType === Node.TEXT_NODE) {
-      if (childNode.nodeValue.trim()) {
-        hasTextChildNode = true;
-      }
-    } else {
-      if (childNode.childNodes.length > 1 || (childNode.childNodes.length
-          && childNode.childNodes[0].nodeType !== Node.TEXT_NODE)) {
-        hasThirdGenChild = true;
-      }
+    if (node.childNodes[i].nodeType === Node.TEXT_NODE && node.childNodes[i].nodeValue.trim()) {
+      hasTextChildNode = true;
+      break;
     }
   }
-  return (hasTextChildNode && !hasThirdGenChild);
+  return hasTextChildNode ? 1 : 2;  // 1-mini translate-unit 2-non-mini translate-unit
 }
 
 function setNodeTexts(node, newData) {
-  for (var i = 0; i < node.childNodes.length; ++i) {
-    const childNode = node.childNodes[i];
-    if (childNode.nodeType === Node.TEXT_NODE) {
-      if (childNode.nodeValue.trim()) {
-        childNode.nodeValue = newData.texts[newData.index];
-        newData.index++;
+  if (node.nodeType === Node.TEXT_NODE) {
+    if (node.nodeValue.trim()) {
+      const newVal = newData.texts[newData.index];
+      if (newVal && newVal.trim()) {
+        node.nodeValue = newVal;
       }
-    } else {
-      setNodeTexts(childNode, newData);
+      newData.index++;
     }
+    return;
+  }
+
+  for (var i = 0; i < node.childNodes.length; ++i) {
+    setNodeTexts(node.childNodes[i], newData);
   }
 }
 
 function nodeUpdate(node, newData) {
-  if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
-    if (matchMiniUnitPattern(node)) {
+  if ((node.nodeType === Node.DOCUMENT_NODE || node.nodeType === Node.ELEMENT_NODE)
+    && SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
+    const testRes = testMiniTranslateUnit(node);
+    if (testRes === 1) {
       setNodeTexts(node, newData);
-    } else {
+    } else if (testRes === 2) {
       for (var i = 0; i < node.childNodes.length; ++i) {
         nodeUpdate(node.childNodes[i], newData);
       }
@@ -60,14 +59,16 @@ function htmlUpdate(transData) {
 }
 
 function seekNode(node, seekObj) {
-  if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
-    if (matchMiniUnitPattern(node)) {
+  if ((node.nodeType === Node.DOCUMENT_NODE || node.nodeType === Node.ELEMENT_NODE)
+    && SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
+    const testRes = testMiniTranslateUnit(node);
+    if (testRes === 1) {
       if (seekObj.idx++ === seekObj.tgt) {
         seekObj.obj = node;
         return;
       }
       // seekObj.idx++;  WHY not working?
-    } else {
+    } else if (testRes === 2) {
       for (var i = 0; i < node.childNodes.length; ++i) {
         seekNode(node.childNodes[i], seekObj);
       }
@@ -76,15 +77,17 @@ function seekNode(node, seekObj) {
 }
 
 function hitTest(node, hitObj) {
-  if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
-    if (matchMiniUnitPattern(node)) {
+  if ((node.nodeType === Node.DOCUMENT_NODE || node.nodeType === Node.ELEMENT_NODE)
+    && SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
+    const testRes = testMiniTranslateUnit(node);
+    if (testRes === 1) {
       if (hitObj.obj === node || hitObj.obj === node.parentNode) {
         hitObj.tgt = hitObj.idx;
         hitObj.mue = node;
         return;
       }
       hitObj.idx++;
-    } else {
+    } else if (testRes === 2) {
       for (var i = 0; i < node.childNodes.length; ++i) {
         hitTest(node.childNodes[i], hitObj);
       }
@@ -92,15 +95,15 @@ function hitTest(node, hitObj) {
   }
 }
 
-function selectNode(eleParent) {
-  if (eleParent !== selectedNode) {
-    var oldBackColor = eleParent.style.backgroundColor;
-    eleParent.style.backgroundColor = '#e0e0e7';
+function selectNode(eleNode) {
+  if (eleNode !== selectedNode) {
+    var oldBackColor = eleNode.style.backgroundColor;
+    eleNode.style.backgroundColor = '#e0e0e7';
     if (selectedNode) {
       selectedNode.style.backgroundColor = orgBackColor;
     }
     orgBackColor = oldBackColor;
-    selectedNode = eleParent;
+    selectedNode = eleNode;
   }
 }
 
@@ -125,7 +128,6 @@ function disableLinks() {
   for (var i = 0; i < links.length; i++) {
     links.item(i).addEventListener('click', function (e) {
       e.preventDefault();
-      // shell.openExternal(url);
     });
   }
 }
@@ -140,7 +142,6 @@ ipc.on('scroll-to', function(event, message) {
 
 document.addEventListener('DOMContentLoaded', function () {
   window.$ = window.jQuery = require('../assets/jquery-3.2.1.min');
-
   disableLinks();
 });
 
