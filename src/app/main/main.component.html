@@ -110,9 +110,9 @@
               <i class="{{getTargetLeftIcon(idx)}}"></i>
             </div>
           </td>
-          <td *ngIf="idx === cur_index && !child_home.cur_doc.sentences[idx].marked" class="ui list target-cell">
+          <td *ngIf="!child_home.cur_doc.sentences[idx].marked" class="ui list target-cell">
             <div *ngFor="let slice of getTgtSliceTexts(idx); let sno = index"
-                 [ngStyle]="{'background-color': isSliceTextNode(idx, sno) ? '#f8f8f8' : '#d3fdc8'}"
+                 [ngStyle]="{'background-color': isSliceTextNode(idx, sno) ? '#f2f2f2' : '#d3fdc8'}"
                  [textContent]="slice"
                  contenteditable="true"
                  #sliceinput
@@ -123,7 +123,7 @@
                  class="item">
             </div>
           </td>
-          <td *ngIf="idx !== cur_index || child_home.cur_doc.sentences[idx].marked" class="target-cell"
+          <td *ngIf="child_home.cur_doc.sentences[idx].marked" class="target-cell"
               [innerHTML]="getTargetHtml(idx)" (click)="disableDocLink($event)">
           </td>
           <td class="collapsing">
