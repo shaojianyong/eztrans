@@ -598,8 +598,8 @@ export class MainComponent implements OnInit {
   getTargetLeftIcon(index: number): string {
     let res = 'placeholder icon';
     const sentence = this.child_home.cur_doc.sentences[index];
-    if (sentence.target === -1) {
-      res = (this.checkFakeCustom(sentence) === -1) ? 'green idea icon' : 'orange edit icon';
+    if (sentence.target === -1 && this.checkFakeCustom(sentence) === -1) {
+      res = 'green idea icon';
     }
     return res;
   }
