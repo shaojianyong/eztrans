@@ -1082,19 +1082,19 @@ export class MainComponent implements OnInit {
   }
 
   onSliceEditBlur(index: number, sno: number): void {
+    const sentence = this.child_home.cur_doc.sentences[index];
+    const res = this.checkFakeCustom(sentence);
+    if (res !== -1) {
+      sentence.target = res;
+      sentence.custom = [];  // 删除虚假的自定义翻译
+    }
+
     this.rerender();
     if (this.search_text) {
       $(`#table-${index}>tbody>tr>td.target-cell`).highlight(this.search_text);
     }
-    const sentence = this.child_home.cur_doc.sentences[index];
     if (sentence.source.length > 1) {
       $(`#table-${index}>tbody>tr>td>span#src-slice-${index}-${sno}`).toggleClass('focused-slice');
-    }
-    // 自动删除虚假的自定义翻译
-    const res = this.checkFakeCustom(sentence);
-    if (res !== -1) {
-      sentence.target = res;
-      sentence.custom = [];
     }
   }
 
