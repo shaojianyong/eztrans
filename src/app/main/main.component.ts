@@ -599,7 +599,7 @@ export class MainComponent implements OnInit {
     let res = 'placeholder icon';
     const sentence = this.child_home.cur_doc.sentences[index];
     if (sentence.target === -1 && this.checkFakeCustom(sentence) === -1) {
-      res = 'green idea icon';
+      res = 'green pencil alternate icon';
     }
     return res;
   }
