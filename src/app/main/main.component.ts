@@ -564,53 +564,42 @@ export class MainComponent implements OnInit {
 
   }
 
-  checkCustomTrans(sentence: SentenceModel): any {
-    const checkResult = { fake: false, empty: false };
+  checkFakeCustom(sentence: SentenceModel): number {
+    let res = -1;
     if (sentence.source.length === 1) {
-      for (const refer of sentence.refers) {
-        if (refer.target && sentence.custom[0] === refer.target.target_text) {
-          checkResult.fake = true;
+      for (let i = 0; i < sentence.refers.length; ++i) {
+        const refer = sentence.refers[i];
+        if (refer.target && refer.target.target_text === sentence.custom[0]) {
+          res = i;
           break;
         }
       }
-      checkResult.empty = (sentence.custom[0].trim().length === 0);
-    } else {
-      for (const refer of sentence.refers) {
-        if (refer.slices.length === sentence.source.length
-          && sentence.custom.length === sentence.source.length) {
-          let allSame = true;
-          for (let i = 0; i < sentence.source.length; ++i) {
-            if (sentence.custom[i].trim().length === 0) {
-              checkResult.empty = true;
-            }
-            if (sentence.custom[i] !== refer.slices[i].target_text) {
-              allSame = false;
-              break;
-            }
-          }
-          if (allSame) {
-            checkResult.fake = true;
-          }
+      return res;
+    }
+
+    for (let i = 0; i < sentence.refers.length; ++i) {
+      let allSame = true;
+      const refer = sentence.refers[i];
+      const referTexts = this.getReferTexts(refer);
+      for (let r = 0; r < sentence.source.length; ++r) {
+        if (referTexts[r] !== sentence.custom[r]) {
+          allSame = false;
+          break;
         }
       }
+      if (allSame) {
+        res = i;
+        break;
+      }
     }
-    return checkResult;
+    return res;
   }
 
   getTargetLeftIcon(index: number): string {
+    let res = 'placeholder icon';
     const sentence = this.child_home.cur_doc.sentences[index];
-    if (sentence.target !== -1) {
-      return 'placeholder icon';
-    }
-
-    let res = '';
-    const checkRsult = this.checkCustomTrans(sentence);
-    if (checkRsult.empty) {
-      res = 'teal eraser icon';
-    } else if (checkRsult.fake) {
-      res = 'red help icon';
-    } else {
-      res = 'green idea icon';
+    if (sentence.target === -1) {
+      res = (this.checkFakeCustom(sentence) === -1) ? 'green idea icon' : 'orange edit icon';
     }
     return res;
   }
@@ -667,36 +656,42 @@ export class MainComponent implements OnInit {
     if (!this.isTargetVisible(index)) {
       return '';
     }
-    return this.getTgtSliceTexts(index).join(' ');
+    return this.getTargetTexts(index).join(' ');
   }
 
-  getTgtSliceTexts(index: number): Array<string> {
+  getReferTexts(refer: VersionModel): Array<string> {
+    const res = [];
+    if (refer.divides.length === refer.slices.length + 1) {
+      for (let i = 0; i < refer.slices.length; ++i) {
+        res.push(refer.target.target_text.substring(refer.divides[i], refer.divides[i + 1]));
+      }
+    } else {
+      for (const slice of refer.slices) {
+        res.push(slice.target_text);
+      }
+    }
+    return res;
+  }
+
+  getTargetTexts(index: number): Array<string> {
     const sentence = this.child_home.cur_doc.sentences[index];
     if (sentence.target === -1) {
       return sentence.custom;
     }
 
+    let res = null;
     const refer = sentence.refers[sentence.target];
     if (sentence.source.length === 1) {
-      return [refer.target.target_text];
-    }
-
-    const tgtTexts = [];
-    if (refer.divides.length === sentence.source.length + 1) {
-      for (let i = 0; i < sentence.source.length; ++i) {
-        tgtTexts.push(refer.target.target_text.substring(refer.divides[i], refer.divides[i + 1]));
-      }
+      res = [refer.target.target_text];
     } else {
-      for (const slice of refer.slices) {
-        tgtTexts.push(slice.target_text);
-      }
+      res = this.getReferTexts(refer);
     }
-    return tgtTexts;
+    return res;
   }
 
   getTargetHtml(index: number): string {
     const sentence = this.child_home.cur_doc.sentences[index];
-    const tgtTexts = this.getTgtSliceTexts(index);
+    const tgtTexts = this.getTargetTexts(index);
 
     if (tgtTexts.length === 1) {
       return tgtTexts[0];
@@ -1062,7 +1057,7 @@ export class MainComponent implements OnInit {
   onSliceEditInput(sliceInput: HTMLElement, index: number, slieceNo: number): void {
     const sentence = this.child_home.cur_doc.sentences[index];
     if (sentence.target !== -1) {
-      sentence.custom = this.getTgtSliceTexts(index);
+      sentence.custom = this.getTargetTexts(index);
       sentence.target = -1;
     }
     if (sliceInput.textContent.trim()) {
@@ -1094,6 +1089,12 @@ export class MainComponent implements OnInit {
     const sentence = this.child_home.cur_doc.sentences[index];
     if (sentence.source.length > 1) {
       $(`#table-${index}>tbody>tr>td>span#src-slice-${index}-${sno}`).toggleClass('focused-slice');
+    }
+    // 自动删除虚假的自定义翻译
+    const res = this.checkFakeCustom(sentence);
+    if (res !== -1) {
+      sentence.target = res;
+      sentence.custom = [];
     }
   }
 

@@ -114,7 +114,7 @@
             </div>
           </td>
           <td *ngIf="!child_home.cur_doc.sentences[idx].marked" class="ui list target-cell">
-            <div *ngFor="let slice of getTgtSliceTexts(idx); let sno = index"
+            <div *ngFor="let slice of getTargetTexts(idx); let sno = index"
                  [ngStyle]="{'background-color': isSliceTextNode(idx, sno) ? '#f1f1f1' : '#d3fdc8'}"
                  [textContent]="slice"
                  contenteditable="true"
