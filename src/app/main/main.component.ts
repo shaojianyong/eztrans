@@ -777,7 +777,7 @@ export class MainComponent implements OnInit {
     }
     this.retranslate();
   }
-
+/*
   @HostListener('window:keydown.arrowright', ['$event'])
   onArrowRight(event: KeyboardEvent): void {
     if (document.activeElement.getAttribute('contenteditable') || this.cur_index === -1) {
@@ -824,7 +824,7 @@ export class MainComponent implements OnInit {
       event.preventDefault();
     }
   }
-
+*/
   nextPage(): void {
     if (this.cur_page + 1 < this.getPageCount()) {
       this.cur_page++;
