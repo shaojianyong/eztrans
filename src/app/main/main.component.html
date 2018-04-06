@@ -95,8 +95,11 @@
           </td>
           <!-- https://stackoverflow.com/questions/31548311/angular-html-binding -->
           <td [ngClass]="isTargetVisible(idx) ? 'source-cell' : 'source-alone'"
-              [innerHTML]="getSourceHtml(idx)"
               (click)="disableDocLink($event)">
+            <span *ngFor="let slice of getSrcSliceHtmls(idx); let sno = index"
+                  [innerHTML]="slice"
+                  id="src-slice-{{idx}}-{{sno}}">
+            </span>
           </td>
           <td class="collapsing">
             <div class="trans-flag-icon" (click)="onClickSourceRight(idx)">
@@ -112,7 +115,7 @@
           </td>
           <td *ngIf="!child_home.cur_doc.sentences[idx].marked" class="ui list target-cell">
             <div *ngFor="let slice of getTgtSliceTexts(idx); let sno = index"
-                 [ngStyle]="{'background-color': isSliceTextNode(idx, sno) ? '#f2f2f2' : '#d3fdc8'}"
+                 [ngStyle]="{'background-color': isSliceTextNode(idx, sno) ? '#f1f1f1' : '#d3fdc8'}"
                  [textContent]="slice"
                  contenteditable="true"
                  #sliceinput

@@ -645,6 +645,24 @@ export class MainComponent implements OnInit {
     return frag.firstChild.innerHTML;
   }
 
+  getSrcSliceHtmls(index: number): Array<string> {
+    const sentence = this.child_home.cur_doc.sentences[index];
+    if (sentence.source.length === 1) {
+      return [sentence.source[0]];
+    }
+
+    const res = [];
+    const frag = JSDOM.fragment(sentence.elhtml);
+    for (const node of frag.firstChild.childNodes) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        res.push(node.nodeValue);
+      } else {
+        res.push(node.outerHTML);
+      }
+    }
+    return res;
+  }
+
   getTargetText(index: number): string {
     if (!this.isTargetVisible(index)) {
       return '';
@@ -1062,7 +1080,10 @@ export class MainComponent implements OnInit {
     if (this.search_text) {
       $(`#table-${index}>tbody>tr>td.target-cell`).unhighlight();
     }
-    $(`#table-${index}>tbody>tr>td>span#slice-${index}-${sno}`).toggleClass('focused-slice');
+    const sentence = this.child_home.cur_doc.sentences[index];
+    if (sentence.source.length > 1) {
+      $(`#table-${index}>tbody>tr>td>span#src-slice-${index}-${sno}`).toggleClass('focused-slice');
+    }
   }
 
   onSliceEditBlur(index: number, sno: number): void {
@@ -1070,7 +1091,10 @@ export class MainComponent implements OnInit {
     if (this.search_text) {
       $(`#table-${index}>tbody>tr>td.target-cell`).highlight(this.search_text);
     }
-    $(`#table-${index}>tbody>tr>td>span#slice-${index}-${sno}`).toggleClass('focused-slice');
+    const sentence = this.child_home.cur_doc.sentences[index];
+    if (sentence.source.length > 1) {
+      $(`#table-${index}>tbody>tr>td>span#src-slice-${index}-${sno}`).toggleClass('focused-slice');
+    }
   }
 
   endSliceEditEnterKeyDown(sliceInput: HTMLElement, event: KeyboardEvent): void {
