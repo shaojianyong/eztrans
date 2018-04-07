@@ -604,11 +604,15 @@ export class HomeComponent implements OnInit {
         selector: {
           trigger: '.icon'
         },
-        onOpen: () => {
+        onOpening: () => {  // 相比onOpen，onOpening可以获得更好的视觉效果
           if (this.sel_eid.startsWith('#group-')) {
             const groupId = this.sel_eid.substr('#group-'.length);
-            this.getGroup(groupId).open = true;
+            const group = this.getGroup(groupId);
+            group.open = true;
 
+            if (group.type === 'book') {
+              $(`${this.sel_eid}>i`).addClass('open');
+            }
             if (groupId === 'recycle') {
               $('#group-recycle>i').addClass('alternate outline');
             }
@@ -619,8 +623,12 @@ export class HomeComponent implements OnInit {
         onClose: () => {
           if (this.sel_eid.startsWith('#group-')) {
             const groupId = this.sel_eid.substr('#group-'.length);
-            this.getGroup(groupId).open = false;
+            const group = this.getGroup(groupId);
+            group.open = false;
 
+            if (group.type === 'book') {
+              $(`${this.sel_eid}>i`).removeClass('open');
+            }
             if (groupId === 'recycle') {
               $('#group-recycle>i').removeClass('alternate outline');
             }

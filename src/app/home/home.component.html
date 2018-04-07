@@ -28,7 +28,8 @@
                (dblclick)="toggleExpandGroup(g_idx)"
                (contextmenu)="onGroupContextMenu(group)"
                id="group-{{group.id}}">
-            <i class="dropdown icon"></i>
+            <i *ngIf="group.type==='clip'" class="dropdown icon"></i>
+            <i *ngIf="group.type==='book'" class="{{group.open ? 'folder open icon' : 'folder icon'}}"></i>
             <span class="group-name" contenteditable="false" [textContent]="group.name"
                   (blur)="endGroupRename($event, group.id)"
                   (keydown.enter)="endGroupRename($event, group.id)">{{group.name}}</span>
