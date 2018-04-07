@@ -610,11 +610,13 @@ export class HomeComponent implements OnInit {
             const group = this.getGroup(groupId);
             group.open = true;
 
-            if (group.type === 'book') {
+            if (group.type === 'clip') {
               $(`${this.sel_eid}>i`).addClass('open');
-            }
-            if (groupId === 'recycle') {
-              $('#group-recycle>i').addClass('alternate outline');
+            } else if (group.type === 'book') {
+              $(`${this.sel_eid}>i`).removeClass('book');
+              $(`${this.sel_eid}>i`).addClass('leanpub');
+            } else if (groupId === 'recycle') {
+              $(`${this.sel_eid}>i`).addClass('alternate outline');
             }
           } else {
             alert('No opened group found!');
@@ -626,11 +628,13 @@ export class HomeComponent implements OnInit {
             const group = this.getGroup(groupId);
             group.open = false;
 
-            if (group.type === 'book') {
+            if (group.type === 'clip') {
               $(`${this.sel_eid}>i`).removeClass('open');
-            }
-            if (groupId === 'recycle') {
-              $('#group-recycle>i').removeClass('alternate outline');
+            } else if (group.type === 'book') {
+              $(`${this.sel_eid}>i`).addClass('book');
+              $(`${this.sel_eid}>i`).removeClass('leanpub');
+            } else if (groupId === 'recycle') {
+              $(`${this.sel_eid}>i`).removeClass('alternate outline');
             }
           } else {
             alert('No closed group found!');
