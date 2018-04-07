@@ -14,7 +14,7 @@ export class GroupModel {
   documents: Array<DocInfoModel>;  // 组内文档
 
   constructor(obj?: any) {
-    this.id = obj && obj.id || 'default-group';
+    this.id = obj && obj.id || 'default';
     this.name = obj && obj.name || 'My Translations';
     this.type = obj && obj.type || GroupType.CLIP;
     this.open = obj && obj.open || false;

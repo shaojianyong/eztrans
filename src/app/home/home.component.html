@@ -19,7 +19,7 @@
     </div>
 
     <div id="left-side-list" class="ui item">
-      <div *ngIf="doc_groups.length > 1" class="ui inverted fluid vertical accordion">
+      <div class="ui inverted fluid vertical accordion">
         <div *ngFor="let group of doc_groups.slice(1); let g_idx = index" class="item">
           <div class="title"
                [class.active]="group.open"
@@ -67,11 +67,11 @@
                [class.active]="doc_groups[0].open"
                [class.selected_document]="'#group-recycle' === sel_eid"
                (click)="onClickGroup('recycle')"
-               (dblclick)="toggleExpandGroup(doc_groups.length)"
+               (dblclick)="toggleExpandGroup(doc_groups.length - 1)"
                (contextmenu)="onRecycleBinContextMenu()"
-               id="group-recycle">
-            <i class="{{doc_groups[0].open ? 'recycle icon' : 'trash alternate icon'}}"></i> {{doc_groups[0].name}}
-            <span class="doc-count">({{getRemovedDocs().length}})</span>
+               id="group-{{doc_groups[0].id}}">
+            <i class="{{doc_groups[0].open ? 'trash alternate outline icon' : 'trash icon'}}"></i>
+             {{doc_groups[0].name}} <span class="doc-count">({{getRemovedDocs().length}})</span>
           </div>
           <div class="content" [class.active]="doc_groups[0].open">
             <table class="ui inverted small very basic table">
