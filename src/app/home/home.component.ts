@@ -56,7 +56,7 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  onClickGroup(group_id: string) {
+  onClickGroup(group_id: string): void {
     const new_sel = `#group-${group_id}`;
     if (new_sel === this.sel_eid) {
       return;
@@ -67,6 +67,16 @@ export class HomeComponent implements OnInit {
     }
     this.sel_eid = new_sel;
     $(this.sel_eid).toggleClass('selected_document');
+  }
+
+  toggleExpandGroup(group_id: string): void {
+    if ($(`#group-${group_id}`).hasClass('active')) {
+      $(`#group-${group_id}`).removeClass('active');
+      $(`#acc-cont-${group_id}`).removeClass('active');
+    } else {
+      $(`#group-${group_id}`).addClass('active');
+      $(`#acc-cont-${group_id}`).addClass('active');
+    }
   }
 
   // 切换当前打开文档前，要先保存
@@ -595,7 +605,10 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     $('.ui.accordion')
       .accordion({
-        exclusive: false
+        // exclusive: false,
+        selector: {
+          trigger: '.icon'  // .title removed
+        }
       });
 
     ipc.send('req-doc-groups');
