@@ -605,9 +605,9 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     $('.ui.accordion')
       .accordion({
-        // exclusive: false,
+        exclusive: false,
         selector: {
-          trigger: '.icon'  // .title removed
+          trigger: '.icon'  // default '.title .icon'
         }
       });
 
