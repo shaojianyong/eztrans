@@ -68,7 +68,7 @@ export class MainComponent implements OnInit {
     } else if (group) {
       group_id = group.id;
     } else {
-      group_id = 'my-translations';
+      group_id = 'default-group';
     }
 
     this.child_open.show(() => {

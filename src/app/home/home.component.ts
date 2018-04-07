@@ -209,7 +209,7 @@ export class HomeComponent implements OnInit {
 
     this.child_msgbox.show(() => {
       // 文档的组织关系挂到默认分组中，同时把文档放入回收站(从回收站撤回时，返回到默认分组中)
-      const toGroup = this.getGroup('my-translations');
+      const toGroup = this.getGroup('default-group');
       for (const doc of this.doc_groups[frIndex].documents) {
         doc.x_state = 1;  // 小组中的文档放入回收站，对于已放入回收站的文档没有影响
         doc.group_id = toGroup.id;
@@ -359,7 +359,8 @@ export class HomeComponent implements OnInit {
     if (docGroups && docGroups.length) {
       this.doc_groups = docGroups;
     } else {
-      this.doc_groups.push(new GroupModel());
+      this.doc_groups.push(new GroupModel({id: 'recycle-group', name: 'Recycle Bin'}));  // 回收站
+      this.doc_groups.push(new GroupModel());  // 默认分组
     }
   }
 
@@ -607,6 +608,12 @@ export class HomeComponent implements OnInit {
           if (this.sel_eid.startsWith('#group-')) {
             const groupId = this.sel_eid.substr('#group-'.length);
             this.getGroup(groupId).open = true;
+
+            if (groupId === 'recycle') {
+              $('#group-recycle>i').removeClass('trash');
+              $('#group-recycle>i').removeClass('alternate');
+              $('#group-recycle>i').addClass('recycle');
+            }
           } else {
             alert('No opened group found!');
           }
@@ -615,6 +622,12 @@ export class HomeComponent implements OnInit {
           if (this.sel_eid.startsWith('#group-')) {
             const groupId = this.sel_eid.substr('#group-'.length);
             this.getGroup(groupId).open = false;
+
+            if (groupId === 'recycle') {
+              $('#group-recycle>i').removeClass('recycle');
+              $('#group-recycle>i').addClass('trash');
+              $('#group-recycle>i').addClass('alternate');
+            }
           } else {
             alert('No closed group found!');
           }
