@@ -69,14 +69,8 @@ export class HomeComponent implements OnInit {
     $(this.sel_eid).toggleClass('selected_document');
   }
 
-  toggleExpandGroup(group_id: string): void {
-    if ($(`#group-${group_id}`).hasClass('active')) {
-      $(`#group-${group_id}`).removeClass('active');
-      $(`#acc-cont-${group_id}`).removeClass('active');
-    } else {
-      $(`#group-${group_id}`).addClass('active');
-      $(`#acc-cont-${group_id}`).addClass('active');
-    }
+  toggleExpandGroup(g_idx: number): void {
+    $('.ui.accordion').accordion('toggle', g_idx);
   }
 
   // 切换当前打开文档前，要先保存
@@ -608,6 +602,22 @@ export class HomeComponent implements OnInit {
         exclusive: false,
         selector: {
           trigger: '.icon'  // default '.title .icon'
+        },
+        onOpen: () => {
+          if (this.sel_eid.startsWith('#group-')) {
+            const groupId = this.sel_eid.substr('#group-'.length);
+            this.getGroup(groupId).open = true;
+          } else {
+            alert('No opened group found!');
+          }
+        },
+        onClose: () => {
+          if (this.sel_eid.startsWith('#group-')) {
+            const groupId = this.sel_eid.substr('#group-'.length);
+            this.getGroup(groupId).open = false;
+          } else {
+            alert('No closed group found!');
+          }
         }
       });
 

@@ -20,10 +20,12 @@
 
     <div id="left-side-list" class="ui item">
       <div class="ui inverted fluid vertical accordion">
-        <div *ngFor="let group of doc_groups" class="item">
-          <div class="title {{('#group-' + group.id === sel_eid) ? 'selected_document' : ''}}"
+        <div *ngFor="let group of doc_groups; let g_idx = index" class="item">
+          <div class="title"
+               [class.active]="group.open"
+               [class.selected_document]="('#group-' + group.id) === sel_eid"
                (click)="onClickGroup(group.id)"
-               (dblclick)="toggleExpandGroup(group.id)"
+               (dblclick)="toggleExpandGroup(g_idx)"
                (contextmenu)="onGroupContextMenu(group)"
                id="group-{{group.id}}">
             <i class="dropdown icon"></i>
@@ -32,15 +34,15 @@
                   (keydown.enter)="endGroupRename($event, group.id)">{{group.name}}</span>
             <span class="doc-count">({{getNormalDocs(group).length}})</span>
           </div>
-          <div class="content" id="acc-cont-{{group.id}}">
+          <div class="content" [class.active]="group.open">
             <table class="ui inverted small very basic table">
               <tbody>
               <tr *ngFor="let doc of getNormalDocs(group)"
+                  [class.selected_document]="('#doc-' + doc.id) === sel_eid"
                   id="doc-{{doc.id}}"
                   (click)="select(doc)"
                   (dblclick)="openDoc()"
-                  (contextmenu)="onDocContextMenu(doc, group)"
-                  class="{{('#doc-' + doc.id === sel_eid) ? 'selected_document' : ''}}">
+                  (contextmenu)="onDocContextMenu(doc, group)">
                 <td class="collapsing left-mark">
                   <i *ngIf="doc.id === cur_doc.id" class="file text icon"></i>
                   <i *ngIf="doc.id !== cur_doc.id" class="file text outline icon"></i>
@@ -61,22 +63,24 @@
         </div>
 
         <div class="item">
-          <div class="title {{('#group-recycle' === sel_eid) ? 'selected_document' : ''}}"
+          <div class="title"
+               [class.active]="doc_groups[doc_groups.length - 1].open"
+               [class.selected_document]="'#group-recycle' === sel_eid"
                (click)="onClickGroup('recycle')"
-               (dblclick)="toggleExpandGroup('recycle')"
+               (dblclick)="toggleExpandGroup(doc_groups.length)"
                (contextmenu)="onRecycleBinContextMenu()"
                id="group-recycle">
             <i class="dropdown icon"></i>
             Recycle Bin <span class="doc-count">({{getRemovedDocs().length}})</span>
           </div>
-          <div class="content" id="acc-cont-recycle">
+          <div class="content" [class.active]="doc_groups[doc_groups.length - 1].open">
             <table class="ui inverted small very basic table">
               <tbody>
               <tr *ngFor="let doc of getRemovedDocs()"
+                  [class.selected_document]="('#doc-' + doc.id) === sel_eid"
                   id="doc-{{doc.id}}"
                   (click)="select(doc)"
-                  (contextmenu)="onRecycleDocContextMenu(doc)"
-                  class="{{('#doc-' + doc.id === sel_eid) ? 'selected_document' : ''}}">
+                  (contextmenu)="onRecycleDocContextMenu(doc)">
                 <td class="collapsing left-mark">
                   <i class="file text outline icon"></i>
                 </td>
