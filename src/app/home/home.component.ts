@@ -317,12 +317,12 @@ export class HomeComponent implements OnInit {
   onDocContextMenu(doc: DocInfoModel, group: GroupModel): void {
     this.select(doc);
     const opened = (doc.id === this.cur_doc.id);
-    ipc.send('show-doc-context-menu', group, this.doc_groups, opened);
+    ipc.send('show-doc-context-menu', doc, group, this.doc_groups, opened);
   }
 
   onGroupContextMenu(group: GroupModel): void {
     this.onClickGroup(group.id);
-    ipc.send('show-group-context-menu', group.id);
+    ipc.send('show-group-context-menu', group, this.doc_groups.indexOf(group), this.doc_groups.length);
   }
 
   onRecycleBinContextMenu(): void {

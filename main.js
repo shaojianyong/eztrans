@@ -360,123 +360,155 @@ function showItemContextMenu(event, params) {
   contextMenu.popup(win);
 }
 
-function showDocContextMenu(event, curGroup, allGroup, opened) {
-  const subMenuItems = [];
-  for (const group of allGroup) {
-    if (group.id === curGroup.id) {
-      continue;
-    }
-    subMenuItems.push({
-      label: group.name,
-      click: docMoveTo,
-      icon: './dist/assets/images/icons/folder.png',
-      group_id: group.id
-    });
-  }
-
+function showDocContextMenu(event, docInfo, curGroup, allGroup, opened) {
   const contextMenu = new Menu();
+  if (docInfo.type === 'article') {
+    const subMenuItems = [];
+    for (const group of allGroup) {
+      if (group.id === curGroup.id || group.id === 'recycle' || group.type === 'book') {
+        continue;
+      }
+      subMenuItems.push({
+        label: group.name,
+        click: docMoveTo,
+        icon: './dist/assets/images/icons/folder.png',
+        group_id: group.id
+      });
+    }
 
-  contextMenu.append(new MenuItem({
-    label: 'Open',
-    click: docOpen,
-    icon: './dist/assets/images/icons/edit.png'
-  }));
+    if (!opened) {
+      contextMenu.append(new MenuItem({
+        label: 'Open',
+        click: docOpen,
+        icon: './dist/assets/images/icons/edit.png'
+      }));
+      contextMenu.append(new MenuItem({type: 'separator'}));
+    }
 
-  contextMenu.append(new MenuItem({type: 'separator'}));
-  contextMenu.append(new MenuItem({
-    label: 'Rename',
-    click: docRename,
-    icon: './dist/assets/images/icons/rename.png'
-  }));
-
-  contextMenu.append(new MenuItem({
-    label: 'Remove',
-    click: docRemove,
-    icon: './dist/assets/images/icons/trash.png'
-  }));
-
-  contextMenu.append(new MenuItem({type: 'separator'}));
-  if (subMenuItems.length) {
     contextMenu.append(new MenuItem({
-      label: 'Move To',
-      icon: './dist/assets/images/icons/moveto.png',
-      submenu: subMenuItems
+      label: 'Rename',
+      click: docRename,
+      icon: './dist/assets/images/icons/rename.png'
     }));
-  }
 
-  contextMenu.append(new MenuItem({
-    label: 'Move Up',
-    click: docMoveUp,
-    icon: './dist/assets/images/icons/arrowup.png'
-  }));
-
-  contextMenu.append(new MenuItem({
-    label: 'Move Down',
-    click: docMoveDown,
-    icon: './dist/assets/images/icons/arrowdown.png'
-  }));
-
-  if (opened) {
-    contextMenu.append(new MenuItem({type: 'separator'}));
     contextMenu.append(new MenuItem({
-      label: 'Export',
-      click: docExport,
-      icon: './dist/assets/images/icons/export.png'
+      label: 'Remove',
+      click: docRemove,
+      icon: './dist/assets/images/icons/trash.png'
     }));
+
+    if (subMenuItems.length || curGroup.documents.length > 1) {
+      contextMenu.append(new MenuItem({type: 'separator'}));
+    }
+    if (subMenuItems.length) {
+      contextMenu.append(new MenuItem({
+        label: 'Move To',
+        icon: './dist/assets/images/icons/moveto.png',
+        submenu: subMenuItems
+      }));
+    }
+
+    let docIdx = 0;
+    for (const di of curGroup.documents) {
+      if (di.id === docInfo.id) {
+        break;
+      }
+      docIdx++;
+    }
+
+    if (docIdx !== 0) {
+      contextMenu.append(new MenuItem({
+        label: 'Move Up',
+        click: docMoveUp,
+        icon: './dist/assets/images/icons/arrowup.png'
+      }));
+    }
+
+    if (docIdx !== curGroup.documents.length - 1) {
+      contextMenu.append(new MenuItem({
+        label: 'Move Down',
+        click: docMoveDown,
+        icon: './dist/assets/images/icons/arrowdown.png'
+      }));
+    }
+
+    if (opened) {
+      contextMenu.append(new MenuItem({type: 'separator'}));
+      contextMenu.append(new MenuItem({
+        label: 'Export',
+        click: docExport,
+        icon: './dist/assets/images/icons/export.png'
+      }));
+    }
+  } else {
+    if (!opened) {
+      contextMenu.append(new MenuItem({
+        label: 'Open',
+        click: docOpen,
+        icon: './dist/assets/images/icons/edit.png'
+      }));
+    }
   }
 
   const win = BrowserWindow.fromWebContents(event.sender);
   contextMenu.popup(win);
 }
 
-function showGroupContextMenu(event, group_id) {
+function showGroupContextMenu(event, group, index, length) {
   const contextMenu = new Menu();
 
-  contextMenu.append(new MenuItem({
-    label: 'Export',
-    click: exportBookReq,
-    icon: './dist/assets/images/icons/export.png',
-    group_id: group_id
-  }));
-
-  contextMenu.append(new MenuItem({
-    label: 'Import',
-    click: importDoc,
-    icon: './dist/assets/images/icons/import.png',
-    group_id: group_id
-  }));
+  if (group.type === 'book') {
+    contextMenu.append(new MenuItem({
+      label: 'Export',
+      click: exportBookReq,
+      icon: './dist/assets/images/icons/export.png',
+      group_id: group.id
+    }));
+  } else {
+    contextMenu.append(new MenuItem({
+      label: 'Import',
+      click: importDoc,
+      icon: './dist/assets/images/icons/import.png',
+      group_id: group.id
+    }));
+  }
 
   contextMenu.append(new MenuItem({type: 'separator'}));
   contextMenu.append(new MenuItem({
     label: 'Rename',
     click: groupRename,
     icon: './dist/assets/images/icons/rename.png',
-    group_id: group_id
+    group_id: group.id
   }));
 
-  if (group_id !== 'my-translations') {
+  if (group.id !== 'default') {
     contextMenu.append(new MenuItem({
       label: 'Delete',
       click: groupDelete,
       icon: './dist/assets/images/icons/delete.png',
-      group_id: group_id
+      group_id: group.id
     }));
   }
 
-  contextMenu.append(new MenuItem({type: 'separator'}));
-  contextMenu.append(new MenuItem({
-    label: 'Move Up',
-    click: groupMoveUp,
-    icon: './dist/assets/images/icons/arrowup.png',
-    group_id: group_id
-  }));
+  // index of 0 is recycle bin
+  if (index !== 1 && index !== 2) {
+    contextMenu.append(new MenuItem({type: 'separator'}));
+    contextMenu.append(new MenuItem({
+      label: 'Move Up',
+      click: groupMoveUp,
+      icon: './dist/assets/images/icons/arrowup.png',
+      group_id: group.id
+    }));
+  }
 
-  contextMenu.append(new MenuItem({
-    label: 'Move Down',
-    click: groupMoveDown,
-    icon: './dist/assets/images/icons/arrowdown.png',
-    group_id: group_id
-  }));
+  if (index !== 1 && index !== length - 1) {
+    contextMenu.append(new MenuItem({
+      label: 'Move Down',
+      click: groupMoveDown,
+      icon: './dist/assets/images/icons/arrowdown.png',
+      group_id: group.id
+    }));
+  }
 
   const win = BrowserWindow.fromWebContents(event.sender);
   contextMenu.popup(win);
