@@ -32,6 +32,7 @@ export class HomeComponent implements OnInit {
   sel_doc: DocInfoModel = null;
   cur_doc = new DocumentModel();  // 指向一个空文档
   dgtree_changed = false;
+  trans_modified = false;
   sel_eid = '';  // 当前选中html元素的id
   search_text = '';
   books = {};
