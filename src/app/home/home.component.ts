@@ -31,7 +31,7 @@ export class HomeComponent implements OnInit {
   cache_docs = {};
   sel_doc: DocInfoModel = null;
   cur_doc = new DocumentModel();  // 指向一个空文档
-  modified_flag = false;
+  dgtree_changed = false;
   sel_eid = '';  // 当前选中html元素的id
   search_text = '';
   books = {};
@@ -104,13 +104,14 @@ export class HomeComponent implements OnInit {
     const doc_name = $(`#doc-${this.sel_doc.id}>td.doc-name`);
     doc_name.attr('contenteditable', 'false');
     this.sel_doc.name = doc_name.text();
+    this.dgtree_changed = true;
     this.updateTitle();
     event.preventDefault();
-    this.modified_flag = true;
   }
 
   removeDoc(): void {
-    this.sel_doc.x_state = 1;  // 标记删除，实现逻辑：切换到已删除分组
+    this.sel_doc.x_state = 1;  // 标记删除
+    this.dgtree_changed = true;
     if (this.sel_doc.id === this.cur_doc.id) {
       this.cur_doc = new DocumentModel();  // 指向一个空文档
       this.updateTitle();
@@ -118,7 +119,6 @@ export class HomeComponent implements OnInit {
     } else {
       this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
     }
-    this.modified_flag = true;
   }
 
   updateTitle(): void {
@@ -136,9 +136,9 @@ export class HomeComponent implements OnInit {
       const temp = group.documents[index];
       group.documents[index] = group.documents[index - 1];
       group.documents[index - 1] = temp;
+      this.dgtree_changed = true;
 
       this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
-      this.modified_flag = true;
     }
   }
 
@@ -149,9 +149,9 @@ export class HomeComponent implements OnInit {
       const temp = group.documents[index];
       group.documents[index] = group.documents[index + 1];
       group.documents[index + 1] = temp;
+      this.dgtree_changed = true;
 
       this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
-      this.modified_flag = true;
     }
   }
 
@@ -162,10 +162,10 @@ export class HomeComponent implements OnInit {
 
     toGroup.documents.push(this.sel_doc);
     frGroup.documents.splice(index, 1);
+    this.dgtree_changed = true;
     this.sel_doc.group_id = toGroup.id;
 
     this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
-    this.modified_flag = true;
   }
 
   exportDoc(): void {
@@ -206,14 +206,15 @@ export class HomeComponent implements OnInit {
     const group_name = $(`#group-${group_id}>span.group-name`);
     group_name.attr('contenteditable', 'false');
     this.getGroup(group_id).name = group_name.text();
+    this.dgtree_changed = true;
 
     event.preventDefault();
-    this.modified_flag = true;
   }
 
   removeGroup(group_id: string): void {
     const group = this.getGroup(group_id);
     group.x_state = 1;  // 标记删除
+    this.dgtree_changed = true;
     if (this.cur_doc.id && this.getDocInfo(this.cur_doc.id).group_id === group_id) {
       this.cur_doc = new DocumentModel();  // 指向一个空文档
       this.updateTitle();
@@ -221,13 +222,12 @@ export class HomeComponent implements OnInit {
     } else {
       this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
     }
-    this.modified_flag = true;
   }
 
   restoreGroup(group_id: string): void {
     this.getGroup(group_id).x_state = 0;
+    this.dgtree_changed = true;
     this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
-    this.modified_flag = true;
   }
 
   onDeleteGroup(group_id: string): void {
@@ -241,13 +241,13 @@ export class HomeComponent implements OnInit {
     this.child_msgbox.show(() => {
       this.deleteGroup(group_id);
       this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
-      this.modified_flag = true;
     });
   }
 
   deleteGroup(group_id: string): void {
     const group = this.getGroup(group_id);
     group.x_state = 2;  // 彻底删除
+    this.dgtree_changed = true;
     if (group.type === 'book') {
       ipc.send('delete-book-folder', group.id);
     } else {
@@ -262,9 +262,9 @@ export class HomeComponent implements OnInit {
       const temp = this.doc_groups[index];
       this.doc_groups[index] = this.doc_groups[index - 1];
       this.doc_groups[index - 1] = temp;
+      this.dgtree_changed = true;
 
       this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
-      this.modified_flag = true;
     }
   }
 
@@ -275,9 +275,9 @@ export class HomeComponent implements OnInit {
       const temp = this.doc_groups[index];
       this.doc_groups[index] = this.doc_groups[index + 1];
       this.doc_groups[index + 1] = temp;
+      this.dgtree_changed = true;
 
       this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
-      this.modified_flag = true;
     }
   }
 
@@ -291,8 +291,8 @@ export class HomeComponent implements OnInit {
 
   restoreDoc(): void {
     this.sel_doc.x_state = 0;
+    this.dgtree_changed = true;
     this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
-    this.modified_flag = true;
   }
 
   onDeleteDoc(): void {
@@ -306,12 +306,12 @@ export class HomeComponent implements OnInit {
     this.child_msgbox.show(() => {
       this.deleteDoc(this.sel_doc);
       this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
-      this.modified_flag = true;
     });
   }
 
   deleteDoc(docInfo: DocInfoModel): void {
     docInfo.x_state = 2;  // 彻底删除
+    this.dgtree_changed = true;
     ipc.send('delete-document-file', docInfo.id);
   }
 
@@ -384,7 +384,6 @@ export class HomeComponent implements OnInit {
         this.deleteDoc(doc);
       }
       this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
-      this.modified_flag = true;
     });
   }
 
@@ -394,6 +393,7 @@ export class HomeComponent implements OnInit {
     } else {
       this.doc_groups.push(new GroupModel({id: 'recycle', name: 'Recycle Bin'}));  // 回收站
       this.doc_groups.push(new GroupModel());  // 默认分组
+      this.dgtree_changed = true;
     }
   }
 
@@ -416,10 +416,10 @@ export class HomeComponent implements OnInit {
 
     const dataType = FunctionUtils.getExtName(fileName).toLowerCase();
     this.cache_docs[docId] = new DocumentModel({id: docId, file_data: fileData, data_type: dataType});
+    this.dgtree_changed = true;
 
     this.select(docInfo);
     this.openDoc(false);
-    this.modified_flag = true;
     return docId;
   }
 
@@ -481,21 +481,21 @@ export class HomeComponent implements OnInit {
 
   // save doc-groups
   saveDocGroups(sync: boolean): void {
-    if (this.modified_flag) {
+    if (this.dgtree_changed) {
       if (sync) {
         const res = ipc.sendSync('save-doc-groups', {
           data: this.doc_groups,
           sync: true
         });
         if (res === 'ok') {
-          this.modified_flag = false;
+          this.dgtree_changed = false;
         }
       } else {
         ipc.send('save-doc-groups', {
           data: this.doc_groups,
           sync: false
         });
-        this.modified_flag = false;
+        this.dgtree_changed = false;
       }
     }
   }
@@ -507,9 +507,9 @@ export class HomeComponent implements OnInit {
       id: group_id,
       name: 'Group-' + ts.substr(2)
     }));
+    this.dgtree_changed = true;
 
     this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
-    this.modified_flag = true;
     this.renameGroup(group_id);
   }
 
@@ -583,6 +583,7 @@ export class HomeComponent implements OnInit {
       name: pkg.metadata.title,
       type: GroupType.BOOK
     }));
+    this.dgtree_changed = true;
 
     for (const itemref of pkg.spine) {
       const rid = itemref['idref'];
@@ -603,10 +604,9 @@ export class HomeComponent implements OnInit {
         file_path: path.join(fullPkgDir, href)
       });
       this.getGroup(bookId).documents.push(diNew);
+      this.dgtree_changed = true;
     }
-
     this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
-    this.modified_flag = true;
   }
 
   exportBook(bookId: string): void {
