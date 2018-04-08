@@ -479,8 +479,8 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  // save doc-groups
-  saveDocGroups(sync: boolean): void {
+  // save doc-group tree
+  saveDGTree(sync: boolean): void {
     if (this.dgtree_changed) {
       if (sync) {
         const res = ipc.sendSync('save-doc-groups', {
@@ -775,7 +775,7 @@ export class HomeComponent implements OnInit {
 
     window.onbeforeunload = () => {
       this.saveCurDocument(true);
-      this.saveDocGroups(true);
+      this.saveDGTree(true);
     };
   }
 
