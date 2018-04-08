@@ -176,6 +176,26 @@ export class HomeComponent implements OnInit {
     this.importEvent.emit({group_id: group_id});
   }
 
+  getNormalGroups(): Array<GroupModel> {
+    const res = [];
+    for (const group of this.doc_groups) {
+      if (group.x_state === 0 && group.id !== 'recycle') {
+        res.push(group);
+      }
+    }
+    return res;
+  }
+
+  getRemovedGroups(): Array<GroupModel> {
+    const res = [];
+    for (const group of this.doc_groups) {
+      if (group.x_state === 1) {
+        res.push(group);
+      }
+    }
+    return res;
+  }
+
   renameGroup(group_id: string): void {
     const group_name = $(`#group-${group_id}>span.group-name`);
     group_name.attr('contenteditable', 'true');
@@ -194,7 +214,7 @@ export class HomeComponent implements OnInit {
   removeGroup(group_id: string): void {
     const group = this.getGroup(group_id);
     group.x_state = 1;  // 标记删除
-    if (this.cur_doc.id && this.getGroup(this.cur_doc.id).id === group_id) {
+    if (this.cur_doc.id && this.getDocInfo(this.cur_doc.id).group_id === group_id) {
       this.cur_doc = new DocumentModel();  // 指向一个空文档
       this.updateTitle();
       this.rerenderEvent.emit({forceShowSelected: false, resetDocument: true});
@@ -204,8 +224,35 @@ export class HomeComponent implements OnInit {
     this.modified_flag = true;
   }
 
-  deleteGroup(group_id: string): void {
+  restoreGroup(group_id: string): void {
+    this.getGroup(group_id).x_state = 0;
+    this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+    this.modified_flag = true;
+  }
 
+  onDeleteGroup(group_id: string): void {
+    this.child_msgbox.setType(0);
+    this.child_msgbox.setHead('Delete Group');
+    this.child_msgbox.setBody('Are you sure you want to delete the group permanently?');
+    this.child_msgbox.setButtonStyle('approve', 'Delete', 'red');
+    this.child_msgbox.setButtonStyle('deny', 'Cancel', 'green');
+    this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+
+    this.child_msgbox.show(() => {
+      this.deleteGroup(group_id);
+      this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+      this.modified_flag = true;
+    });
+  }
+
+  deleteGroup(group_id: string): void {
+    const group = this.getGroup(group_id);
+    group.x_state = 2;  // 彻底删除
+    if (group.type === 'book') {
+      ipc.send('delete-book-folder', group.id);
+    } else {
+      ipc.send('delete-group-files', group.documents);
+    }
   }
 
   moveUpGroup(group_id: string): void {
@@ -248,7 +295,7 @@ export class HomeComponent implements OnInit {
     this.modified_flag = true;
   }
 
-  deleteDoc(): void {
+  onDeleteDoc(): void {
     this.child_msgbox.setType(0);
     this.child_msgbox.setHead('Delete Document');
     this.child_msgbox.setBody('Are you sure you want to delete the document permanently?');
@@ -257,11 +304,15 @@ export class HomeComponent implements OnInit {
     this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
 
     this.child_msgbox.show(() => {
-      this.sel_doc.x_state = 2;  // 彻底删除
-      ipc.send('delete-document-file', this.sel_doc.id);
+      this.deleteDoc(this.sel_doc);
       this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
       this.modified_flag = true;
     });
+  }
+
+  deleteDoc(docInfo: DocInfoModel): void {
+    docInfo.x_state = 2;  // 彻底删除
+    ipc.send('delete-document-file', docInfo.id);
   }
 
   getNormalDocs(group: GroupModel): Array<DocInfoModel> {
@@ -288,19 +339,6 @@ export class HomeComponent implements OnInit {
     return res;
   }
 
-  hasRemovedDocs(): boolean {
-    let res = false;
-    for (const group of this.doc_groups) {
-      for (const doc of group.documents) {
-        if (doc.x_state === 1) {
-          res = true;
-          break;
-        }
-      }
-    }
-    return res;
-  }
-
   onDocContextMenu(doc: DocInfoModel, group: GroupModel): void {
     this.select(doc);
     const opened = (doc.id === this.cur_doc.id);
@@ -314,7 +352,7 @@ export class HomeComponent implements OnInit {
 
   onRecycleBinContextMenu(): void {
     this.onClickGroup('recycle');
-    if (this.hasRemovedDocs()) {
+    if (this.getRemovedDocs().length + this.getRemovedGroups().length) {
       ipc.send('show-recycle-bin-context-menu');
     }
   }
@@ -322,6 +360,11 @@ export class HomeComponent implements OnInit {
   onRecycleDocContextMenu(doc: DocInfoModel): void {
     this.select(doc);
     ipc.send('show-recycle-doc-context-menu');
+  }
+
+  onRecycleGroupContextMenu(group: GroupModel): void {
+    this.onClickGroup(group.id);
+    ipc.send('show-recycle-group-context-menu', group);
   }
 
   emptyRecycleBin(): void {
@@ -333,9 +376,12 @@ export class HomeComponent implements OnInit {
     this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
 
     this.child_msgbox.show(() => {
+      for (const group of this.getRemovedGroups()) {
+        this.deleteGroup(group.id);
+      }
+
       for (const doc of this.getRemovedDocs()) {
-        doc.x_state = 2;  // 彻底删除
-        ipc.send('delete-document-file', doc.id);
+        this.deleteDoc(doc);
       }
       this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
       this.modified_flag = true;
@@ -672,7 +718,15 @@ export class HomeComponent implements OnInit {
     });
 
     ipc.on('doc-delete', (event) => {
-      this.deleteDoc();
+      this.onDeleteDoc();
+    });
+
+    ipc.on('group-restore', (event, group_id) => {
+      this.restoreGroup(group_id);
+    });
+
+    ipc.on('group-delete', (event, group_id) => {
+      this.onDeleteGroup(group_id);
     });
 
     ipc.on('import-doc', (event, group_id) => {

@@ -65,7 +65,7 @@ export class MainComponent implements OnInit {
     const group = this.child_home.getCurSelGroup();
     if (event) {
       group_id = event.group_id;
-    } else if (group) {
+    } else if (group && group.type === 'clip') {
       group_id = group.id;
     } else {
       group_id = 'default';

@@ -278,6 +278,14 @@ function docDelete(menuItem, browserWindow) {
   browserWindow.send('doc-delete');
 }
 
+function groupRestore(menuItem, browserWindow) {
+  browserWindow.send('group-restore', menuItem.group_id);
+}
+
+function groupDelete(menuItem, browserWindow) {
+  browserWindow.send('group-delete', menuItem.group_id);
+}
+
 // target, skipped
 function showItemContextMenu(event, params) {
   const contextMenu = new Menu();
@@ -537,6 +545,29 @@ function showRecycleDocContextMenu(event) {
   contextMenu.popup(win);
 }
 
+function showRecycleGroupContextMenu(event, group) {
+  const contextMenu = new Menu();
+
+  contextMenu.append(new MenuItem({
+    label: 'Restore',
+    click: groupRestore,
+    icon: './dist/assets/images/icons/restore.png',
+    group_id: group.id
+  }));
+
+  contextMenu.append(new MenuItem({type: 'separator'}));
+
+  contextMenu.append(new MenuItem({
+    label: 'Delete',
+    click: groupDelete,
+    icon: './dist/assets/images/icons/delete.png',
+    group_id: group.id
+  }));
+
+  const win = BrowserWindow.fromWebContents(event.sender);
+  contextMenu.popup(win);
+}
+
 function showRecycleBinContextMenu(event) {
   const contextMenu = new Menu();
   contextMenu.append(new MenuItem({
@@ -770,6 +801,19 @@ function exportBook(event, bookId) {
   });
 }
 
+function deleteBookFolder(event, bookId) {
+  const bookdir = path.join(__dirname, 'datafile', bookId);
+  del([bookdir]).then(function(paths) {
+    console.log('Book folder deleted: ' + bookId);
+  });
+}
+
+function deleteGroupFiles(event, documents) {
+  for (const doc of documents) {
+    deleteDocFile(null, doc.id);
+  }
+}
+
 // Handles reading the contents of a file
 ipcMain.on('read-file', readFile);
 ipcMain.on('save-file', saveFile);
@@ -778,6 +822,7 @@ ipcMain.on('show-doc-context-menu', showDocContextMenu);
 ipcMain.on('show-group-context-menu', showGroupContextMenu);
 ipcMain.on('show-recycle-bin-context-menu', showRecycleBinContextMenu);
 ipcMain.on('show-recycle-doc-context-menu', showRecycleDocContextMenu);
+ipcMain.on('show-recycle-group-context-menu', showRecycleGroupContextMenu);
 ipcMain.on('req-doc-groups', reqDocGroups);
 ipcMain.on('save-doc-groups', saveDocGroups);
 ipcMain.on('req-document', reqDocument);
@@ -786,3 +831,5 @@ ipcMain.on('delete-document-file', deleteDocFile);
 ipcMain.on('read-epub-pkg-file', readEpubPkgFile);
 ipcMain.on('read-epub-nav-file', readEpubNavFile);
 ipcMain.on('export-book', exportBook);
+ipcMain.on('delete-book-folder', deleteBookFolder);
+ipcMain.on('delete-group-files', deleteGroupFiles);
