@@ -447,7 +447,7 @@ export class HomeComponent implements OnInit {
 
   // save current document
   saveCurDocument(sync: boolean) {
-    if (!this.cur_doc.id) {
+    if (!this.cur_doc.id || !this.trans_modified) {
       return;
     }
     const docInfo = this.getDocInfo(this.cur_doc.id);
@@ -470,6 +470,8 @@ export class HomeComponent implements OnInit {
     if (docInfo.type === DocType.CHAPTER) {
       this.updateTargetFile(sync);
     }
+
+    this.trans_modified = false;
   }
 
   updateTargetFile(sync: boolean): void {
@@ -772,6 +774,11 @@ export class HomeComponent implements OnInit {
 
     ipc.on('export-book-req', (event, group_id) => {
       this.exportBook(group_id);
+    });
+
+    ipc.on('auto-save-schedule', (event) => {
+      this.saveCurDocument(false);
+      this.saveDGTree(false);
     });
 
     window.onbeforeunload = () => {
