@@ -776,9 +776,11 @@ export class HomeComponent implements OnInit {
       this.exportBook(group_id);
     });
 
+    ipc.send('auto-save-request');
     ipc.on('auto-save-schedule', (event) => {
       this.saveCurDocument(false);
       this.saveDGTree(false);
+      ipc.send('auto-save-request');
     });
 
     window.onbeforeunload = () => {

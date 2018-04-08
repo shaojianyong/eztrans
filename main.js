@@ -810,6 +810,14 @@ function deleteGroupFiles(event, documents) {
   }
 }
 
+// 定时器放入renderer进程回导致页面刷新
+function autoSaveRequest(event) {
+  const timeoutObj = setTimeout(function() {
+    event.sender.send('auto-save-schedule');
+    clearTimeout(timeoutObj);
+  }, 60000);  // 一分钟自动保存一次
+}
+
 // Handles reading the contents of a file
 ipcMain.on('read-file', readFile);
 ipcMain.on('save-file', saveFile);
@@ -829,3 +837,4 @@ ipcMain.on('read-epub-nav-file', readEpubNavFile);
 ipcMain.on('export-book', exportBook);
 ipcMain.on('delete-book-folder', deleteBookFolder);
 ipcMain.on('delete-group-files', deleteGroupFiles);
+ipcMain.on('auto-save-request', autoSaveRequest);
