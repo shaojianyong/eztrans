@@ -191,34 +191,21 @@ export class HomeComponent implements OnInit {
     this.modified_flag = true;
   }
 
-  deleteGroup(group_id: string): void {
-    let frIndex = 0;
-    for (const group of this.doc_groups) {
-      if (group.id === group_id) {
-        frIndex++;
-        break;
-      }
-    }
-
-    this.child_msgbox.setType(0);
-    this.child_msgbox.setHead('Delete Group');
-    this.child_msgbox.setBody('Are you sure you want to delete the group permanently?');
-    this.child_msgbox.setButtonStyle('approve', 'Delete', 'red');
-    this.child_msgbox.setButtonStyle('deny', 'Cancel', 'green');
-    this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
-
-    this.child_msgbox.show(() => {
-      // 文档的组织关系挂到默认分组中，同时把文档放入回收站(从回收站撤回时，返回到默认分组中)
-      const toGroup = this.getGroup('default');
-      for (const doc of this.doc_groups[frIndex].documents) {
-        doc.x_state = 1;  // 小组中的文档放入回收站，对于已放入回收站的文档没有影响
-        doc.group_id = toGroup.id;
-        toGroup.documents.push(doc);
-      }
-      this.doc_groups.splice(frIndex, 1);
+  removeGroup(group_id: string): void {
+    const group = this.getGroup(group_id);
+    group.x_state = 1;  // 标记删除
+    if (this.cur_doc.id && this.getGroup(this.cur_doc.id).id === group_id) {
+      this.cur_doc = new DocumentModel();  // 指向一个空文档
+      this.updateTitle();
+      this.rerenderEvent.emit({forceShowSelected: false, resetDocument: true});
+    } else {
       this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
-      this.modified_flag = true;
-    });
+    }
+    this.modified_flag = true;
+  }
+
+  deleteGroup(group_id: string): void {
+
   }
 
   moveUpGroup(group_id: string): void {
@@ -696,8 +683,8 @@ export class HomeComponent implements OnInit {
       this.renameGroup(group_id);
     });
 
-    ipc.on('group-delete', (event, group_id) => {
-      this.deleteGroup(group_id);
+    ipc.on('group-remove', (event, group_id) => {
+      this.removeGroup(group_id);
     });
 
     ipc.on('group-move-up', (event, group_id) => {

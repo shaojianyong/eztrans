@@ -246,8 +246,8 @@ function groupRename(menuItem, browserWindow) {
   browserWindow.send('group-rename', menuItem.group_id);
 }
 
-function groupDelete(menuItem, browserWindow) {
-  browserWindow.send('group-delete', menuItem.group_id);
+function groupRemove(menuItem, browserWindow) {
+  browserWindow.send('group-remove', menuItem.group_id);
 }
 
 function groupMoveUp(menuItem, browserWindow) {
@@ -485,8 +485,8 @@ function showGroupContextMenu(event, group, index, length) {
 
   if (group.id !== 'default') {
     contextMenu.append(new MenuItem({
-      label: 'Delete',
-      click: groupDelete,
+      label: 'Remove',
+      click: groupRemove,
       icon: './dist/assets/images/icons/delete.png',
       group_id: group.id
     }));
