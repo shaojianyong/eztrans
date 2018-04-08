@@ -450,8 +450,10 @@ function showDocContextMenu(event, docInfo, curGroup, allGroup, opened) {
     }
   }
 
-  const win = BrowserWindow.fromWebContents(event.sender);
-  contextMenu.popup(win);
+  if (contextMenu.items.length) {
+    const win = BrowserWindow.fromWebContents(event.sender);
+    contextMenu.popup(win);
+  }
 }
 
 function showGroupContextMenu(event, group, index, length) {
