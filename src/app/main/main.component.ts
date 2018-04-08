@@ -90,11 +90,17 @@ export class MainComponent implements OnInit {
       return;
     }
 
+    const docInfo = this.child_home.getDocInfo(this.child_home.cur_doc.id);
+    if (docInfo.type === 'chapter') {
+      this.child_home.exportBook(docInfo.group_id);
+      return;
+    }
+
     const expInfo = this.pms.getExportInfo(this.child_home.cur_doc.data_type);
     const options = {
       title: expInfo.title,
       filters: expInfo.filters,
-      defaultPath: this.child_home.getDocInfo(this.child_home.cur_doc.id).name
+      defaultPath: docInfo.name
     };
     dialog.showSaveDialog(options, (filename) => {
       if (filename) {
