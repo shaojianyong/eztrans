@@ -29,41 +29,37 @@ const dgsDb = new loki(path.join(__dirname, 'database', 'dgs.db'), {
 // opened documents
 let openedDocs = {};
 
-
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
-//let transView;
-let preview;
+// let transView;
+// let loginView;
 
 function createWindow() {
   // Create the browser window.
   // electron.Menu.setApplicationMenu(null);  // 隐藏菜单栏
   mainWindow = new BrowserWindow({width: 800, height: 600, minWidth: 800, minHeight: 600});
 
-  preview = new BrowserView();
-  mainWindow.setBrowserView(preview);
+  /*
+  loginView = new BrowserView();
+  mainWindow.setBrowserView(loginView);
   const wcb = mainWindow.getContentBounds();
-  preview.setBounds({x: 0, y: 0, width: wcb.width, height: wcb.height});
-  preview.setAutoResize({width: true, height: true});
-  /*transView.webContents.loadURL(url.format({
+  loginView.setBounds({x: 0, y: 0, width: wcb.width, height: wcb.height});
+  loginView.setAutoResize({width: true, height: true});
+  transView.webContents.loadURL(url.format({
     pathname: path.join(__dirname, 'dist', 'index.html'),
     protocol: 'file:',
     slashes: true
-  }));*/
-
-  preview.webContents.loadURL('https://www.whitehouse.gov/articles/great-debate-presidents-day-washingtons-birthday/');
-
-  mainWindow.setBrowserView(null);
+  }));
+  loginView.webContents.loadURL('https://www.whitehouse.gov/articles/great-debate-presidents-day-washingtons-birthday/');
+  mainWindow.setBrowserView(null);  // 切换回默认视图
+  */
 
   mainWindow.loadURL(url.format({
     pathname: path.join(__dirname, 'dist', 'index.html'),
     protocol: 'file:',
     slashes: true
   }));
-
-  // mainWindow.setBrowserView(preview);
-
 
   // Open the DevTools.
   // transView.webContents.openDevTools();
