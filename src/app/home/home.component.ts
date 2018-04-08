@@ -778,9 +778,12 @@ export class HomeComponent implements OnInit {
 
     ipc.send('auto-save-request');
     ipc.on('auto-save-schedule', (event) => {
-      this.saveCurDocument(false);
-      this.saveDGTree(false);
-      ipc.send('auto-save-request');
+      try {
+        this.saveCurDocument(false);
+        this.saveDGTree(false);
+      } finally {
+        ipc.send('auto-save-request');
+      }
     });
 
     window.onbeforeunload = () => {
