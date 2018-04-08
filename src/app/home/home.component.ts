@@ -472,9 +472,11 @@ export class HomeComponent implements OnInit {
   }
 
   updateTargetFile(sync: boolean): void {
-    const di = this.getDocInfo(this.cur_doc.id);
-    const filePath = di.file_path.replace(path.join(di.group_id, 'src'), path.join(di.group_id, 'dst'));
-    this.updateTargetFileEvent.emit({sync: sync, target: filePath, type: 'xhtml'});
+    if (this.cur_doc.id) {
+      const di = this.getDocInfo(this.cur_doc.id);
+      const filePath = di.file_path.replace(path.join(di.group_id, 'src'), path.join(di.group_id, 'dst'));
+      this.updateTargetFileEvent.emit({sync: sync, target: filePath, type: 'xhtml'});
+    }
   }
 
   // save doc-groups
