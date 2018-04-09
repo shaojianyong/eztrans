@@ -570,6 +570,7 @@ export class MainComponent implements OnInit {
 
   }
 
+  // 返回与自定义翻译一致的参考翻译
   checkFakeCustom(sentence: SentenceModel): number {
     let res = -1;
     if (sentence.source.length === 1) {
@@ -1095,6 +1096,8 @@ export class MainComponent implements OnInit {
       sentence.custom = [];  // 删除虚假的自定义翻译
     }
 
+    this.child_home.trans_modified = true;
+
     this.rerender();
     if (this.search_text) {
       $(`#table-${index}>tbody>tr>td.target-cell`).highlight(this.search_text);
@@ -1167,6 +1170,11 @@ export class MainComponent implements OnInit {
 
   disableDocLink(event: MouseEvent) {
     event.preventDefault();
+  }
+
+  onTargetChanged() {
+    this.updatePreview();
+    this.child_home.trans_modified = true;
   }
 
   ngOnInit() {
