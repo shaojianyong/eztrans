@@ -7,6 +7,7 @@ const { JSDOM } = (<any>window).require('jsdom');
 
 import {ExLinksModule} from '../services/utils/ex-links.module';
 import { FunctionUtils } from '../services/utils/function-utils';
+import { DocInfoModel } from '../services/model/doc-info.model';
 import {VersionModel, SentenceModel, SentenceStatus} from '../services/model/sentence.model';
 import {TranslateModel, TranslateState} from '../services/model/translate.model';
 import {ParserManagerService} from '../parsers/manager/parser-manager.service';
@@ -251,7 +252,7 @@ export class MainComponent implements OnInit {
   }
 
   translate(index: number, sentence: SentenceModel): void {
-    const docId = this.child_home.cur_doc.id;
+    const docInfo = this.child_home.getCurDocInfo();
     for (const engine of this.ems.engine_list) {
       let refIdx = -1;
       for (let i = 0; i < sentence.refers.length; ++i) {
@@ -281,7 +282,7 @@ export class MainComponent implements OnInit {
       }
 
       this.rerender();  // 展示旋转图标
-      engine.translateX(sentence.source.join(' '), refer.target, this.child_home.getCurDocInfo()).subscribe(
+      engine.translateX(sentence.source.join(' '), refer.target, docInfo).subscribe(
         res => {
           if (res.result === 'ok' && refer.target.target_text) {
             refer.target.trans_state = TranslateState.SUCCESS;
@@ -294,30 +295,32 @@ export class MainComponent implements OnInit {
                   sentence.target = refIdx;
                 }
               }
-              if (sentence.target === refIdx && res.doc_id === docId) {
+              if (sentence.target === refIdx && res.doc_id === this.child_home.cur_doc.id) {
                 this.updatePreview();
               }
             } else {
-              this.translateReferSlices(index, sentence, refIdx, docId);
+              this.translateReferSlices(index, sentence, refIdx, docInfo);
             }
           } else {
             refer.target.trans_state = TranslateState.FAILURE;
           }
-          if (res.doc_id === docId && this.getPageRange().indexOf(index) !== -1) {
+          if (res.doc_id === this.child_home.cur_doc.id && this.getPageRange().indexOf(index) !== -1) {
             this.rerender();
           }
+          this.child_home.setTransModifiedFlag(res.doc_id);
         },
         err => {
           refer.target.trans_state = TranslateState.FAILURE;
-          if (err.doc_id === docId && this.getPageRange().indexOf(index) !== -1) {
+          if (err.doc_id === this.child_home.cur_doc.id && this.getPageRange().indexOf(index) !== -1) {
             this.rerender();
           }
+          this.child_home.setTransModifiedFlag(err.doc_id);
         }
       );
     }
   }
 
-  translateReferSlices(index: number, sentence: SentenceModel, refIdx: number, docId: string): void {
+  translateReferSlices(index: number, sentence: SentenceModel, refIdx: number, docInfo: DocInfoModel): void {
     const refer = sentence.refers[refIdx];
     for (let i = 0; i < sentence.source.length; ++i) {
       if (refer.slices[i]) {
@@ -329,7 +332,7 @@ export class MainComponent implements OnInit {
       }
 
       const engine = this.ems.getEngine(refer.engine);
-      engine.translateX(sentence.source[i], refer.slices[i], this.child_home.getCurDocInfo()).subscribe(
+      engine.translateX(sentence.source[i], refer.slices[i], docInfo).subscribe(
         res => {
           if (res.result === 'ok' && refer.slices[i].target_text) {
             refer.slices[i].trans_state = TranslateState.SUCCESS;
@@ -347,7 +350,7 @@ export class MainComponent implements OnInit {
                 }
               }
               this.divideIntegratedTranslation(refer);
-              if (sentence.target === refIdx && res.doc_id === docId) {
+              if (sentence.target === refIdx && res.doc_id === this.child_home.cur_doc.id) {
                 this.updatePreview();
               }
             }
@@ -355,15 +358,17 @@ export class MainComponent implements OnInit {
             refer.slices[i].trans_state = TranslateState.FAILURE;
           }
           // 如果文档没有切换，更新视图，否则，不需要更新
-          if (res.doc_id === docId && this.getPageRange().indexOf(index) !== -1) {
+          if (res.doc_id === this.child_home.cur_doc.id && this.getPageRange().indexOf(index) !== -1) {
             this.rerender();
           }
+          this.child_home.setTransModifiedFlag(res.doc_id);
         },
         err => {
           refer.slices[i].trans_state = TranslateState.FAILURE;
-          if (err.doc_id === docId && this.getPageRange().indexOf(index) !== -1) {
+          if (err.doc_id === this.child_home.cur_doc.id && this.getPageRange().indexOf(index) !== -1) {
             this.rerender();
           }
+          this.child_home.setTransModifiedFlag(err.doc_id);
         }
       );
     }
@@ -1096,7 +1101,7 @@ export class MainComponent implements OnInit {
       sentence.custom = [];  // 删除虚假的自定义翻译
     }
 
-    this.child_home.trans_modified = true;
+    this.child_home.setTransModifiedFlag(this.child_home.cur_doc.id);
 
     this.rerender();
     if (this.search_text) {
@@ -1174,7 +1179,7 @@ export class MainComponent implements OnInit {
 
   onTargetChanged() {
     this.updatePreview();
-    this.child_home.trans_modified = true;
+    this.child_home.setTransModifiedFlag(this.child_home.cur_doc.id);
   }
 
   ngOnInit() {

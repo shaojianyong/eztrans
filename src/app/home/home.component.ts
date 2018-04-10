@@ -32,13 +32,14 @@ export class HomeComponent implements OnInit {
   sel_doc: DocInfoModel = null;
   cur_doc = new DocumentModel();  // 指向一个空文档
   dgtree_changed = false;
-  trans_modified = false;
   sel_eid = '';  // 当前选中html元素的id
   search_text = '';
   books = {};
 
-  constructor(private title: Title) { }
 
+  constructor(private title: Title) {
+
+  }
 
   select(doc: DocInfoModel): void {
     const new_sel = `#doc-${doc.id}`;
@@ -82,7 +83,7 @@ export class HomeComponent implements OnInit {
 
     if (this.sel_doc.id in this.cache_docs) {
       if (this.cur_doc && this.cur_doc.id) {
-        this.saveCurDocument(false);
+        this.saveDocument(this.cur_doc, false);
       }
 
       this.cur_doc = this.cache_docs[this.sel_doc.id];
@@ -445,22 +446,27 @@ export class HomeComponent implements OnInit {
     return res;
   }
 
-  // save current document
-  saveCurDocument(sync: boolean) {
-    if (!this.cur_doc.id || !this.trans_modified) {
+  setTransModifiedFlag(docId: string): void {
+    if (docId in this.cache_docs) {
+      this.cache_docs[docId].modified = true;
+    }
+  }
+
+  saveDocument(doc: DocumentModel, sync: boolean) {
+    if (!doc.modified) {
       return;
     }
-    const docInfo = this.getDocInfo(this.cur_doc.id);
+    const docInfo = this.getDocInfo(doc.id);
     if (sync) {
       ipc.sendSync('save-document', {
-        data: this.cur_doc,
+        data: doc,
         type: docInfo.type,
         group_id: docInfo.group_id,
         sync: true
       });
     } else {
       ipc.send('save-document', {
-        data: this.cur_doc,
+        data: doc,
         type: docInfo.type,
         group_id: docInfo.group_id,
         sync: false
@@ -468,18 +474,24 @@ export class HomeComponent implements OnInit {
     }
     // 同步更新翻译结果文件
     if (docInfo.type === DocType.CHAPTER) {
-      this.updateTargetFile(sync);
+      this.updateTargetFile(doc.id, sync);
     }
-
-    this.trans_modified = false;
+    doc.modified = false;
   }
 
-  updateTargetFile(sync: boolean): void {
-    if (this.cur_doc.id) {
-      const di = this.getDocInfo(this.cur_doc.id);
-      const filePath = di.file_path.replace(path.join(di.group_id, 'src'), path.join(di.group_id, 'dst'));
-      this.updateTargetFileEvent.emit({sync: sync, target: filePath, type: 'xhtml'});
+  // save all modified documents
+  saveAllDocuments(sync: boolean): void {
+    for (const docId in this.cache_docs) {
+      if (this.cache_docs.hasOwnProperty(docId)) {
+        this.saveDocument(this.cache_docs[docId], sync);
+      }
     }
+  }
+
+  updateTargetFile(docId: string, sync: boolean): void {
+    const di = this.getDocInfo(docId);
+    const filePath = di.file_path.replace(path.join(di.group_id, 'src'), path.join(di.group_id, 'dst'));
+    this.updateTargetFileEvent.emit({sync: sync, target: filePath, type: 'xhtml'});
   }
 
   // save doc-group tree
@@ -613,7 +625,9 @@ export class HomeComponent implements OnInit {
   }
 
   exportBook(bookId: string): void {
-    this.updateTargetFile(true);
+    if (this.cur_doc.id) {
+      this.updateTargetFile(this.cur_doc.id, true);
+    }
     ipc.send('export-book', bookId);
   }
 
@@ -779,7 +793,7 @@ export class HomeComponent implements OnInit {
     ipc.send('auto-save-request');
     ipc.on('auto-save-schedule', (event) => {
       try {
-        this.saveCurDocument(false);
+        this.saveAllDocuments(false);
         this.saveDGTree(false);
       } finally {
         ipc.send('auto-save-request');
@@ -787,7 +801,7 @@ export class HomeComponent implements OnInit {
     });
 
     window.onbeforeunload = () => {
-      this.saveCurDocument(true);
+      this.saveAllDocuments(true);
       this.saveDGTree(true);
     };
   }
