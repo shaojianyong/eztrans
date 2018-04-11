@@ -7,6 +7,7 @@ const ipc = electron.ipcRenderer;
 
 import Epub from '../services/epub/epub';
 import { FunctionUtils } from '../services/utils/function-utils';
+import { AppdataModel } from '../services/model/appdata.model';
 import { DocumentModel } from '../services/model/document.model';
 import { TranslateState } from '../services/model/translate.model';
 import { GroupType, GroupModel } from '../services/model/group.model';
@@ -35,6 +36,7 @@ export class HomeComponent implements OnInit {
   sel_eid = '';  // 当前选中html元素的id
   search_text = '';
   books = {};
+  app_data: AppdataModel;
 
 
   constructor(private title: Title) {
@@ -515,6 +517,13 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  saveAppData(): void {
+    const res = ipc.sendSync('save-app-data', this.app_data);
+    if (res !== 'ok') {
+      alert('Save app data failed!');
+    }
+  }
+
   addGroup(): void {
     const ts = moment().format('YYYYMMDDHHmmssSSS');
     const group_id = 'g' + ts;
@@ -801,8 +810,10 @@ export class HomeComponent implements OnInit {
     });
 
     window.onbeforeunload = () => {
+      this.app_data.last_open_doc_id = this.cur_doc.id;
       this.saveAllDocuments(true);
       this.saveDGTree(true);
+      this.saveAppData();
     };
   }
 

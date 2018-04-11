@@ -738,6 +738,10 @@ function saveDocument(event, params) {
   });
 }
 
+function saveAppData(event, appData) {
+
+}
+
 function deleteDocFile(event, doc_id) {
   // close database
   const docDb = openedDocs[doc_id];
@@ -831,6 +835,7 @@ ipcMain.on('req-doc-groups', reqDocGroups);
 ipcMain.on('save-doc-groups', saveDocGroups);
 ipcMain.on('req-document', reqDocument);
 ipcMain.on('save-document', saveDocument);
+ipcMain.on('save-app-data', saveAppData);
 ipcMain.on('delete-document-file', deleteDocFile);
 ipcMain.on('read-epub-pkg-file', readEpubPkgFile);
 ipcMain.on('read-epub-nav-file', readEpubNavFile);
