@@ -518,6 +518,7 @@ export class HomeComponent implements OnInit {
   }
 
   saveAppData(): void {
+    this.app_data.last_open_doc_id = this.cur_doc.id;
     const res = ipc.sendSync('save-app-data', this.app_data);
     if (res !== 'ok') {
       alert('Save app data failed!');
@@ -810,7 +811,6 @@ export class HomeComponent implements OnInit {
     });
 
     window.onbeforeunload = () => {
-      this.app_data.last_open_doc_id = this.cur_doc.id;
       this.saveAllDocuments(true);
       this.saveDGTree(true);
       this.saveAppData();
