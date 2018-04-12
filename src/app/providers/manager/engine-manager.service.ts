@@ -24,7 +24,7 @@ export class EngineManagerService {
     private baidu: BaiduFanyiService,
     private iciba: IcibaTransService
     ) {
-    this.engine_list = [google];
+    this.engine_list = [google, baidu, iciba];
   }
 
   getEngine(name: string) {

@@ -813,7 +813,7 @@ export class HomeComponent implements OnInit {
     window.onbeforeunload = () => {
       this.saveAllDocuments(true);
       this.saveDGTree(true);
-      this.saveAppData();
+      // this.saveAppData();  TODO: 实现这个功能
     };
   }
 

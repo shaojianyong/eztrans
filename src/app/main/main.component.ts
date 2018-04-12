@@ -349,7 +349,7 @@ export class MainComponent implements OnInit {
                   sentence.target = refIdx;
                 }
               }
-              this.divideIntegratedTranslation(refer);
+              // this.divideIntegratedTranslation(refer);  TODO: 暂时屏蔽掉可能导致死循环的代码
               if (sentence.target === refIdx && res.doc_id === this.child_home.cur_doc.id) {
                 this.updatePreview();
               }
