@@ -81,7 +81,17 @@ function hitTest(node, hitObj) {
     && SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
     const testRes = testMiniTranslateUnit(node);
     if (testRes === 1) {
-      if (hitObj.obj === node || hitObj.obj === node.parentNode) {
+      var hitMtu = false;
+      var eleObj = hitObj.obj;
+      while (eleObj) {
+        if (eleObj === node) {
+          hitMtu = true;
+          break;
+        }
+        eleObj = eleObj.parentNode;
+      }
+
+      if (hitMtu) {
         hitObj.tgt = hitObj.idx;
         hitObj.mue = node;
         return;
