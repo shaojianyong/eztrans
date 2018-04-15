@@ -25,6 +25,7 @@ export class VersionModel {
 // 句段模型
 export class SentenceModel {
   source: Array<string>;
+  txtags: Array<string>;  // TextNode所在的element标签
   target: number;
   ignore: boolean;  // 跳过，不需要翻译
   marked: boolean;  // 翻译完成标记
@@ -34,6 +35,7 @@ export class SentenceModel {
 
   constructor(obj?: any) {
     this.source = obj && obj.source || [];
+    this.txtags = obj && obj.txtags || [];
     this.target = obj && obj.target || -2;
     this.ignore = obj && obj.ignore || false;
     this.marked = obj && obj.marked || false;

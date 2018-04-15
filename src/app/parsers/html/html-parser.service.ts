@@ -6,16 +6,17 @@ import { ParserService } from '../base/parser.service';
 const SKIP_ELEMENTS = ['style', 'script', 'pre', 'code', 'noscript'];
 
 
-function getHtmlNodeTexts(node: any, nodeTexts: Array<string>): void {
+function getHtmlNodeTexts(node: any, nodeTexts: Array<string>, nodeTags: Array<string>): void {
   if (node.nodeType === Node.TEXT_NODE) {
     if (node.nodeValue.trim()) {
       nodeTexts.push(node.nodeValue);
+      nodeTags.push(node.parentElement.tagName.toLowerCase());
     }
     return;
   }
 
   for (let i = 0; i < node.childNodes.length; ++i) {
-    getHtmlNodeTexts(node.childNodes[i], nodeTexts);
+    getHtmlNodeTexts(node.childNodes[i], nodeTexts, nodeTags);
   }
 }
 
@@ -88,8 +89,10 @@ export class HtmlParserService extends ParserService {
       const testRes = testMiniTranslateUnit(node);
       if (testRes === 1) {
         const mue = {source: []};
-        getHtmlNodeTexts(node, mue.source);
+        const txtags = [];
+        getHtmlNodeTexts(node, mue.source, txtags);
         if (mue.source.length > 1) {
+          mue['txtags'] = txtags;
           mue['elhtml'] = (<any>node).outerHTML;
         }
         observer.next(mue);
