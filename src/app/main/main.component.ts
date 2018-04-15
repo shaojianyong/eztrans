@@ -674,16 +674,19 @@ export class MainComponent implements OnInit {
   // stackoverflow.com/questions/44210786/style-not-working-for-innerhtml-in-angular-2-typescript
   addSpanParentForTextNode(xmldoc: Document, node: Node, args: any): void {
     for (let i = 0; i < node.childNodes.length; ++i) {
-      if (node.childNodes[i].nodeType === Node.TEXT_NODE) {
-        const span = xmldoc.createElement('span');
-        if (this.cur_slice === args.slice++ && args.index === this.cur_index) {
-          span.setAttribute('class', 'focused-slice');
+      const childNode = node.childNodes[i];
+      if (childNode.nodeType === Node.TEXT_NODE) {
+        if (childNode.nodeValue.trim()) {
+          const span = xmldoc.createElement('span');
+          if (this.cur_slice === args.slice++ && args.index === this.cur_index) {
+            span.setAttribute('class', 'focused-slice');
+          }
+          const text = xmldoc.createTextNode(childNode.nodeValue);
+          span.appendChild(text);
+          node.replaceChild(span, childNode);
         }
-        const text = xmldoc.createTextNode(node.childNodes[i].nodeValue);
-        span.appendChild(text);
-        node.replaceChild(span, node.childNodes[i]);
       } else {
-        this.addSpanParentForTextNode(xmldoc, node.childNodes[i], args);
+        this.addSpanParentForTextNode(xmldoc, childNode, args);
       }
     }
   }
