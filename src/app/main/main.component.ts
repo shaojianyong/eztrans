@@ -1,9 +1,10 @@
-import {Component, OnInit, ChangeDetectorRef, ViewChild, HostListener} from '@angular/core';
+import {Component, OnInit, ChangeDetectorRef, ViewChild, HostListener, ViewEncapsulation} from '@angular/core';
 import {Title} from '@angular/platform-browser';
 
 const {ipcRenderer, remote} = (<any>window).require('electron');
 const {dialog, Menu, MenuItem} = remote;
 const { JSDOM } = (<any>window).require('jsdom');
+const { DOMParser, XMLSerializer } = (<any>window).require('xmldom');
 
 import {ExLinksModule} from '../services/utils/ex-links.module';
 import { FunctionUtils } from '../services/utils/function-utils';
@@ -20,15 +21,17 @@ import {StatisticsModel} from '../services/model/statistics.model';
 import {OpenComponent} from '../open/open.component';
 import {setHtmlNodeTexts} from '../parsers/html/html-parser.service';
 
-
+// encapsulation - stackoverflow.com/questions/44210786/style-not-working-for-innerhtml-in-angular-2-typescript
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss'],
-  providers: [EngineManagerService, ParserManagerService]
+  providers: [EngineManagerService, ParserManagerService],
+  encapsulation: ViewEncapsulation.None
 })
 export class MainComponent implements OnInit {
   cur_index = -1;
+  cur_slice = -1;
   cur_page = 0;
   page_size = 50;
   search_text = '';
@@ -53,6 +56,7 @@ export class MainComponent implements OnInit {
   reset(): void {
     this.cur_page = 0;
     this.cur_index = -1;
+    this.cur_slice = -1;
     document.getElementById('trans-list').scrollTop = 0;
     this.search_text = '';
     $('#main-search').val('');
@@ -646,22 +650,42 @@ export class MainComponent implements OnInit {
     return frag.firstChild.innerHTML;
   }
 
-  getSrcSliceHtmls(index: number): Array<string> {
+  getSourceHtmlWithSpan(index: number): string {
     const sentence = this.child_home.cur_doc.sentences[index];
     if (sentence.source.length === 1) {
-      return [sentence.source[0]];
+      return sentence.source[0];
     }
 
-    const res = [];
-    const frag = JSDOM.fragment(sentence.elhtml);
-    for (const node of frag.firstChild.childNodes) {
-      if (node.nodeType === Node.TEXT_NODE) {
-        res.push(node.nodeValue);
+    const parser = new DOMParser();
+    const xmldoc = parser.parseFromString(sentence.elhtml, 'text/xml');
+    const args = {
+      index: index,
+      slice: 0
+    };
+    this.addSpanParentForTextNode(xmldoc, xmldoc, args);
+
+    const serial = new XMLSerializer();
+    const res = serial.serializeToString(xmldoc);
+    const beg = res.indexOf('>') + 1;
+    const end = res.lastIndexOf('<');
+    return res.substring(beg, end);
+  }
+
+  // stackoverflow.com/questions/44210786/style-not-working-for-innerhtml-in-angular-2-typescript
+  addSpanParentForTextNode(xmldoc: Document, node: Node, args: any): void {
+    for (let i = 0; i < node.childNodes.length; ++i) {
+      if (node.childNodes[i].nodeType === Node.TEXT_NODE) {
+        const span = xmldoc.createElement('span');
+        if (this.cur_slice === args.slice++ && args.index === this.cur_index) {
+          span.setAttribute('class', 'focused-slice');
+        }
+        const text = xmldoc.createTextNode(node.childNodes[i].nodeValue);
+        span.appendChild(text);
+        node.replaceChild(span, node.childNodes[i]);
       } else {
-        res.push(node.outerHTML);
+        this.addSpanParentForTextNode(xmldoc, node.childNodes[i], args);
       }
     }
-    return res;
   }
 
   getTargetText(index: number): string {
@@ -716,16 +740,6 @@ export class MainComponent implements OnInit {
     };
     setHtmlNodeTexts(frag.firstChild, newData);
     return frag.firstChild.innerHTML;
-  }
-
-  // 根据是否为TEXT_NODE节点设定对应的span背景色
-  isSliceTextNode(index: number, slice: number): boolean {
-    const sentence = this.child_home.cur_doc.sentences[index];
-    if (sentence.source.length === 1) {
-      return true;
-    }
-    const frag = JSDOM.fragment(sentence.elhtml);
-    return (frag.firstChild.childNodes[slice].nodeType === Node.TEXT_NODE);
   }
 
   getPageCount(): number {
@@ -930,6 +944,7 @@ export class MainComponent implements OnInit {
           if (this.cur_index !== -1) {
             if (this.getPageRange().indexOf(this.cur_index) === -1) {
               this.cur_index = -1;
+              this.cur_slice = -1;
             }
           }
           this.rerender();
@@ -1035,6 +1050,7 @@ export class MainComponent implements OnInit {
       if (this.cur_index !== -1) {
         if (this.getPageRange().indexOf(this.cur_index) === -1) {
           this.cur_index = -1;
+          this.cur_slice = -1;
         }
       }
       this.rerender();
@@ -1060,6 +1076,7 @@ export class MainComponent implements OnInit {
     if (this.cur_index !== -1) {
       if (this.getPageRange().indexOf(this.cur_index) === -1) {
         this.cur_index = -1;
+        this.cur_slice = -1;
       }
     }
     this.rerender();
@@ -1089,7 +1106,8 @@ export class MainComponent implements OnInit {
     }
     const sentence = this.child_home.cur_doc.sentences[index];
     if (sentence.source.length > 1) {
-      $(`#table-${index}>tbody>tr>td>span#src-slice-${index}-${sno}`).toggleClass('focused-slice');
+      this.cur_slice = sno;
+      this.rerender();
     }
   }
 
@@ -1102,13 +1120,13 @@ export class MainComponent implements OnInit {
     }
 
     this.child_home.setTransModifiedFlag(this.child_home.cur_doc.id);
+    if (sentence.source.length > 1) {
+      this.cur_slice = -1;
+    }
 
     this.rerender();
     if (this.search_text) {
       $(`#table-${index}>tbody>tr>td.target-cell`).highlight(this.search_text);
-    }
-    if (sentence.source.length > 1) {
-      $(`#table-${index}>tbody>tr>td>span#src-slice-${index}-${sno}`).toggleClass('focused-slice');
     }
   }
 
@@ -1136,6 +1154,7 @@ export class MainComponent implements OnInit {
       const page = this.getPageIndex(hit);
       if (page !== -1) {
         this.cur_index = hit;
+        this.cur_slice = -1;
         this.cur_page = page;  // flip page
         this.rerender();
         this.showSelectedItem();
