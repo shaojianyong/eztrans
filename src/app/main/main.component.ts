@@ -21,6 +21,9 @@ import {StatisticsModel} from '../services/model/statistics.model';
 import {OpenComponent} from '../open/open.component';
 import {setHtmlNodeTexts} from '../parsers/html/html-parser.service';
 
+const SKIP_ELEMENTS = ['style', 'script', 'pre', 'code', 'noscript'];
+
+
 // encapsulation - stackoverflow.com/questions/44210786/style-not-working-for-innerhtml-in-angular-2-typescript
 @Component({
   selector: 'app-main',
@@ -333,6 +336,12 @@ export class MainComponent implements OnInit {
         }
       } else {
         refer.slices[i] = new TranslateModel({trans_state: TranslateState.REQUESTED});
+        if (SKIP_ELEMENTS.indexOf(sentence.txtags[i]) !== -1) {
+          refer.slices[i].target_text = sentence.source[i];
+          refer.slices[i].trans_state = TranslateState.SUCCESS;
+          refer.slices[i].trans_grade = 0;
+          continue;  // 不需要翻译
+        }
       }
 
       const engine = this.ems.getEngine(refer.engine);
@@ -1219,7 +1228,7 @@ export class MainComponent implements OnInit {
           srcText = srcText.replace(/\r\n|\n/g, ' ');
           srcText = srcText.replace(/\s{2,}/g, ' ').trim();*/
 
-          const sentence = new SentenceModel({ source: res.source, elhtml: res.elhtml });
+          const sentence = new SentenceModel({ source: res.source, txtags: res.txtags, elhtml: res.elhtml });
           if (docId in self.child_home.cache_docs) {
             const doc = self.child_home.cache_docs[docId];
             doc.sentences.push(sentence);

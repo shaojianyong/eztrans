@@ -7,21 +7,22 @@ import { ParserService } from '../base/parser.service';
 const SKIP_ELEMENTS = ['style', 'script', 'pre', 'code', 'noscript'];
 
 
-function getHtmlNodeTexts(node: any, nodeTexts: Array<string>): void {
+function getHtmlNodeTexts(node: Node, nodeTexts: Array<string>, nodeTags: Array<string>): void {
   if (node.nodeType === Node.TEXT_NODE) {
     if (node.nodeValue.trim()) {
       nodeTexts.push(node.nodeValue);
+      nodeTags.push(node.parentNode.nodeName.toLowerCase());
     }
     return;
   }
 
   for (let i = 0; i < node.childNodes.length; ++i) {
-    getHtmlNodeTexts(node.childNodes[i], nodeTexts);
+    getHtmlNodeTexts(node.childNodes[i], nodeTexts, nodeTags);
   }
 }
 
 // stackoverflow.com/questions/32850812/node-xmldom-how-do-i-change-the-value-of-a-single-xml-field-in-javascript
-function setHtmlNodeTexts(node: any, newData: any): void {
+export function setHtmlNodeTexts(node: Node, newData: any): void {
   if (node.nodeType === Node.TEXT_NODE) {
     if (node.nodeValue.trim()) {
       const newVal = newData.texts[newData.index];
@@ -38,7 +39,7 @@ function setHtmlNodeTexts(node: any, newData: any): void {
   }
 }
 
-function testMiniTranslateUnit(node: any): number {
+function testMiniTranslateUnit(node: Node): number {
   if (node.nodeType !== Node.DOCUMENT_NODE && !(node.textContent && node.textContent.trim())) {
     return 0;  // non translate-unit, no text node, no translate need
   }
@@ -107,9 +108,11 @@ export class XhtmlParserService extends ParserService {
       const testRes = testMiniTranslateUnit(node);
       if (testRes === 1) {
         const mue = {source: []};
-        getHtmlNodeTexts(node, mue.source);
+        const txtags = [];
+        getHtmlNodeTexts(node, mue.source, txtags);
         if (mue.source.length > 1) {
           const serial = new XMLSerializer();
+          mue['txtags'] = txtags;
           mue['elhtml'] = serial.serializeToString(node);
         }
         observer.next(mue);
