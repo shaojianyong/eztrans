@@ -16,7 +16,7 @@
   </div>
   <!-- important: idx定义要用let，否则事件处理函数不能用它作为参数 -->
   <div *ngFor="let refer of sentence.refers; let idx = index" class="ui vertical segment">
-    <p [innerHTML]="getTargetHtml(refer)" (click)="disableDocLink($event)">
+    <p [innerHTML]="getReferHtml(refer)" (click)="disableDocLink($event)">
     </p>
     <div class="ui small secondary menu">
       <a class="item" (click)="selectTranslation(idx)">

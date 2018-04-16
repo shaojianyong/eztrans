@@ -6,6 +6,7 @@ const {dialog, Menu, MenuItem} = remote;
 const { JSDOM } = (<any>window).require('jsdom');
 const { DOMParser, XMLSerializer } = (<any>window).require('xmldom');
 
+import { AppUtils } from '../services/model/app-utils';
 import {ExLinksModule} from '../services/utils/ex-links.module';
 import { FunctionUtils } from '../services/utils/function-utils';
 import { DocInfoModel } from '../services/model/doc-info.model';
@@ -19,10 +20,9 @@ import {AboutComponent} from '../about/about.component';
 import {SettingsComponent} from '../settings/settings.component';
 import {StatisticsModel} from '../services/model/statistics.model';
 import {OpenComponent} from '../open/open.component';
-import {setHtmlNodeTexts} from '../parsers/html/html-parser.service';
+
 
 const SKIP_ELEMENTS = ['style', 'script', 'pre', 'code', 'noscript'];
-
 
 // encapsulation - stackoverflow.com/questions/44210786/style-not-working-for-innerhtml-in-angular-2-typescript
 @Component({
@@ -363,7 +363,7 @@ export class MainComponent implements OnInit {
       } else {
         refer.slices[i] = new TranslateModel({trans_state: TranslateState.REQUESTED});
         if (SKIP_ELEMENTS.indexOf(sentence.txtags[i]) !== -1) {
-          refer.slices[i].target_text = sentence.source[i];
+          refer.slices[i].target_text = sentence.ntsphs[i];
           refer.slices[i].trans_state = TranslateState.SUCCESS;
           refer.slices[i].trans_grade = 0;
           continue;  // 不需要翻译
@@ -388,7 +388,7 @@ export class MainComponent implements OnInit {
                   sentence.target = refIdx;
                 }
               }
-              this.divideIntegratedTranslation(refer);  // TODO: 暂时屏蔽掉可能导致死循环的代码
+              // this.divideIntegratedTranslation(refer);  // TODO: 暂时屏蔽掉可能导致死循环的代码
               if (sentence.target === refIdx && res.doc_id === this.child_home.cur_doc.id) {
                 this.updatePreview();
               }
@@ -631,7 +631,7 @@ export class MainComponent implements OnInit {
     for (let i = 0; i < sentence.refers.length; ++i) {
       let allSame = true;
       const refer = sentence.refers[i];
-      const referTexts = this.getReferTexts(refer);
+      const referTexts = AppUtils.getReferTexts(sentence, refer);
       for (let r = 0; r < sentence.source.length; ++r) {
         if (referTexts[r] !== sentence.custom[r]) {
           allSame = false;
@@ -730,54 +730,17 @@ export class MainComponent implements OnInit {
     if (!this.isTargetVisible(index)) {
       return '';
     }
-    return this.getTargetTexts(index).join(' ');
-  }
-
-  getReferTexts(refer: VersionModel): Array<string> {
-    const res = [];
-    if (refer.divides.length === refer.slices.length + 1) {
-      for (let i = 0; i < refer.slices.length; ++i) {
-        res.push(refer.target.target_text.substring(refer.divides[i], refer.divides[i + 1]));
-      }
-    } else {
-      for (const slice of refer.slices) {
-        res.push(slice.target_text);
-      }
-    }
-    return res;
-  }
-
-  getTargetTexts(index: number): Array<string> {
     const sentence = this.child_home.cur_doc.sentences[index];
-    if (sentence.target === -1) {
-      return sentence.custom;
-    }
+    return this.getTargetTexts(sentence).join(' ');
+  }
 
-    let res = null;
-    const refer = sentence.refers[sentence.target];
-    if (sentence.source.length === 1) {
-      res = [refer.target.target_text];
-    } else {
-      res = this.getReferTexts(refer);
-    }
-    return res;
+  getTargetTexts(sentence: SentenceModel): Array<string> {
+    return AppUtils.getTargetTexts(sentence);
   }
 
   getTargetHtml(index: number): string {
     const sentence = this.child_home.cur_doc.sentences[index];
-    const tgtTexts = this.getTargetTexts(index);
-
-    if (tgtTexts.length === 1) {
-      return tgtTexts[0];
-    }
-
-    const frag = JSDOM.fragment(sentence.elhtml);
-    const newData = {
-      texts: tgtTexts,
-      index: 0
-    };
-    setHtmlNodeTexts(frag.firstChild, newData);
-    return frag.firstChild.innerHTML;
+    return AppUtils.getTargetHtml(sentence);
   }
 
   getPageCount(): number {
@@ -1124,7 +1087,7 @@ export class MainComponent implements OnInit {
   onSliceEditInput(sliceInput: HTMLElement, index: number, slieceNo: number): void {
     const sentence = this.child_home.cur_doc.sentences[index];
     if (sentence.target !== -1) {
-      sentence.custom = this.getTargetTexts(index);
+      sentence.custom = this.getTargetTexts(sentence);
       sentence.target = -1;
     }
     if (sliceInput.textContent.trim()) {

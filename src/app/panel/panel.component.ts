@@ -4,8 +4,8 @@ const { JSDOM } = (<any>window).require('jsdom');
 import { VersionModel, SentenceModel } from '../services/model/sentence.model';
 import { TranslateModel } from '../services/model/translate.model';
 import {EngineManagerService} from '../providers/manager/engine-manager.service';
-import {setHtmlNodeTexts} from '../parsers/html/html-parser.service';
 import {FunctionUtils} from '../services/utils/function-utils';
+import { AppUtils } from '../services/model/app-utils';
 import engines from '../providers/manager/engines';
 
 
@@ -25,36 +25,8 @@ export class PanelComponent implements OnInit {
   constructor(private ems: EngineManagerService) {
   }
 
-  getSliceTexts(refer: VersionModel): Array<string> {
-    const res = [];
-    if (this.sentence.source.length === 1) {
-      res[0] = refer.target.target_text;
-    } else if (refer.divides.length === this.sentence.source.length + 1) {
-      for (let i = 0; i < this.sentence.source.length; ++i) {
-        res.push(refer.target.target_text.substring(refer.divides[i], refer.divides[i + 1]));
-      }
-    } else {
-      for (const slice of refer.slices) {
-        res.push(slice.target_text);
-      }
-    }
-    return res;
-  }
-
-  // deep copy: stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-deep-clone-an-object-in-javascript
-  getTargetHtml(refer: VersionModel): string {
-    const sliceTexts = this.getSliceTexts(refer);
-    if (sliceTexts.length === 1) {
-      return sliceTexts[0];
-    }
-
-    const newData = {
-      texts: sliceTexts,
-      index: 0
-    };
-    const frag = JSDOM.fragment(this.sentence.elhtml);
-    setHtmlNodeTexts(frag.firstChild, newData);
-    return frag.firstChild.innerHTML;
+  getReferHtml(refer: VersionModel): string {
+    return AppUtils.getReferHtml(this.sentence, refer);
   }
 
   selectTranslation(refer_index: number): void {
@@ -70,17 +42,7 @@ export class PanelComponent implements OnInit {
   }
 
   getCustomHtml(): string {
-    if (this.sentence.source.length === 1) {
-      return this.sentence.custom[0];
-    }
-
-    const frag = JSDOM.fragment(this.sentence.elhtml);
-    const newData = {
-      texts: this.sentence.custom,
-      index: 0
-    };
-    setHtmlNodeTexts(frag.firstChild, newData);
-    return frag.firstChild.innerHTML;
+    return AppUtils.getCustomHtml(this.sentence);
   }
 
   updateCustomView(): void {
