@@ -4,6 +4,10 @@ import { ParserUtils } from '../../parsers/base/parser-utils';
 
 export class AppUtils {
   static getReferTexts(sentence: SentenceModel, refer: VersionModel): Array<string> {
+    if (sentence.source.length === 1) {
+      return [refer.target.target_text];
+    }
+
     const res = [];
     if (refer.divides.length === refer.slices.length + 1) {
       for (let i = 0; i < refer.slices.length; ++i) {
@@ -27,16 +31,14 @@ export class AppUtils {
   }
 
   static getTargetTexts(sentence: SentenceModel): Array<string> {
-    if (sentence.target === -1) {
-      return sentence.custom;
-    }
-
     let res = null;
-    const refer = sentence.refers[sentence.target];
-    if (sentence.source.length === 1) {
-      res = [refer.target.target_text];
-    } else {
+    if (sentence.target === -1) {
+      res = sentence.custom;
+    } else if (sentence.target > -1) {
+      const refer = sentence.refers[sentence.target];
       res = AppUtils.getReferTexts(sentence, refer);
+    } else {
+      res = [];
     }
     return res;
   }
