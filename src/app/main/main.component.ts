@@ -121,33 +121,10 @@ export class MainComponent implements OnInit {
   getLastTransData(forPreview = false): Array<string> {
     let segments = [];
     for (const sentence of this.child_home.cur_doc.sentences) {
-      if (sentence.target === -2) {
+      if (sentence.target === -2 || sentence.ignore) {
         segments = segments.concat(sentence.source);
       } else {
-        if (sentence.ignore) {
-          segments = segments.concat(sentence.source);
-        } else if (sentence.target === -1) {
-          for (const slice of sentence.custom) {
-            if (forPreview && !slice.trim()) {
-              segments.push('[x]');  // 将文本节点置空时(空格会被忽略)，也就是把它给删除了
-            } else {
-              segments.push(slice);
-            }
-          }
-        } else {
-          const refer = sentence.refers[sentence.target];
-          if (sentence.source.length === 1) {
-            segments.push(refer.target.target_text);
-          } else if (refer.divides.length === sentence.source.length + 1) {
-            for (let i = 0; i < sentence.source.length; ++i) {
-              segments.push(refer.target.target_text.substring(refer.divides[i], refer.divides[i + 1]));
-            }
-          } else {
-            for (const slice of refer.slices) {
-              segments.push(slice.target_text);
-            }
-          }
-        }
+        segments = segments.concat(AppUtils.getTargetTexts(sentence));
       }
     }
     return segments;
