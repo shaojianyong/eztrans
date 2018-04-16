@@ -258,6 +258,32 @@ export class MainComponent implements OnInit {
     return res;
   }
 
+  getWholeSrcText(sentence: SentenceModel): string {
+    if (sentence.source.length === 1) {
+      return sentence.source[0];
+    }
+
+    let res = '';
+    const wholeSrc = sentence.source.join(' ');
+    for (let i = 0; i < sentence.source.length; ++i) {
+      if (SKIP_ELEMENTS.indexOf(sentence.txtags[i]) === -1) {
+        sentence.ntsphs[i] = '';
+        res += sentence.source[i];
+      } else {
+        let placeholder = `X${i}`;
+        while (wholeSrc.indexOf(placeholder) !== -1) {
+          placeholder += `.${i}`;
+        }
+        sentence.ntsphs[i] = placeholder;
+        if (!res.endsWith(' ')) {
+          res += ' ';
+        }
+        res += placeholder;
+      }
+    }
+    return res;
+  }
+
   translate(index: number, sentence: SentenceModel): void {
     const docInfo = this.child_home.getCurDocInfo();
     for (const engine of this.ems.engine_list) {
@@ -289,7 +315,7 @@ export class MainComponent implements OnInit {
       }
 
       this.rerender();  // 展示旋转图标
-      engine.translateX(sentence.source.join(' '), refer.target, docInfo).subscribe(
+      engine.translateX(this.getWholeSrcText(sentence), refer.target, docInfo).subscribe(
         res => {
           if (res.result === 'ok' && refer.target.target_text) {
             refer.target.trans_state = TranslateState.SUCCESS;
@@ -362,7 +388,7 @@ export class MainComponent implements OnInit {
                   sentence.target = refIdx;
                 }
               }
-              // this.divideIntegratedTranslation(refer);  TODO: 暂时屏蔽掉可能导致死循环的代码
+              this.divideIntegratedTranslation(refer);  // TODO: 暂时屏蔽掉可能导致死循环的代码
               if (sentence.target === refIdx && res.doc_id === this.child_home.cur_doc.id) {
                 this.updatePreview();
               }

@@ -26,6 +26,7 @@ export class VersionModel {
 export class SentenceModel {
   source: Array<string>;
   txtags: Array<string>;  // TextNode所在的element标签
+  ntsphs: Array<string>;  // 不翻译分片的占位符placeholders
   target: number;
   ignore: boolean;  // 跳过，不需要翻译
   marked: boolean;  // 翻译完成标记
@@ -36,6 +37,7 @@ export class SentenceModel {
   constructor(obj?: any) {
     this.source = obj && obj.source || [];
     this.txtags = obj && obj.txtags || [];
+    this.ntsphs = obj && obj.ntsphs || [];
     this.target = obj && obj.target || -2;
     this.ignore = obj && obj.ignore || false;
     this.marked = obj && obj.marked || false;
