@@ -1,3 +1,5 @@
+import {TranslateState} from "./translate.model";
+
 const { JSDOM } = (<any>window).require('jsdom');
 import { VersionModel, SentenceModel } from './sentence.model';
 import { ParserUtils } from '../../parsers/base/parser-utils';
@@ -14,8 +16,13 @@ export class AppUtils {
         res.push(refer.target.target_text.substring(refer.divides[i], refer.divides[i + 1]));
       }
     } else {
-      for (const slice of refer.slices) {
-        res.push(slice.target_text);
+      for (let i = 0; i < sentence.source.length; ++i) {
+        const slice = refer.slices[i];
+        if (slice && slice.trans_state === TranslateState.SUCCESS) {
+          res.push(slice.target_text);
+        } else {
+          res.push(sentence.source[i]);
+        }
       }
     }
 
