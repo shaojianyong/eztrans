@@ -31,7 +31,7 @@ export class ParserUtils {
     }
 
     for (let i = 0; i < node.childNodes.length; ++i) {
-      ParserUtils.setHtmlNodeTexts(node.childNodes[i], newData);
+      ParserUtils.setHtmlNodeTexts(node.childNodes[i], newData, xmldom);  // 不要漏掉参数xmldom！
     }
   }
 
