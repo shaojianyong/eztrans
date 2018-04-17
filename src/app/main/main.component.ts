@@ -1143,7 +1143,6 @@ export class MainComponent implements OnInit {
   showPreview(): void {
     const webview = document.getElementsByTagName('webview')[0];
     if (this.child_home.cur_doc && this.child_home.cur_doc.id) {
-
       let fileData = this.getLastFileData('html');
       fileData = fileData.replace(/\r\n|\n/g, ' ');  // WebView会把换行符吃掉，导致单词黏连在一起
       (<any>webview).loadURL(`data:text/html,${fileData}`);
