@@ -118,7 +118,7 @@ export class MainComponent implements OnInit {
     });
   }
 
-  getLastTransData(forPreview = false): Array<string> {
+  getLastTransData(): Array<string> {
     let segments = [];
     for (const sentence of this.child_home.cur_doc.sentences) {
       if (sentence.target === -2 || sentence.ignore) {
@@ -130,10 +130,10 @@ export class MainComponent implements OnInit {
     return segments;
   }
 
-  getLastFileData(fileType: string, forPreview = false): string {
+  getLastFileData(fileType: string): string {
     const parser = this.pms.getParser(this.child_home.cur_doc.data_type);
     parser.load(this.child_home.cur_doc.file_data);
-    parser.update(this.getLastTransData(forPreview));
+    parser.update(this.getLastTransData());
     return parser.getLastData(fileType);
   }
 
@@ -1144,7 +1144,7 @@ export class MainComponent implements OnInit {
     const webview = document.getElementsByTagName('webview')[0];
     if (this.child_home.cur_doc && this.child_home.cur_doc.id) {
 
-      let fileData = this.getLastFileData('html', true);
+      let fileData = this.getLastFileData('html');
       fileData = fileData.replace(/\r\n|\n/g, ' ');  // WebView会把换行符吃掉，导致单词黏连在一起
       (<any>webview).loadURL(`data:text/html,${fileData}`);
     } else {
@@ -1154,7 +1154,7 @@ export class MainComponent implements OnInit {
 
   updatePreview(): void {
     const webview = document.getElementsByTagName('webview')[0];
-    (<any>webview).send('update-preview', this.getLastTransData(true));
+    (<any>webview).send('update-preview', this.getLastTransData());
   }
 
   syncPreview(): void {
