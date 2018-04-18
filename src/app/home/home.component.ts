@@ -405,9 +405,22 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  loadAppData(appData: AppdataModel) {
+    if (appData) {
+      this.app_data = appData;
+    } else {
+      this.app_data = new AppdataModel();
+    }
+  }
+
   loadDocGroups(docGroups: any): void {
     if (docGroups && docGroups.length) {
       this.doc_groups = docGroups;
+      const docInfo = this.app_data.last_open_doc_id ? this.getDocInfo(this.app_data.last_open_doc_id) : null;
+      if (docInfo) {
+        this.sel_doc = docInfo;
+        this.openDoc();
+      }
     } else {
       this.doc_groups.push(new GroupModel({id: 'recycle', name: 'Recycle Bin'}));  // 回收站
       this.doc_groups.push(new GroupModel());  // 默认分组
@@ -726,7 +739,12 @@ export class HomeComponent implements OnInit {
         }
       });
 
-    ipc.send('req-doc-groups');
+    ipc.send('req-app-data');
+
+    ipc.on('rsp-app-data', (event, data) => {
+      this.loadAppData(data);
+      ipc.send('req-doc-groups');
+    });
 
     ipc.on('rsp-doc-groups', (event, data) => {
       this.loadDocGroups(data);
@@ -835,7 +853,7 @@ export class HomeComponent implements OnInit {
     window.onbeforeunload = () => {
       this.saveAllDocuments(true);
       this.saveDGTree(true);
-      // this.saveAppData();  TODO: 实现这个功能
+      this.saveAppData();
     };
   }
 

@@ -576,6 +576,37 @@ function showRecycleBinContextMenu(event) {
   contextMenu.popup(win);
 }
 
+// TODO: 为了提升软件开启时的加载速度，考虑将appData存放到dgsDb，并和docGroups一次性返回给前端页面
+function reqAppData(event) {
+  const adc = appDb.getCollection('appData');
+  if (adc) {
+    var obj = adc.get(1);  // 获取集合中的首个元素
+    event.sender.send('rsp-app-data', obj);
+  } else {
+    event.sender.send('rsp-app-data', null);
+  }
+}
+
+function saveAppData(event, appData) {
+  var adc = appDb.getCollection('appData');
+  if (!adc) {
+    adc = appDb.addCollection('appData');
+  }
+
+  var obj = adc.get(1);  // 获取集合中的首个元素
+  if (obj) {
+    appData['$loki'] = obj['$loki'];
+    appData['meta'] = obj['meta'];
+    adc.update(appData);
+  } else {
+    adc.insert(appData);
+  }
+
+  appDb.saveDatabase(function() {
+    event.returnValue = 'ok';
+    appDb.close();
+  });
+}
 
 function reqDocGroups(event) {
   const docGroups = dgsDb.getCollection('docGroups');
@@ -738,10 +769,6 @@ function saveDocument(event, params) {
   });
 }
 
-function saveAppData(event, appData) {
-
-}
-
 function deleteDocFile(event, doc_id) {
   // close database
   const docDb = openedDocs[doc_id];
@@ -831,11 +858,12 @@ ipcMain.on('show-group-context-menu', showGroupContextMenu);
 ipcMain.on('show-recycle-bin-context-menu', showRecycleBinContextMenu);
 ipcMain.on('show-recycle-doc-context-menu', showRecycleDocContextMenu);
 ipcMain.on('show-recycle-group-context-menu', showRecycleGroupContextMenu);
+ipcMain.on('req-app-data', reqAppData);
+ipcMain.on('save-app-data', saveAppData);
 ipcMain.on('req-doc-groups', reqDocGroups);
 ipcMain.on('save-doc-groups', saveDocGroups);
 ipcMain.on('req-document', reqDocument);
 ipcMain.on('save-document', saveDocument);
-ipcMain.on('save-app-data', saveAppData);
 ipcMain.on('delete-document-file', deleteDocFile);
 ipcMain.on('read-epub-pkg-file', readEpubPkgFile);
 ipcMain.on('read-epub-nav-file', readEpubNavFile);
