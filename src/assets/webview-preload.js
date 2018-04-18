@@ -1,6 +1,6 @@
 var ipc = require('electron').ipcRenderer;
 
-var SKIP_ELEMENTS = require('skip_elements');
+var SKIP_ELEMENTS = require('../assets/skip_elements');
 
 var selectedNode = null;
 var orgBackColor = null;

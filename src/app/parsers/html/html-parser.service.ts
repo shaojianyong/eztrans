@@ -4,7 +4,7 @@ const { JSDOM } = (<any>window).require('jsdom');
 import { ParserUtils } from '../base/parser-utils';
 import { ParserService } from '../base/parser.service';
 
-const SKIP_ELEMENTS = (<any>window).require('../../../assets/skip_elements');
+const SKIP_ELEMENTS = (<any>window).require('./assets/skip_elements');
 
 
 @Injectable()

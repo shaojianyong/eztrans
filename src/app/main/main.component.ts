@@ -22,7 +22,7 @@ import {StatisticsModel} from '../services/model/statistics.model';
 import {OpenComponent} from '../open/open.component';
 
 
-const SKIP_ELEMENTS = (<any>window).require('../../assets/skip_elements');
+const SKIP_ELEMENTS = (<any>window).require('./assets/skip_elements');
 
 // encapsulation - stackoverflow.com/questions/44210786/style-not-working-for-innerhtml-in-angular-2-typescript
 @Component({
