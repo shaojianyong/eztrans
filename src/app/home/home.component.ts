@@ -248,10 +248,23 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  // stackoverflow.com/questions/208105/how-do-i-remove-a-property-from-a-javascript-object
   deleteGroup(group_id: string): void {
     const group = this.getGroup(group_id);
     group.x_state = 2;  // 彻底删除
     this.dgtree_changed = true;
+
+    // 删除缓存文档对象
+    for (const docId in this.cache_docs) {
+      if (this.cache_docs.hasOwnProperty(docId)) {
+        const docInfo = this.getDocInfo(docId);
+        if (docInfo.group_id === group_id) {
+          delete this.cache_docs['docId'];
+        }
+      }
+    }
+
+    // 删除组和组内文件
     if (group.type === 'book') {
       ipc.send('delete-book-folder', group.id);
     } else {
