@@ -617,11 +617,12 @@ export class HomeComponent implements OnInit {
     this.books[bookId].loadNavigation(str);
     const nav = this.books[bookId].navigation;
 
-    this.doc_groups.push(new GroupModel({
+    const book = new GroupModel({
       id: bookId,
       name: pkg.metadata.title,
       type: GroupType.BOOK
-    }));
+    });
+    this.doc_groups.push(book);
     this.dgtree_changed = true;
 
     for (const itemref of pkg.spine) {
@@ -642,10 +643,17 @@ export class HomeComponent implements OnInit {
         group_id: bookId,
         file_path: path.join(fullPkgDir, href)
       });
-      this.getGroup(bookId).documents.push(diNew);
+      book.documents.push(diNew);
       this.dgtree_changed = true;
     }
-    this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+
+    if (book.documents.length) {
+      book.open = true;
+      this.sel_doc = book.documents[0];
+      this.openDoc();
+    } else {
+      this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+    }
   }
 
   exportBook(bookId: string): void {
