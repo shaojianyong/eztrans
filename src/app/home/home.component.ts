@@ -266,6 +266,7 @@ export class HomeComponent implements OnInit {
 
     // 删除组和组内文件
     if (group.type === 'book') {
+      delete this.books[group_id];
       ipc.send('delete-book-folder', group.id);
     } else {
       ipc.send('delete-group-files', group.documents);
