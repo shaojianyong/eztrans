@@ -259,7 +259,7 @@ export class HomeComponent implements OnInit {
       if (this.cache_docs.hasOwnProperty(docId)) {
         const docInfo = this.getDocInfo(docId);
         if (docInfo.group_id === group_id) {
-          delete this.cache_docs['docId'];
+          delete this.cache_docs[docId];
         }
       }
     }
