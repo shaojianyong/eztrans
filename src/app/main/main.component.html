@@ -112,7 +112,7 @@
           </td>
           <td *ngIf="!child_home.cur_doc.sentences[idx].marked" class="ui list target-cell">
             <div *ngFor="let slice of getTargetTexts(child_home.cur_doc.sentences[idx]); let sno = index"
-                 [ngStyle]="{'background-color': (sno % 2) ? '#d3fdc8' : '#f1f1f1'}"
+                 [ngStyle]="{'background-color': (sno % 2) ? 'white' : '#e2ffe2'}"
                  [textContent]="slice"
                  contenteditable="true"
                  #sliceinput

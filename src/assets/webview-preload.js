@@ -108,7 +108,7 @@ function hitTest(node, hitObj) {
 function selectNode(eleNode) {
   if (eleNode !== selectedNode) {
     var oldBackColor = eleNode.style.backgroundColor;
-    eleNode.style.backgroundColor = '#e0e0e7';
+    eleNode.style.backgroundColor = '#e8e8e8';
     if (selectedNode) {
       selectedNode.style.backgroundColor = orgBackColor;
     }
