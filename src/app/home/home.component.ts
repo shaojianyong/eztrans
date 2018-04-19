@@ -144,14 +144,13 @@ export class HomeComponent implements OnInit {
     while (prev >= 0 && group.documents[prev].x_state !== 0) {
       --prev;
     }
-
     if (prev === -1) {
       throw new Error('Cannot find the previous doc!');
     }
 
     const temp = group.documents[index];
-    group.documents[index] = group.documents[index - 1];
-    group.documents[index - 1] = temp;
+    group.documents[index] = group.documents[prev];
+    group.documents[prev] = temp;
     this.dgtree_changed = true;
     this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
   }
@@ -172,8 +171,8 @@ export class HomeComponent implements OnInit {
     }
 
     const temp = group.documents[index];
-    group.documents[index] = group.documents[index + 1];
-    group.documents[index + 1] = temp;
+    group.documents[index] = group.documents[next];
+    group.documents[next] = temp;
     this.dgtree_changed = true;
     this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
   }
