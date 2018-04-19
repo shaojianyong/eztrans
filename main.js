@@ -656,14 +656,6 @@ function saveDocGroups(event, params) {
       dgsDb.close();
     }
   });
-
-  /* event.returnValue 放这里不行，文件保存可能不完全，进程就退出了
-  if (params.sync) {
-    dgsDb.close();
-    console.log('Sync saveDocGroups ...');
-    event.returnValue = 'ok';
-  }
-  */
 }
 
 function openDocDb(fullDbPath, docId, event) {

@@ -251,8 +251,6 @@ export class HomeComponent implements OnInit {
   // stackoverflow.com/questions/208105/how-do-i-remove-a-property-from-a-javascript-object
   deleteGroup(group_id: string): void {
     const group = this.getGroup(group_id);
-    group.x_state = 2;  // 彻底删除
-    this.dgtree_changed = true;
 
     // 删除缓存文档对象
     for (const docId in this.cache_docs) {
@@ -271,32 +269,54 @@ export class HomeComponent implements OnInit {
     } else {
       ipc.send('delete-group-files', group.documents);
     }
+
+    // 删除对应的数组元素
+    const index = this.doc_groups.indexOf(group);
+    this.doc_groups.splice(index, 1);
+    this.dgtree_changed = true;
   }
 
   moveUpGroup(group_id: string): void {
     const group = this.getGroup(group_id);
     const index = this.doc_groups.indexOf(group);
-    if (index > 0) {
-      const temp = this.doc_groups[index];
-      this.doc_groups[index] = this.doc_groups[index - 1];
-      this.doc_groups[index - 1] = temp;
-      this.dgtree_changed = true;
-
-      this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+    if (index <= 0) {
+      throw new Error('Cannot move up the top group!');
     }
+
+    let prev = index - 1;
+    while (prev >= 0 && this.doc_groups[prev].x_state !== 0) {
+      --prev;
+    }
+    if (prev === -1) {
+      throw new Error('Cannot find the previous group!');
+    }
+
+    const temp = this.doc_groups[index];
+    this.doc_groups[index] = this.doc_groups[prev];
+    this.doc_groups[prev] = temp;
+    this.dgtree_changed = true;
+    this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
   }
 
   moveDownGroup(group_id: string): void {
     const group = this.getGroup(group_id);
     const index = this.doc_groups.indexOf(group);
-    if (index < this.doc_groups.length - 1) {
-      const temp = this.doc_groups[index];
-      this.doc_groups[index] = this.doc_groups[index + 1];
-      this.doc_groups[index + 1] = temp;
-      this.dgtree_changed = true;
-
-      this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+    if (index >= this.doc_groups.length - 1) {
+      throw new Error('Cannot move down the bottom group!');
     }
+    let next = index + 1;
+    while (next < this.doc_groups.length && this.doc_groups[next].x_state !== 0) {
+      ++next;
+    }
+    if (next === this.doc_groups.length) {
+      throw new Error('Cannot find the next group!');
+    }
+
+    const temp = this.doc_groups[index];
+    this.doc_groups[index] = this.doc_groups[next];
+    this.doc_groups[next] = temp;
+    this.dgtree_changed = true;
+    this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
   }
 
   getCurSelGroup(): GroupModel {
@@ -328,9 +348,11 @@ export class HomeComponent implements OnInit {
   }
 
   deleteDoc(docInfo: DocInfoModel): void {
-    docInfo.x_state = 2;  // 彻底删除
-    this.dgtree_changed = true;
     ipc.send('delete-document-file', docInfo.id);
+    const group = this.getGroup(docInfo.group_id);
+    const index = group.documents.indexOf(docInfo);
+    group.documents.splice(index, 1);
+    this.dgtree_changed = true;
   }
 
   getNormalDocs(group: GroupModel): Array<DocInfoModel> {
@@ -364,8 +386,18 @@ export class HomeComponent implements OnInit {
   }
 
   onGroupContextMenu(group: GroupModel): void {
+    let count = 0;
+    let index = 0;
+    for (const temp of this.doc_groups) {
+      if (temp.x_state === 0) {
+        if (temp.id === group.id) {
+          index = count;
+        }
+        ++count;
+      }
+    }
     this.onClickGroup(group.id);
-    ipc.send('show-group-context-menu', group, this.doc_groups.indexOf(group), this.doc_groups.length);
+    ipc.send('show-group-context-menu', group, index, count);
   }
 
   onRecycleBinContextMenu(): void {

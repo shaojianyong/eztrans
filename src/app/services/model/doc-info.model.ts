@@ -14,7 +14,7 @@ export class DocInfoModel {
   group_id: string;   // 所在组
   source_lang: string;  // 文档语言
   target_lang: string;  // 目标语言
-  x_state: number;  // 0-正常状态 1-标记删除 2-彻底删除
+  x_state: number;  // 0-正常状态 1-标记删除
   create_time: string;  // 创建时间
   modify_time: string;  // 修改时间
 

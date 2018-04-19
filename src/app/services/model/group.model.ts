@@ -11,7 +11,7 @@ export class GroupModel {
   name: string;   // 分组名称
   type: string;   // 分组类型
   open: boolean;  // 是否展开
-  x_state: number;  // 0-正常状态 1-标记删除 2-彻底删除
+  x_state: number;  // 0-正常状态 1-标记删除
   documents: Array<DocInfoModel>;  // 组内文档
 
   constructor(obj?: any) {
