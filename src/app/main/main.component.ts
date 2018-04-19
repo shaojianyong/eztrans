@@ -263,6 +263,14 @@ export class MainComponent implements OnInit {
   }
 
   translate(index: number, sentence: SentenceModel): void {
+    if (sentence.source.length === 1
+      && FunctionUtils.getContentType(sentence.source[0]) < FunctionUtils.ContentType.TEXT) {
+      sentence.custom[0] = sentence.source[0];
+      sentence.target = -1;
+      this.rerender();
+      return;
+    }
+
     const docInfo = this.child_home.getCurDocInfo();
     for (const engine of this.ems.engine_list) {
       let refIdx = -1;
