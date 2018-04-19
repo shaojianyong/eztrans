@@ -11,7 +11,7 @@
     </div>
     <div class="ui active tab segment" data-tab="ebook">
       <div class="ui fluid action input">
-        <input type="text" #eBookURL placeholder="Local eBook File">
+        <input id="ebook-path-input" type="text" #eBookURL placeholder="Local eBook File">
         <button class="ui icon button" (click)="eBookBrowse(eBookURL)">
           <i class="ellipsis horizontal icon"></i>
         </button>
@@ -19,7 +19,7 @@
     </div>
     <div class="ui tab segment" data-tab="document">
       <div class="ui fluid action input">
-        <input type="text" #docFileURL placeholder="Local Document File">
+        <input id="local-path-input" type="text" #docFileURL placeholder="Local Document File">
         <button class="ui icon button" (click)="docBrowse(docFileURL)">
           <i class="ellipsis horizontal icon"></i>
         </button>
@@ -27,7 +27,7 @@
     </div>
     <div class="ui tab segment" data-tab="web">
       <div class="ui fluid action input">
-        <input type="text" #webPageURL placeholder="Internet Web Page">
+        <input id="web-url-input" type="text" #webPageURL placeholder="Internet Web Page">
         <button class="ui icon button" (click)="paste(webPageURL)">
           <i class="paste icon"></i>
         </button>
