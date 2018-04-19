@@ -99,6 +99,19 @@ app.on('activate', function() {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
+// TODO: 文本替换是有副作用的
+function normalizeXmlTag(xml) {
+  var reg = /<(\/?)([A-Za-z0-9_]+)\s+>/g;
+  xml = xml.replace(reg,'<$1$2>');
+
+  // reg = /<\s+(\/?)([A-Za-z0-9_]+)>/g;
+  // xml = xml.replace(reg,'<$1$2>');
+
+  // reg = /<(\/?)\s+([A-Za-z0-9_]+)>/g;
+  // xml = xml.replace(reg,'<$1$2>');
+  return xml;
+}
+
 function getBaseURL(webUrl) {
   let index = webUrl.lastIndexOf('/');
   if (index === -1) {
@@ -135,7 +148,8 @@ function readFile(event, fileUrl, group_id) {
         const index = fileUrl.lastIndexOf('/');
         fileName = fileUrl.substr(index + 1);
       }
-      event.sender.send('file-read', dom.serialize(), fileUrl, fileName, group_id, null);
+      const docStr = normalizeXmlTag(dom.serialize());
+      event.sender.send('file-read', docStr, fileUrl, fileName, group_id, null);
     });
   } else if (fileUrl.toLowerCase().endsWith('.epub')) {
     const bookId = 'b' + moment().format('YYYYMMDDHHmmssSSS');
@@ -710,8 +724,9 @@ function reqDocument(event, groupId, docId, docType, filePath) {
             headel.insertBefore(metael, headel.firstChild);
 
             const serial = new xmldom.XMLSerializer();
-            event.sender.send('file-read', serial.serializeToString(xmldoc),
-              filePath, getFileName(filePath), groupId, docId);
+            const docStr = normalizeXmlTag(serial.serializeToString(xmldoc));
+            console.log('-------->', docStr);
+            event.sender.send('file-read', docStr, filePath, getFileName(filePath), groupId, docId);
           }
         });
       }
