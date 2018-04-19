@@ -1,8 +1,8 @@
 export default {
-  YFCloud: {
+  Suda: {
     name: 'Suda',
     site: 'https://www.suda-cloud.cn',
-    icon: 'violet earlybirds icon'
+    icon: 'violet user secret icon'
   },
   Google: {
     name: 'Google',

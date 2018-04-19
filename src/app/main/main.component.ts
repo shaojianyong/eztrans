@@ -266,7 +266,7 @@ export class MainComponent implements OnInit {
     if (sentence.source.length === 1
       && FunctionUtils.getContentType(sentence.source[0]) < FunctionUtils.ContentType.TEXT) {
       const refer = new VersionModel({
-        engine: 'YFCloud',
+        engine: 'Suda',
         target: new TranslateModel({
           target_text: sentence.source[0],
           trans_state: TranslateState.SUCCESS,
