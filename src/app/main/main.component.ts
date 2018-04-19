@@ -265,8 +265,16 @@ export class MainComponent implements OnInit {
   translate(index: number, sentence: SentenceModel): void {
     if (sentence.source.length === 1
       && FunctionUtils.getContentType(sentence.source[0]) < FunctionUtils.ContentType.TEXT) {
-      sentence.custom[0] = sentence.source[0];
-      sentence.target = -1;
+      const refer = new VersionModel({
+        engine: 'YFCloud',
+        target: new TranslateModel({
+          target_text: sentence.source[0],
+          trans_state: TranslateState.SUCCESS,
+          trans_grade: 0
+        })
+      });
+      sentence.refers.push(refer);
+      sentence.target = 0;
       this.rerender();
       return;
     }
