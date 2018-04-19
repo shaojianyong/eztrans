@@ -543,7 +543,7 @@ export class MainComponent implements OnInit {
     } else if (sentence.marked) {
       icon = 'placeholder icon';  // 隐藏状态
     } else if (sentence.target === -1) {
-      icon = 'placeholder icon';  // 占位符
+      icon = (index === this.cur_index) ? 'violet quote left link icon' : 'placeholder icon';
     } else if (status === SentenceStatus.INITIAL) {
       icon = (index === this.cur_index) ? 'violet quote left link icon' : 'placeholder icon';
     } else if (status === SentenceStatus.IN_PROC) {
