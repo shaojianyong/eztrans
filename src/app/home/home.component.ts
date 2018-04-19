@@ -136,27 +136,46 @@ export class HomeComponent implements OnInit {
   moveUpDoc(): void {
     const group = this.getCurSelGroup();
     const index = group.documents.indexOf(this.sel_doc);
-    if (index > 0) {
-      const temp = group.documents[index];
-      group.documents[index] = group.documents[index - 1];
-      group.documents[index - 1] = temp;
-      this.dgtree_changed = true;
-
-      this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+    if (index <= 0) {
+      throw new Error('Cannot move up the top doc!');
     }
+
+    let prev = index - 1;
+    while (prev >= 0 && group.documents[prev].x_state !== 0) {
+      --prev;
+    }
+
+    if (prev === -1) {
+      throw new Error('Cannot find the previous doc!');
+    }
+
+    const temp = group.documents[index];
+    group.documents[index] = group.documents[index - 1];
+    group.documents[index - 1] = temp;
+    this.dgtree_changed = true;
+    this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
   }
 
   moveDownDoc(): void {
     const group = this.getCurSelGroup();
     const index = group.documents.indexOf(this.sel_doc);
-    if (index < group.documents.length - 1) {
-      const temp = group.documents[index];
-      group.documents[index] = group.documents[index + 1];
-      group.documents[index + 1] = temp;
-      this.dgtree_changed = true;
-
-      this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
+    if (index >= group.documents.length - 1) {
+      throw new Error('Cannot move down the bottom doc!');
     }
+
+    let next = index + 1;
+    while (next < group.documents.length && group.documents[next].x_state !== 0) {
+      ++next;
+    }
+    if (next === group.documents.length) {
+      throw new Error('Cannot find the next doc!');
+    }
+
+    const temp = group.documents[index];
+    group.documents[index] = group.documents[index + 1];
+    group.documents[index + 1] = temp;
+    this.dgtree_changed = true;
+    this.rerenderEvent.emit({forceShowSelected: false, resetDocument: false});
   }
 
   moveTo(group_id: string): void {
@@ -380,9 +399,30 @@ export class HomeComponent implements OnInit {
   }
 
   onDocContextMenu(doc: DocInfoModel, group: GroupModel): void {
-    this.select(doc);
+    let count = 0;
+    let index = 0;
+    const moveto = [];
     const opened = (doc.id === this.cur_doc.id);
-    ipc.send('show-doc-context-menu', doc, group, this.doc_groups, opened);
+    if (doc.type === DocType.ARTICLE) {
+      for (const di of group.documents) {
+        if (di.x_state === 0) {
+          if (di.id === doc.id) {
+            index = count;
+          }
+          ++count;
+        }
+      }
+
+      for (const grp of this.doc_groups) {
+        if (grp.x_state !== 0 || grp.id === group.id || grp.id === 'recycle' || grp.type === 'book') {
+          continue;
+        }
+        moveto.push({id: grp.id, name: grp.name});
+      }
+    }
+
+    this.select(doc);
+    ipc.send('show-doc-context-menu', doc.type, index, count, moveto, opened);
   }
 
   onGroupContextMenu(group: GroupModel): void {

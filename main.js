@@ -364,29 +364,30 @@ function showItemContextMenu(event, params) {
   contextMenu.popup(win);
 }
 
-function showDocContextMenu(event, docInfo, curGroup, allGroup, opened) {
+function showDocContextMenu(event, docType, docIdx, count, moveto, opened) {
   const contextMenu = new Menu();
-  if (docInfo.type === 'article') {
+
+  if (!opened) {
+    contextMenu.append(new MenuItem({
+      label: 'Open',
+      click: docOpen,
+      icon: './dist/assets/images/icons/edit.png'
+    }));
+  }
+
+  if (docType === 'article') {
+    if (!opened) {
+      contextMenu.append(new MenuItem({type: 'separator'}));
+    }
+
     const subMenuItems = [];
-    for (const group of allGroup) {
-      if (group.id === curGroup.id || group.id === 'recycle' || group.type === 'book') {
-        continue;
-      }
+    for (const group of moveto) {
       subMenuItems.push({
         label: group.name,
         click: docMoveTo,
         icon: './dist/assets/images/icons/folder.png',
         group_id: group.id
       });
-    }
-
-    if (!opened) {
-      contextMenu.append(new MenuItem({
-        label: 'Open',
-        click: docOpen,
-        icon: './dist/assets/images/icons/edit.png'
-      }));
-      contextMenu.append(new MenuItem({type: 'separator'}));
     }
 
     contextMenu.append(new MenuItem({
@@ -401,7 +402,7 @@ function showDocContextMenu(event, docInfo, curGroup, allGroup, opened) {
       icon: './dist/assets/images/icons/trash.png'
     }));
 
-    if (subMenuItems.length || curGroup.documents.length > 1) {
+    if (subMenuItems.length || count > 1) {
       contextMenu.append(new MenuItem({type: 'separator'}));
     }
     if (subMenuItems.length) {
@@ -412,14 +413,6 @@ function showDocContextMenu(event, docInfo, curGroup, allGroup, opened) {
       }));
     }
 
-    let docIdx = 0;
-    for (const di of curGroup.documents) {
-      if (di.id === docInfo.id) {
-        break;
-      }
-      docIdx++;
-    }
-
     if (docIdx !== 0) {
       contextMenu.append(new MenuItem({
         label: 'Move Up',
@@ -428,7 +421,7 @@ function showDocContextMenu(event, docInfo, curGroup, allGroup, opened) {
       }));
     }
 
-    if (docIdx !== curGroup.documents.length - 1) {
+    if (docIdx !== count - 1) {
       contextMenu.append(new MenuItem({
         label: 'Move Down',
         click: docMoveDown,
@@ -442,14 +435,6 @@ function showDocContextMenu(event, docInfo, curGroup, allGroup, opened) {
         label: 'Export',
         click: docExport,
         icon: './dist/assets/images/icons/export.png'
-      }));
-    }
-  } else {
-    if (!opened) {
-      contextMenu.append(new MenuItem({
-        label: 'Open',
-        click: docOpen,
-        icon: './dist/assets/images/icons/edit.png'
       }));
     }
   }
