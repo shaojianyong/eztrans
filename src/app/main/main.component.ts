@@ -243,7 +243,8 @@ export class MainComponent implements OnInit {
     let res = '';
     const wholeSrc = sentence.source.join(' ');
     for (let i = 0; i < sentence.source.length; ++i) {
-      if (SKIP_ELEMENTS.indexOf(sentence.txtags[i]) === -1) {
+      if (SKIP_ELEMENTS.indexOf(sentence.txtags[i]) === -1
+        && FunctionUtils.getContentType(sentence.source[i]) >= FunctionUtils.ContentType.TEXT) {
         sentence.ntsphs[i] = '';
         res += sentence.source[i];
       } else {
@@ -339,7 +340,8 @@ export class MainComponent implements OnInit {
         }
       } else {
         refer.slices[i] = new TranslateModel({trans_state: TranslateState.REQUESTED});
-        if (SKIP_ELEMENTS.indexOf(sentence.txtags[i]) !== -1) {
+        if (SKIP_ELEMENTS.indexOf(sentence.txtags[i]) !== -1
+          || FunctionUtils.getContentType(sentence.source[i]) < FunctionUtils.ContentType.TEXT) {
           refer.slices[i].target_text = sentence.ntsphs[i];
           refer.slices[i].trans_state = TranslateState.SUCCESS;
           refer.slices[i].trans_grade = 0;

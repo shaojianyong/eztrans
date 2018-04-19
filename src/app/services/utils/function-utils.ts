@@ -1,4 +1,31 @@
+const urlRegex = (<any>window).require('url-regex');
+const emailRegex = (<any>window).require('email-regex');
+
+
 export class FunctionUtils {
+  static ContentType = Object.freeze({
+    NONE: 0,
+    URL: 1,
+    EMAIL: 2,
+    TEXT: 10000
+  });
+
+  // 0 < translate-needless < 10000
+  static getContentType(str: string): number {
+    const trimmed = str.trim();
+    if (!trimmed) {
+      return FunctionUtils.ContentType.NONE;
+    }
+
+    let res = FunctionUtils.ContentType.TEXT;
+    if (urlRegex({exact: true, strict: false}).test(trimmed)) {
+      res = FunctionUtils.ContentType.URL;
+    } else if (emailRegex({exact: true}).test(trimmed)) {
+      res = FunctionUtils.ContentType.EMAIL;
+    }
+
+    return res;
+  }
 
   static htmlEscape(str: string): string {
     return str
