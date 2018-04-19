@@ -12,7 +12,7 @@ export class DocumentModel {
     this.id = obj && obj.id || '';
     this.file_data = obj && obj.file_data || '';
     this.data_type = obj && obj.data_type || '';
-    this.modified = obj && obj.modified || false;
+    this.modified = obj && obj.modified || true;
     this.sentences = obj && obj.sentences || [];
   }
 }
