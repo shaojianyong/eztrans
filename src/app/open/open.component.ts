@@ -14,6 +14,9 @@ export class OpenComponent implements OnInit {
   constructor() { }
 
   show(onApprove = null, onDeny = null): void {
+    $('#ebook-path-input').val('');
+    $('#local-path-input').val('');
+    $('#web-url-input').val('');
     $('#open-dialog')
       .modal({
         closable: false,
