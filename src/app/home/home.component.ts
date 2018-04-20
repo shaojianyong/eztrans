@@ -720,9 +720,21 @@ export class HomeComponent implements OnInit {
         label = nav.href2Label[href];
       }
 
+      let docName = label.trim();
+      if (docName.toLowerCase().endsWith('.xhtml')) {
+        docName = docName.substr(0, docName.length - 6);
+      } else if (docName.toLowerCase().endsWith('.html')) {
+        docName = docName.substr(0, docName.length - 5);
+      }
+      if (docName.toLowerCase() === 'toc') {
+        docName = 'Table of Contents';
+      } else if (docName === 'cover') {
+        docName = 'Cover';
+      }
+
       const diNew = new DocInfoModel({
         id: bookId + '-' + rid,
-        name: label.trim(),
+        name: docName,
         type: DocType.CHAPTER,
         group_id: bookId,
         file_path: path.join(fullPkgDir, href)
