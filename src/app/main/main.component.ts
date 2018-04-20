@@ -1207,10 +1207,6 @@ export class MainComponent implements OnInit {
       parser.load(data);
       parser.parse().subscribe(
         res => {
-          /*let srcText = res.source;
-          srcText = srcText.replace(/\r\n|\n/g, ' ');
-          srcText = srcText.replace(/\s{2,}/g, ' ').trim();*/
-
           const sentence = new SentenceModel({ source: res.source, txtags: res.txtags, elhtml: res.elhtml });
           if (docId in self.child_home.cache_docs) {
             const doc = self.child_home.cache_docs[docId];
