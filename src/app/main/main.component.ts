@@ -1079,6 +1079,13 @@ export class MainComponent implements OnInit {
     $('#trans-list').unhighlight();
   }
 
+  onSliceEditClick(sliceInput: HTMLElement, index: number, slieceNo: number): void {
+    if (!sliceInput.isContentEditable) {
+      sliceInput.contentEditable = 'true';
+    }
+    sliceInput.focus();
+  }
+
   onSliceEditInput(sliceInput: HTMLElement, index: number, slieceNo: number): void {
     const sentence = this.child_home.cur_doc.sentences[index];
     if (sentence.target !== -1) {
@@ -1096,7 +1103,7 @@ export class MainComponent implements OnInit {
     this.updatePreview();
   }
 
-  onSliceEditFocus(index: number, sno: number): void {
+  onSliceEditFocus(sliceInput: HTMLElement, index: number, sno: number): void {
     if (this.search_text) {
       $(`#table-${index}>tbody>tr>td.target-cell`).unhighlight();
     }
@@ -1107,7 +1114,7 @@ export class MainComponent implements OnInit {
     }
   }
 
-  onSliceEditBlur(index: number, sno: number): void {
+  onSliceEditBlur(sliceInput: HTMLElement, index: number, sno: number): void {
     const sentence = this.child_home.cur_doc.sentences[index];
     const res = this.checkFakeCustom(sentence);
     if (res !== -1) {
@@ -1121,6 +1128,10 @@ export class MainComponent implements OnInit {
     }
 
     this.rerender();
+    if (sliceInput.isContentEditable) {
+      sliceInput.contentEditable = 'false';
+    }
+
     if (this.search_text) {
       $(`#table-${index}>tbody>tr>td.target-cell`).highlight(this.search_text);
     }

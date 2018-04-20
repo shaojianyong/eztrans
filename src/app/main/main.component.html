@@ -114,11 +114,11 @@
             <div *ngFor="let slice of getTargetTexts(child_home.cur_doc.sentences[idx]); let sno = index"
                  [ngStyle]="{'background-color': (sno % 2) ? 'white' : '#e2ffe2'}"
                  [textContent]="slice"
-                 contenteditable="true"
                  #sliceinput
+                 (click)="onSliceEditClick(sliceinput, idx, sno)"
                  (input)="onSliceEditInput(sliceinput, idx, sno)"
-                 (focus)="onSliceEditFocus(idx, sno)"
-                 (blur)="onSliceEditBlur(idx, sno)"
+                 (focus)="onSliceEditFocus(sliceinput, idx, sno)"
+                 (blur)="onSliceEditBlur(sliceinput, idx, sno)"
                  (keydown.enter)="endSliceEditEnterKeyDown(sliceinput, $event)"
                  class="item">
             </div>
