@@ -2,7 +2,10 @@ export class ParserUtils {
   static getHtmlNodeTexts(node: Node, nodeTexts: Array<string>, nodeTags: Array<string>): void {
     if (node.nodeType === Node.TEXT_NODE) {
       if (node.nodeValue.trim()) {
-        nodeTexts.push(node.nodeValue);
+        let nodeText = node.nodeValue;
+        nodeText = nodeText.replace(/\r\n|\n/g, ' ');
+        nodeText = nodeText.replace(/\s{2,}/g, ' ').trim();
+        nodeTexts.push(nodeText);
         nodeTags.push(node.parentNode.nodeName.toLowerCase());
       }
       return;
