@@ -20,6 +20,7 @@ import {AboutComponent} from '../about/about.component';
 import {SettingsComponent} from '../settings/settings.component';
 import {StatisticsModel} from '../services/model/statistics.model';
 import {OpenComponent} from '../open/open.component';
+import engines from '../providers/manager/engines';
 
 
 const SKIP_ELEMENTS = (<any>window).require('./assets/skip_elements');
@@ -644,11 +645,16 @@ export class MainComponent implements OnInit {
   getTargetLeftIcon(index: number): string {
     let res = 'placeholder icon';
     const sentence = this.child_home.cur_doc.sentences[index];
-    if (sentence.target === -1 && this.checkFakeCustom(sentence) === -1) {
+    if (sentence.target === -1) {
       if (sentence.marked) {
         res = 'green pencil alternate icon';
       } else {
         res = 'violet pencil alternate icon';
+      }
+    } else {
+      if (this.child_home.app_data.show_engine_icon) {
+        const engineName = sentence.refers[sentence.target].engine;
+        res = engines[engineName].icon;
       }
     }
     return res;
