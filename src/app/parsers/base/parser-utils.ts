@@ -2,7 +2,7 @@ export class ParserUtils {
   static getHtmlNodeTexts(node: Node, nodeTexts: Array<string>, nodeTags: Array<string>): void {
     if (node.nodeType === Node.TEXT_NODE) {
       const trimmed = node.nodeValue.trim();  // NO-BREAK SPACE (0x00a0) will be trimmed
-      if (trimmed && trimmed !== String.fromCharCode(0x200b)) {  // ZERO WIDTH SPACE
+      if (trimmed && trimmed !== String.fromCharCode(8203) && !trimmed.match(/^[\W|\d]+$/)) {  // ZERO WIDTH SPACE
         let nodeText = node.nodeValue;
         nodeText = nodeText.replace(/\r\n|\n/g, ' ');
         nodeText = nodeText.replace(/\s{2,}/g, ' ').trim();
@@ -21,7 +21,7 @@ export class ParserUtils {
   static setHtmlNodeTexts(node: Node, newData: any, xmldom = false): void {
     if (node.nodeType === Node.TEXT_NODE) {
       const trimmed = node.nodeValue.trim();  // NO-BREAK SPACE (0x00a0) will be trimmed
-      if (trimmed && trimmed !== String.fromCharCode(0x200b)) {  // ZERO WIDTH SPACE
+      if (trimmed && trimmed !== String.fromCharCode(8203) && !trimmed.match(/^[\W|\d]+$/)) {  // ZERO WIDTH SPACE
         const newVal = newData.texts[newData.index];
         if (newVal && newVal.trim()) {
           if (xmldom) {

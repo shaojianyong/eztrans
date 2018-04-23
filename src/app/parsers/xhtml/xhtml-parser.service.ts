@@ -69,7 +69,9 @@ export class XhtmlParserService extends ParserService {
           mue['txtags'] = txtags;
           mue['elhtml'] = serial.serializeToString(node);
         }
-        observer.next(mue);
+        if (mue.source.length) {
+          observer.next(mue);
+        }
       } else if (testRes === 2) {
         for (let i = 0; i < node.childNodes.length; ++i) {
           this.traverseR(node.childNodes[i], observer);
@@ -83,7 +85,12 @@ export class XhtmlParserService extends ParserService {
       && SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
       const testRes = ParserUtils.testMiniTranslateUnit(node);
       if (testRes === 1) {
-        ParserUtils.setHtmlNodeTexts(node, newData, true);
+        const source = [];
+        const txtags = [];
+        ParserUtils.getHtmlNodeTexts(node, source, txtags);
+        if (source.length) {
+          ParserUtils.setHtmlNodeTexts(node, newData, true);
+        }
       } else if (testRes === 2) {
         for (let i = 0; i < node.childNodes.length; ++i) {
           this.traverseW(node.childNodes[i], newData);

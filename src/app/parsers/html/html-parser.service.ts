@@ -50,7 +50,9 @@ export class HtmlParserService extends ParserService {
           mue['txtags'] = txtags;
           mue['elhtml'] = (<any>node).outerHTML;
         }
-        observer.next(mue);
+        if (mue.source.length) {
+          observer.next(mue);
+        }
       } else if (testRes === 2) {
         for (let i = 0; i < node.childNodes.length; ++i) {
           this.traverseR(node.childNodes[i], observer);
@@ -64,7 +66,12 @@ export class HtmlParserService extends ParserService {
       && SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
       const testRes = ParserUtils.testMiniTranslateUnit(node);
       if (testRes === 1) {
-        ParserUtils.setHtmlNodeTexts(node, newData);
+        const source = [];
+        const txtags = [];
+        ParserUtils.getHtmlNodeTexts(node, source, txtags);
+        if (source.length) {
+          ParserUtils.setHtmlNodeTexts(node, newData);
+        }
       } else if (testRes === 2) {
         for (let i = 0; i < node.childNodes.length; ++i) {
           this.traverseW(node.childNodes[i], newData);

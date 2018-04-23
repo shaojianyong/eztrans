@@ -19,9 +19,24 @@ function testMiniTranslateUnit(node) {
   return hasTextChildNode ? 1 : 2;  // 1-mini translate-unit 2-non-mini translate-unit
 }
 
+function getNodeTexts(node, nodeTexts) {
+  if (node.nodeType === Node.TEXT_NODE) {
+    const trimmed = node.nodeValue.trim();  // NO-BREAK SPACE (0x00a0) will be trimmed
+    if (trimmed && trimmed !== String.fromCharCode(8203) && !trimmed.match(/^[\W|\d]+$/)) {  // ZERO WIDTH SPACE
+      nodeTexts.push(node.nodeValue);
+    }
+    return;
+  }
+
+  for (var i = 0; i < node.childNodes.length; ++i) {
+    getNodeTexts(node.childNodes[i], nodeTexts);
+  }
+}
+
 function setNodeTexts(node, newData) {
   if (node.nodeType === Node.TEXT_NODE) {
-    if (node.nodeValue.trim()) {
+    const trimmed = node.nodeValue.trim();  // NO-BREAK SPACE (0x00a0) will be trimmed
+    if (trimmed && trimmed !== String.fromCharCode(8203) && !trimmed.match(/^[\W|\d]+$/)) {  // ZERO WIDTH SPACE
       const newVal = newData.texts[newData.index];
       if (newVal && newVal.trim()) {
         node.nodeValue = newVal;
@@ -41,7 +56,11 @@ function nodeUpdate(node, newData) {
     && SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
     const testRes = testMiniTranslateUnit(node);
     if (testRes === 1) {
-      setNodeTexts(node, newData);
+      const source = [];
+      getNodeTexts(node, source);
+      if (source.length) {
+        setNodeTexts(node, newData);
+      }
     } else if (testRes === 2) {
       for (var i = 0; i < node.childNodes.length; ++i) {
         nodeUpdate(node.childNodes[i], newData);
@@ -63,11 +82,15 @@ function seekNode(node, seekObj) {
     && SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
     const testRes = testMiniTranslateUnit(node);
     if (testRes === 1) {
-      if (seekObj.idx++ === seekObj.tgt) {
-        seekObj.obj = node;
-        return;
+      const source = [];
+      getNodeTexts(node, source);
+      if (source.length) {
+        if (seekObj.idx++ === seekObj.tgt) {
+          seekObj.obj = node;
+          return;
+        }
+        // seekObj.idx++;  WHY not working?
       }
-      // seekObj.idx++;  WHY not working?
     } else if (testRes === 2) {
       for (var i = 0; i < node.childNodes.length; ++i) {
         seekNode(node.childNodes[i], seekObj);
@@ -81,22 +104,26 @@ function hitTest(node, hitObj) {
     && SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
     const testRes = testMiniTranslateUnit(node);
     if (testRes === 1) {
-      var hitMtu = false;
-      var eleObj = hitObj.obj;
-      while (eleObj) {
-        if (eleObj === node) {
-          hitMtu = true;
-          break;
+      const source = [];
+      getNodeTexts(node, source);
+      if (source.length) {
+        var hitMtu = false;
+        var eleObj = hitObj.obj;
+        while (eleObj) {
+          if (eleObj === node) {
+            hitMtu = true;
+            break;
+          }
+          eleObj = eleObj.parentNode;
         }
-        eleObj = eleObj.parentNode;
-      }
 
-      if (hitMtu) {
-        hitObj.tgt = hitObj.idx;
-        hitObj.mue = node;
-        return;
+        if (hitMtu) {
+          hitObj.tgt = hitObj.idx;
+          hitObj.mue = node;
+          return;
+        }
+        hitObj.idx++;
       }
-      hitObj.idx++;
     } else if (testRes === 2) {
       for (var i = 0; i < node.childNodes.length; ++i) {
         hitTest(node.childNodes[i], hitObj);
