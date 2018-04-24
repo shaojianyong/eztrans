@@ -10,7 +10,8 @@ const SKIP_CONTENTS = [
   '\u02b0-\u02ff',  // 占位修饰符号：https://unicode-table.com/cn/blocks/spacing-modifier-letters/
   '\u0300-\u036f',  // 结合附加符号：https://unicode-table.com/cn/blocks/combining-diacritical-marks/
   '\u0370-\u03ff',  // 希腊字母及科普特字母：https://unicode-table.com/cn/blocks/greek-coptic/
-  '\u2000-\u206f',  // 常用标点：https://unicode-table.com/cn/blocks/general-punctuation/
+  '\u2000-\u200a',  // 常用标点(1)：https://unicode-table.com/cn/blocks/general-punctuation/
+  '\u200c-\u206f',  // 常用标点(2)：https://unicode-table.com/cn/blocks/general-punctuation/
   '\u2070-\u209f',  // 上标及下标：https://unicode-table.com/cn/blocks/superscripts-and-subscripts/
   '\u20a0-\u20cf',  // 货币符号：https://unicode-table.com/cn/blocks/currency-symbols/
   '\u20d0-\u20ff',  // 组合用记号：https://unicode-table.com/cn/blocks/combining-diacritical-marks-for-symbols/

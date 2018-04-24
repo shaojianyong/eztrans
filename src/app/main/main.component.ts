@@ -1102,12 +1102,17 @@ export class MainComponent implements OnInit {
       sentence.custom = this.getTargetTexts(sentence);
       sentence.target = -1;
     }
-    if (sliceInput.textContent.trim()) {
-      sentence.custom[slieceNo] = sliceInput.textContent;
+
+    const trimmed = sliceInput.textContent.trim();
+    if (trimmed) {
+      if (trimmed.length > 1 && trimmed.indexOf('\u200b') !== -1) {
+        sentence.custom[slieceNo] = trimmed.replace('\u200b', '');
+      }
     } else {
-      sliceInput.textContent = sentence.custom[slieceNo];
-      alert('Document structure cannot be changed!');
+      sliceInput.textContent = '\u200b';
     }
+     = sliceInput.textContent;
+    console.log('--------->', sentence.custom[slieceNo], sentence.custom[slieceNo].length);
 
     this.child_pane.updateCustomView();  // 调用this.rerender()会使span编辑框失去焦点
     this.updatePreview();
