@@ -1,6 +1,7 @@
 var ipc = require('electron').ipcRenderer;
 
 var SKIP_ELEMENTS = require('../assets/skip_elements');
+var SKIP_CONTENT_REGEX = require('../assets/skip_contents');
 
 var selectedNode = null;
 var orgBackColor = null;
@@ -22,7 +23,7 @@ function testMiniTranslateUnit(node) {
 function getNodeTexts(node, nodeTexts) {
   if (node.nodeType === Node.TEXT_NODE) {
     const trimmed = node.nodeValue.trim();  // NO-BREAK SPACE (0x00a0) will be trimmed
-    if (trimmed && !trimmed.match(/^[\u0001-\u0040\u005b-\u0060\u007b-\u007f\u2654-\u265F\u2660-\u2667\u200b]+$/)) {
+    if (trimmed && !trimmed.match(SKIP_CONTENT_REGEX)) {
       nodeTexts.push(node.nodeValue);
     }
     return;
@@ -36,7 +37,7 @@ function getNodeTexts(node, nodeTexts) {
 function setNodeTexts(node, newData) {
   if (node.nodeType === Node.TEXT_NODE) {
     const trimmed = node.nodeValue.trim();  // NO-BREAK SPACE (0x00a0) will be trimmed
-    if (trimmed && !trimmed.match(/^[\u0001-\u0040\u005b-\u0060\u007b-\u007f\u200b]+$/)) {
+    if (trimmed && !trimmed.match(SKIP_CONTENT_REGEX)) {
       const newVal = newData.texts[newData.index];
       if (newVal && newVal.trim()) {
         node.nodeValue = newVal;

@@ -1,8 +1,11 @@
+const SKIP_CONTENT_REGEX = (<any>window).require('./assets/skip_contents');
+
 export class ParserUtils {
+
   static getHtmlNodeTexts(node: Node, nodeTexts: Array<string>, nodeTags: Array<string>): void {
     if (node.nodeType === Node.TEXT_NODE) {
       const trimmed = node.nodeValue.trim();  // NO-BREAK SPACE (0x00a0) will be trimmed
-      if (trimmed && !trimmed.match(/^[\u0001-\u0040\u005b-\u0060\u007b-\u007f\u200b]+$/)) {
+      if (trimmed && !trimmed.match(SKIP_CONTENT_REGEX)) {
         let nodeText = node.nodeValue;
         nodeText = nodeText.replace(/\r\n|\n/g, ' ');
         nodeText = nodeText.replace(/\s{2,}/g, ' ').trim();
@@ -21,7 +24,7 @@ export class ParserUtils {
   static setHtmlNodeTexts(node: Node, newData: any, xmldom = false): void {
     if (node.nodeType === Node.TEXT_NODE) {
       const trimmed = node.nodeValue.trim();  // NO-BREAK SPACE (0x00a0) will be trimmed
-      if (trimmed && !trimmed.match(/^[\u0001-\u0040\u005b-\u0060\u007b-\u007f\u200b]+$/)) {
+      if (trimmed && !trimmed.match(SKIP_CONTENT_REGEX)) {
         const newVal = newData.texts[newData.index];
         if (newVal && newVal.trim()) {
           if (xmldom) {
