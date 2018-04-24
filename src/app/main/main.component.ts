@@ -25,6 +25,8 @@ import engines from '../providers/manager/engines';
 
 const SKIP_ELEMENTS = (<any>window).require('./assets/skip_elements');
 
+const ZERO_WIDTH_SPACE = String.fromCharCode(8203);
+
 // encapsulation - stackoverflow.com/questions/44210786/style-not-working-for-innerhtml-in-angular-2-typescript
 @Component({
   selector: 'app-main',
@@ -1103,16 +1105,18 @@ export class MainComponent implements OnInit {
       sentence.target = -1;
     }
 
+    let newVal = sliceInput.textContent;
     const trimmed = sliceInput.textContent.trim();
     if (trimmed) {
-      if (trimmed.length > 1 && trimmed.indexOf('\u200b') !== -1) {
-        sentence.custom[slieceNo] = trimmed.replace('\u200b', '');
+      if (trimmed.length > 1 && trimmed.indexOf(ZERO_WIDTH_SPACE) !== -1) {
+        newVal = trimmed.replace(ZERO_WIDTH_SPACE, '');
       }
     } else {
-      sliceInput.textContent = '\u200b';
+      newVal = ZERO_WIDTH_SPACE;
+      // ?? sliceInput.textContent = newVal;
     }
-     = sliceInput.textContent;
-    console.log('--------->', sentence.custom[slieceNo], sentence.custom[slieceNo].length);
+    sentence.custom[slieceNo] = newVal;
+    console.log('--------->', newVal, newVal.length);
 
     this.child_pane.updateCustomView();  // 调用this.rerender()会使span编辑框失去焦点
     this.updatePreview();
