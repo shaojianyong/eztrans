@@ -1,10 +1,12 @@
 var ipc = require('electron').ipcRenderer;
+const { JSDOM } = require('../../node_modules/jsdom');
 
 var SKIP_ELEMENTS = require('../assets/skip_elements');
 var SKIP_CONTENT_REGEX = require('../assets/skip_contents');
 
 var selectedNode = null;
 var orgBackColor = null;
+var domObj = null;
 
 function testMiniTranslateUnit(node) {
   if (node.nodeType !== Node.DOCUMENT_NODE && !(node.textContent && node.textContent.trim())) {
@@ -170,6 +172,10 @@ function disableLinks() {
   }
 }
 
+ipc.on('rsp-html', function(event, message) {
+  domObj = new JSDOM(message);
+});
+
 ipc.on('update-preview', function(event, message) {
   htmlUpdate(message);
 });
@@ -181,6 +187,7 @@ ipc.on('scroll-to', function(event, message) {
 document.addEventListener('DOMContentLoaded', function () {
   window.$ = window.jQuery = require('../assets/jquery-3.2.1.min');
   disableLinks();
+  ipc.sendToHost('req-html');
 });
 
 document.addEventListener('click', function (event) {

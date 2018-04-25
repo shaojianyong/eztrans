@@ -1171,18 +1171,30 @@ export class MainComponent implements OnInit {
       (<any>webview).openDevTools();
     });
 
+    // stackoverflow.com/questions/40640766/electron-app-how-do-you-use-ipcrenderer-sendtohost
     (<any>webview).addEventListener('ipc-message', (event: any) => {
-      const hit = event.args[0];
-      if (hit === this.cur_index) {
-        return;
-      }
-      const page = this.getPageIndex(hit);
-      if (page !== -1) {
-        this.cur_index = hit;
-        this.cur_slice = -1;
-        this.cur_page = page;  // flip page
-        this.rerender();
-        this.showSelectedItem();
+      if (event.channel === 'hit-item') {
+        const hit = event.args[0];
+        if (hit === this.cur_index) {
+          return;
+        }
+        const page = this.getPageIndex(hit);
+        if (page !== -1) {
+          this.cur_index = hit;
+          this.cur_slice = -1;
+          this.cur_page = page;  // flip page
+          this.rerender();
+          this.showSelectedItem();
+        }
+      } else if (event.channel === 'req-html') {
+        if (!this.child_home.cur_doc || !this.child_home.cur_doc.id) {
+          return;
+        }
+        const parser = this.pms.getParser(this.child_home.cur_doc.data_type);
+        parser.load(this.child_home.cur_doc.file_data);
+        let fileData = parser.getLastData('html');
+        fileData = fileData.replace(/\r\n|\n/g, ' ');  // WebView会把换行符吃掉，导致单词黏连在一起
+        (<any>webview).send('rsp-html', fileData);
       }
     });
   }
