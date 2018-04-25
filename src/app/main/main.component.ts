@@ -1113,10 +1113,9 @@ export class MainComponent implements OnInit {
       }
     } else {
       newVal = ZERO_WIDTH_SPACE;
-      // ?? sliceInput.textContent = newVal;
+      sliceInput.textContent = newVal;
     }
     sentence.custom[slieceNo] = newVal;
-    console.log('--------->', newVal, newVal.length);
 
     this.child_pane.updateCustomView();  // 调用this.rerender()会使span编辑框失去焦点
     this.updatePreview();
