@@ -1190,11 +1190,12 @@ export class MainComponent implements OnInit {
         if (!this.child_home.cur_doc || !this.child_home.cur_doc.id) {
           return;
         }
-        const parser = this.pms.getParser(this.child_home.cur_doc.data_type);
-        parser.load(this.child_home.cur_doc.file_data);
-        let fileData = parser.getLastData('html');
-        fileData = fileData.replace(/\r\n|\n/g, ' ');  // WebView会把换行符吃掉，导致单词黏连在一起
-        (<any>webview).send('rsp-html', fileData);
+
+        let segments = [];
+        for (const sentence of this.child_home.cur_doc.sentences) {
+          segments = segments.concat(sentence.source);
+        }
+        (<any>webview).send('rsp-html', segments);
       }
     });
   }
