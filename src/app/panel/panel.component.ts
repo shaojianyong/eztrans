@@ -74,11 +74,11 @@ export class PanelComponent implements OnInit {
     const dstLang = 'zh-CN';
     let link = engines[engine_name].site;
     if (engine_name === 'Google') {
-      link += `/#${srcLang}/${dstLang}/${encodeURIComponent(this.sentence.source.join(' '))}`;
+      link += `/#${srcLang}/${dstLang}/${encodeURIComponent(this.sentence.slices.join(' '))}`;
     } else if (engine_name === 'Baidu') {
       const slc = FunctionUtils.baiduLangCode(srcLang);
       const dlc = FunctionUtils.baiduLangCode(dstLang);
-      link += `/#${slc}/${dlc}/${encodeURIComponent(this.sentence.source.join(' '))}`;
+      link += `/#${slc}/${dlc}/${encodeURIComponent(this.sentence.slices.join(' '))}`;
     }
 
     console.log(link);

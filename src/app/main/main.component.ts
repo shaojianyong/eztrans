@@ -125,7 +125,7 @@ export class MainComponent implements OnInit {
     let segments = [];
     for (const sentence of this.child_home.cur_doc.sentences) {
       if (sentence.target === -2 || sentence.ignore) {
-        segments = segments.concat(sentence.source);
+        segments = segments.concat(sentence.slices);
       } else {
         segments = segments.concat(AppUtils.getTargetTexts(sentence));
       }
@@ -239,17 +239,17 @@ export class MainComponent implements OnInit {
   }
 
   getWholeSrcText(sentence: SentenceModel): string {
-    if (sentence.source.length === 1) {
-      return sentence.source[0];
+    if (sentence.slices.length === 1) {
+      return sentence.slices[0];
     }
 
     let res = '';
-    const wholeSrc = sentence.source.join(' ');
-    for (let i = 0; i < sentence.source.length; ++i) {
+    const wholeSrc = sentence.slices.join(' ');
+    for (let i = 0; i < sentence.slices.length; ++i) {
       if (SKIP_ELEMENTS.indexOf(sentence.txtags[i]) === -1
-        && FunctionUtils.getContentType(sentence.source[i]) >= FunctionUtils.ContentType.TEXT) {
+        && FunctionUtils.getContentType(sentence.slices[i]) >= FunctionUtils.ContentType.TEXT) {
         sentence.ntsphs[i] = '';
-        res += sentence.source[i];
+        res += sentence.slices[i];
       } else {
         let placeholder = `X${i}`;
         while (wholeSrc.indexOf(placeholder) !== -1) {
@@ -266,12 +266,12 @@ export class MainComponent implements OnInit {
   }
 
   translate(index: number, sentence: SentenceModel): void {
-    if (sentence.source.length === 1
-      && FunctionUtils.getContentType(sentence.source[0]) < FunctionUtils.ContentType.TEXT) {
+    if (sentence.slices.length === 1
+      && FunctionUtils.getContentType(sentence.slices[0]) < FunctionUtils.ContentType.TEXT) {
       const refer = new VersionModel({
         engine: 'Suda',
         target: new TranslateModel({
-          target_text: sentence.source[0],
+          target_text: sentence.slices[0],
           trans_state: TranslateState.SUCCESS,
           trans_grade: 0
         })
@@ -316,7 +316,7 @@ export class MainComponent implements OnInit {
         res => {
           if (res.result === 'ok' && refer.target.target_text) {
             refer.target.trans_state = TranslateState.SUCCESS;
-            if (sentence.source.length === 1) {
+            if (sentence.slices.length === 1) {
               // 根据评分选用最佳翻译
               if (sentence.target === -2) {
                 sentence.target = refIdx;
@@ -352,7 +352,7 @@ export class MainComponent implements OnInit {
 
   translateReferSlices(index: number, sentence: SentenceModel, refIdx: number, docInfo: DocInfoModel): void {
     const refer = sentence.refers[refIdx];
-    for (let i = 0; i < sentence.source.length; ++i) {
+    for (let i = 0; i < sentence.slices.length; ++i) {
       if (refer.slices[i]) {
         if (refer.slices[i].trans_state === TranslateState.SUCCESS && refer.slices[i].target_text) {
           continue;  // 不发重复请求
@@ -360,7 +360,7 @@ export class MainComponent implements OnInit {
       } else {
         refer.slices[i] = new TranslateModel({trans_state: TranslateState.REQUESTED});
         if (SKIP_ELEMENTS.indexOf(sentence.txtags[i]) !== -1
-          || FunctionUtils.getContentType(sentence.source[i]) < FunctionUtils.ContentType.TEXT) {
+          || FunctionUtils.getContentType(sentence.slices[i]) < FunctionUtils.ContentType.TEXT) {
           refer.slices[i].target_text = sentence.ntsphs[i];
           refer.slices[i].trans_state = TranslateState.SUCCESS;
           refer.slices[i].trans_grade = 0;
@@ -369,13 +369,13 @@ export class MainComponent implements OnInit {
       }
 
       const engine = this.ems.getEngine(refer.engine);
-      engine.translateX(sentence.source[i], refer.slices[i], docInfo).subscribe(
+      engine.translateX(sentence.slices[i], refer.slices[i], docInfo).subscribe(
         res => {
           if (res.result === 'ok' && refer.slices[i].target_text) {
             refer.slices[i].trans_state = TranslateState.SUCCESS;
 
             // 最后一个分片返回，并且所有分片都翻译成功
-            if (refer.slices.length === sentence.source.length &&
+            if (refer.slices.length === sentence.slices.length &&
               refer.target.trans_state === TranslateState.SUCCESS
               && this.checkAllSliceStates(refer)) {
               // 根据评分选用最佳翻译
@@ -615,7 +615,7 @@ export class MainComponent implements OnInit {
   // 返回与自定义翻译一致的参考翻译
   checkFakeCustom(sentence: SentenceModel): number {
     let res = -1;
-    if (sentence.source.length === 1) {
+    if (sentence.slices.length === 1) {
       for (let i = 0; i < sentence.refers.length; ++i) {
         const refer = sentence.refers[i];
         if (refer.target && refer.target.target_text === sentence.custom[0]) {
@@ -630,7 +630,7 @@ export class MainComponent implements OnInit {
       let allSame = true;
       const refer = sentence.refers[i];
       const referTexts = AppUtils.getReferTexts(sentence, refer);
-      for (let r = 0; r < sentence.source.length; ++r) {
+      for (let r = 0; r < sentence.slices.length; ++r) {
         if (referTexts[r] !== sentence.custom[r]) {
           allSame = false;
           break;
@@ -684,8 +684,8 @@ export class MainComponent implements OnInit {
 
   getSourceHtml(index: number): string {
     const sentence = this.child_home.cur_doc.sentences[index];
-    if (sentence.source.length === 1) {
-      return sentence.source[0];
+    if (sentence.slices.length === 1) {
+      return sentence.slices[0];
     }
 
     const frag = JSDOM.fragment(sentence.elhtml);
@@ -694,8 +694,8 @@ export class MainComponent implements OnInit {
 
   getSourceHtmlWithSpan(index: number): string {
     const sentence = this.child_home.cur_doc.sentences[index];
-    if (sentence.source.length === 1) {
-      return sentence.source[0];
+    if (sentence.slices.length === 1) {
+      return sentence.slices[0];
     }
 
     const parser = new DOMParser();
@@ -1027,7 +1027,7 @@ export class MainComponent implements OnInit {
 
   searchTest(index: number): boolean {
     const str = this.search_text.toLowerCase();
-    const source_text = this.child_home.cur_doc.sentences[index].source.join(' ').toLowerCase();
+    const source_text = this.child_home.cur_doc.sentences[index].slices.join(' ').toLowerCase();
     const target_text = this.getTargetText(index).toLowerCase();
     return (source_text.indexOf(str) !== -1 || target_text.indexOf(str) !== -1);
   }
@@ -1126,7 +1126,7 @@ export class MainComponent implements OnInit {
       $(`#table-${index}>tbody>tr>td.target-cell`).unhighlight();
     }
     const sentence = this.child_home.cur_doc.sentences[index];
-    if (sentence.source.length > 1) {
+    if (sentence.slices.length > 1) {
       this.cur_slice = sno;
       this.rerender();
     }
@@ -1141,7 +1141,7 @@ export class MainComponent implements OnInit {
     }
 
     this.child_home.setTransModifiedFlag(this.child_home.cur_doc.id);
-    if (sentence.source.length > 1) {
+    if (sentence.slices.length > 1) {
       this.cur_slice = -1;
     }
 
@@ -1193,7 +1193,7 @@ export class MainComponent implements OnInit {
 
         let segments = [];
         for (const sentence of this.child_home.cur_doc.sentences) {
-          segments = segments.concat(sentence.source);
+          segments = segments.concat(sentence.slices);
         }
         (<any>webview).send('rsp-html', segments);
       }

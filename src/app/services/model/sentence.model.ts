@@ -9,18 +9,24 @@ export const SentenceStatus = Object.freeze({
   FAILURE: 'failure'   // 失败
 });
 
+// 目标分片
+export class TargetSlice {
+  tgt: Array<TranslateModel>;
+  beg: number;
+  end: number;
+  ord: number;
+}
+
 // 不同引擎的翻译版本
 export class VersionModel {
   engine: string;  // 翻译引擎
   target: TranslateModel;  // 译本，整体翻译结果
-  slices: Array<TranslateModel>;  // 分片翻译结果，译本切分依据
-  divides: Array<number>;  // 译本切分，长度为N+1：0,...target.target_text.length
+  slices: Array<TargetSlice>;  // 分片翻译结果，译本切分依据
 
   constructor(obj?: any) {
     this.engine = obj && obj.engine || 'Google';
     this.target = obj && obj.target || null;
     this.slices = obj && obj.slices || [];
-    this.divides = obj && obj.divides || [];
   }
 }
 
@@ -28,10 +34,10 @@ export class VersionModel {
 // 这些分片的文本由特殊符号代替，这些符号就是占位符。占位符的选取有两个要求：
 // 1) 占位符不会被引擎翻译（占位符原样返回，才能正确还原）。
 // 2) 占位符不能出现在原文中（即，不能与原文冲突）。
-export class SliceNode {
+export class SourceSlice {
   orgText: string;  // 原文文本
   tagName: string;  // TextNode所在的element标签
-  plcHldr: string;  // placeholder
+  plcHldr: string;  // placeholder不需要翻译分片的占位符
   nodeIdx: number;  // 节点索引
 
   constructor(obj?: any) {
@@ -44,9 +50,7 @@ export class SliceNode {
 
 // 句段模型
 export class SentenceModel {
-  source: Array<SliceNode>;
-  txtags: Array<string>;  // TextNode所在的element标签
-  ntsphs: Array<string>;  // 不翻译分片的占位符placeholders
+  slices: Array<SourceSlice>;
   target: number;
   ignore: boolean;  // 跳过，不需要翻译
   marked: boolean;  // 翻译完成标记
@@ -56,9 +60,7 @@ export class SentenceModel {
   dstmtu: string;  // 目的最小翻译单元，输出文本和HTML模板
 
   constructor(obj?: any) {
-    this.source = obj && obj.source || [];
-    this.txtags = obj && obj.txtags || [];
-    this.ntsphs = obj && obj.ntsphs || [];
+    this.slices = obj && obj.slices || [];
     this.target = obj && obj.target || -2;
     this.ignore = obj && obj.ignore || false;
     this.marked = obj && obj.marked || false;
@@ -66,6 +68,5 @@ export class SentenceModel {
     this.refers = obj && obj.refers || [];
     this.srcmtu = obj && obj.srcmtu || '';
     this.dstmtu = obj && obj.dstmtu || '';
-
   }
 }

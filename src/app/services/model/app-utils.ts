@@ -6,7 +6,7 @@ import { ParserUtils } from '../../parsers/base/parser-utils';
 
 export class AppUtils {
   static getReferTexts(sentence: SentenceModel, refer: VersionModel): Array<string> {
-    if (sentence.source.length === 1) {
+    if (sentence.slices.length === 1) {
       return [refer.target.target_text];
     }
 
@@ -16,22 +16,22 @@ export class AppUtils {
         res.push(refer.target.target_text.substring(refer.divides[i], refer.divides[i + 1]));
       }
     } else {
-      for (let i = 0; i < sentence.source.length; ++i) {
+      for (let i = 0; i < sentence.slices.length; ++i) {
         const slice = refer.slices[i];
         if (slice && slice.trans_state === TranslateState.SUCCESS) {
           res.push(slice.target_text);
         } else {
-          res.push(sentence.source[i]);
+          res.push(sentence.slices[i]);
         }
       }
     }
 
-    for (let i = 0; i < sentence.source.length; ++i) {
+    for (let i = 0; i < sentence.slices.length; ++i) {
       if (sentence.ntsphs[i]) {
         if (res[i] !== sentence.ntsphs[i]) {
           throw new Error(`The placeholder be translated: ${sentence.ntsphs[i]} -> ${res[i]}!`);
         }
-        res[i] = sentence.source[i];
+        res[i] = sentence.slices[i];
       }
     }
     return res;

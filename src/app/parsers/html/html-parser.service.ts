@@ -3,7 +3,7 @@ import {Observable} from 'rxjs/Observable';
 const { JSDOM } = (<any>window).require('jsdom');
 import { ParserUtils } from '../base/parser-utils';
 import { ParserService } from '../base/parser.service';
-import {SentenceModel, SliceNode} from '../../services/model/sentence.model';
+import {SentenceModel, SourceSlice} from '../../services/model/sentence.model';
 
 const SKIP_ELEMENTS = (<any>window).require('./assets/skip_elements');
 
@@ -45,8 +45,8 @@ export class HtmlParserService extends ParserService {
       const testRes = ParserUtils.testMiniTranslateUnit(node);
       if (testRes === 1) {
         const sentence = new SentenceModel({srcmtu: (<any>node).outerHTML});
-        ParserUtils.getHtmlNodeTexts(node, sentence.source, node.textContent);
-        if (ParserUtils.needTranslate(sentence.source)) {
+        ParserUtils.getHtmlNodeTexts(node, sentence.slices, node.textContent);
+        if (ParserUtils.needTranslate(sentence.slices)) {
           observer.next(sentence);
         }
       } else if (testRes === 2) {
