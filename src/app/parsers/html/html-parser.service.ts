@@ -3,6 +3,7 @@ import {Observable} from 'rxjs/Observable';
 const { JSDOM } = (<any>window).require('jsdom');
 import { ParserUtils } from '../base/parser-utils';
 import { ParserService } from '../base/parser.service';
+import {SentenceModel, SliceNode} from '../../services/model/sentence.model';
 
 const SKIP_ELEMENTS = (<any>window).require('./assets/skip_elements');
 
@@ -26,9 +27,9 @@ export class HtmlParserService extends ParserService {
     });
   }
 
-  update(segments: Array<string>): void {
+  update(sentences: Array<SentenceModel>): void {
     const newData = {
-      texts: segments,
+      sentence: sentences,
       index: 0
     };
     this.traverseW(this.dom.window.document, newData);
@@ -43,15 +44,10 @@ export class HtmlParserService extends ParserService {
       && SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
       const testRes = ParserUtils.testMiniTranslateUnit(node);
       if (testRes === 1) {
-        const mue = {source: []};
-        const txtags = [];
-        ParserUtils.getHtmlNodeTexts(node, mue.source, txtags);
-        if (mue.source.length > 1) {
-          mue['txtags'] = txtags;
-          mue['elhtml'] = (<any>node).outerHTML;
-        }
-        if (mue.source.length) {
-          observer.next(mue);
+        const sentence = new SentenceModel({srcmtu: (<any>node).outerHTML});
+        ParserUtils.getHtmlNodeTexts(node, sentence.source, node.textContent);
+        if (ParserUtils.needTranslate(sentence.source)) {
+          observer.next(sentence);
         }
       } else if (testRes === 2) {
         for (let i = 0; i < node.childNodes.length; ++i) {
@@ -66,11 +62,10 @@ export class HtmlParserService extends ParserService {
       && SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
       const testRes = ParserUtils.testMiniTranslateUnit(node);
       if (testRes === 1) {
-        const source = [];
-        const txtags = [];
-        ParserUtils.getHtmlNodeTexts(node, source, txtags);
-        if (source.length) {
-          ParserUtils.setHtmlNodeTexts(node, newData);
+        const slices = [];
+        ParserUtils.getHtmlNodeTexts(node, slices, node.textContent);
+        if (ParserUtils.needTranslate(slices)) {
+          (<any>node).outerHTML = newData.sentences[newData.index++].dstmtu;
         }
       } else if (testRes === 2) {
         for (let i = 0; i < node.childNodes.length; ++i) {

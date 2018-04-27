@@ -1,4 +1,5 @@
 import {Observable} from 'rxjs/Observable';
+import {SentenceModel} from '../../services/model/sentence.model';
 
 export abstract class ParserService {
 
@@ -6,7 +7,7 @@ export abstract class ParserService {
 
   abstract parse(): Observable<any>;
 
-  abstract update(segments: Array<string>): void;
+  abstract update(sentences: Array<SentenceModel>): void;
 
   abstract getLastData(dataType: string): string;
 }
