@@ -8,58 +8,41 @@ export const SentenceStatus = Object.freeze({
   FAILURE: 'failure'   // 失败
 });
 
-export class SliceOrder {
-  beg: number;
-  end: number;
-  ord: number;
-}
-
 export class VersionModel {
   engine: string;  // 翻译引擎
   target: TranslateModel;  // 译本，整体翻译结果
   slices: Array<TranslateModel>;  // 分片翻译结果，译本切分依据
-  orders: Array<SliceOrder>;
+  divides: Array<number>;  // 译本切分，长度为N+1：0,...target.target_text.length
 
   constructor(obj?: any) {
     this.engine = obj && obj.engine || 'Google';
     this.target = obj && obj.target || null;
     this.slices = obj && obj.slices || [];
-    this.orders = obj && obj.orders || [];
-  }
-}
-
-// 分片节点
-export class SliceNode {
-  orgText: string;  // 原文文本
-  tagName: string;  // TextNode所在的element标签
-  plcHldr: string;  // placeholder
-
-  constructor(obj?: any) {
-    this.orgText = obj && obj.orgText || '';
-    this.tagName = obj && obj.tagName || '';
-    this.plcHldr = obj && obj.plcHldr || '';
+    this.divides = obj && obj.divides || [];
   }
 }
 
 // 句段模型
 export class SentenceModel {
-  source: Array<SliceNode>;
+  source: Array<string>;
+  txtags: Array<string>;  // TextNode所在的element标签
+  ntsphs: Array<string>;  // 不翻译分片的占位符placeholders
   target: number;
   ignore: boolean;  // 跳过，不需要翻译
   marked: boolean;  // 翻译完成标记
   custom: Array<string>;  // 自定义翻译
   refers: Array<VersionModel>;
-  srcmtu: string;  // 源始最小翻译单元，输入文本和HTML模板
-  dstmtu: string;  // 目的最小翻译单元，输出文本和HTML模板
+  elhtml: string;
 
   constructor(obj?: any) {
     this.source = obj && obj.source || [];
+    this.txtags = obj && obj.txtags || [];
+    this.ntsphs = obj && obj.ntsphs || [];
     this.target = obj && obj.target || -2;
     this.ignore = obj && obj.ignore || false;
     this.marked = obj && obj.marked || false;
     this.custom = obj && obj.custom || [];
     this.refers = obj && obj.refers || [];
-    this.srcmtu = obj && obj.srcmtu || '';
-    this.dstmtu = obj && obj.dstmtu || '';
+    this.elhtml = obj && obj.elhtml || '';
   }
 }
