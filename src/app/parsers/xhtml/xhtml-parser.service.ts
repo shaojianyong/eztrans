@@ -61,16 +61,11 @@ export class XhtmlParserService extends ParserService {
       && SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
       const testRes = ParserUtils.testMiniTranslateUnit(node);
       if (testRes === 1) {
-        const mue = {source: []};
-        const txtags = [];
-        ParserUtils.getHtmlNodeTexts(node, mue.source, txtags);
-        if (mue.source.length > 1) {
-          const serial = new XMLSerializer();
-          mue['txtags'] = txtags;
-          mue['elhtml'] = serial.serializeToString(node);
-        }
-        if (mue.source.length) {
-          observer.next(mue);
+        const serial = new XMLSerializer();
+        const sentence = new SentenceModel({srcmtu: serial.serializeToString(node)});
+        ParserUtils.getHtmlNodeTexts(node, sentence.slices, node.textContent);
+        if (ParserUtils.needTranslate(sentence.slices)) {
+          observer.next(sentence);
         }
       } else if (testRes === 2) {
         for (let i = 0; i < node.childNodes.length; ++i) {

@@ -336,8 +336,8 @@ export class MainComponent implements OnInit {
       const engine = this.ems.getEngine(refer.engine);
       engine.translateX(sentence.slices[i], refer.slices[i], docInfo).subscribe(
         res => {
-          if (res.result === 'ok' && refer.slices[i].target_text) {
-            refer.slices[i].trans_state = TranslateState.SUCCESS;
+          if (res.result === 'ok' && refer.slices[i].tgt.target_text) {
+            refer.slices[i].tgt.trans_state = TranslateState.SUCCESS;
 
             // 最后一个分片返回，并且所有分片都翻译成功
             if (refer.slices.length === sentence.slices.length &&
@@ -357,7 +357,7 @@ export class MainComponent implements OnInit {
               }
             }
           } else {
-            refer.slices[i].trans_state = TranslateState.FAILURE;
+            refer.slices[i].tgt.trans_state = TranslateState.FAILURE;
           }
           // 如果文档没有切换，更新视图，否则，不需要更新
           if (res.doc_id === this.child_home.cur_doc.id && this.getPageRange().indexOf(index) !== -1) {
@@ -366,7 +366,7 @@ export class MainComponent implements OnInit {
           this.child_home.setTransModifiedFlag(res.doc_id);
         },
         err => {
-          refer.slices[i].trans_state = TranslateState.FAILURE;
+          refer.slices[i].tgt.trans_state = TranslateState.FAILURE;
           if (err.doc_id === this.child_home.cur_doc.id && this.getPageRange().indexOf(index) !== -1) {
             this.rerender();
           }
@@ -376,7 +376,8 @@ export class MainComponent implements OnInit {
     }
   }
 
-  oneSliceDivide(refer: VersionModel, index: number): void {
+/*
+    oneSliceDivide(refer: VersionModel, index: number): void {
     const wholeStr = refer.target.target_text;
     const sliceStr = refer.slices[index].target_text;
     const oldBegPos = refer.divides[index];
@@ -483,11 +484,12 @@ export class MainComponent implements OnInit {
       refer.divides[refer.slices.length] = refer.target.target_text.length;
     }
   }
+*/
 
   checkAllSliceStates(vm: VersionModel): boolean {
     let res = true;
     for (const slice of vm.slices) {
-      if (slice.trans_state !== TranslateState.SUCCESS) {
+      if (slice.tgt.trans_state !== TranslateState.SUCCESS) {
         res = false;
         break;
       }
@@ -650,21 +652,21 @@ export class MainComponent implements OnInit {
   getSourceHtml(index: number): string {
     const sentence = this.child_home.cur_doc.sentences[index];
     if (sentence.slices.length === 1) {
-      return sentence.slices[0];
+      return sentence.slices[0].orgText;
     }
 
-    const frag = JSDOM.fragment(sentence.elhtml);
+    const frag = JSDOM.fragment(sentence.srcmtu);
     return frag.firstChild.innerHTML;
   }
 
   getSourceHtmlWithSpan(index: number): string {
     const sentence = this.child_home.cur_doc.sentences[index];
     if (sentence.slices.length === 1) {
-      return sentence.slices[0];
+      return sentence.slices[0].orgText;
     }
 
     const parser = new DOMParser();
-    const xmldoc = parser.parseFromString(sentence.elhtml, 'text/xml');
+    const xmldoc = parser.parseFromString(sentence.srcmtu, 'text/xml');
     const args = {
       index: index,
       slice: 0
