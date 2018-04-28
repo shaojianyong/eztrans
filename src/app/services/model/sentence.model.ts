@@ -11,7 +11,7 @@ export const SentenceStatus = Object.freeze({
 
 // 目标分片
 export class TargetSlice {
-  tgt: Array<TranslateModel>;
+  tgt: TranslateModel;
   beg: number;
   end: number;
   ord: number;
