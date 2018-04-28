@@ -136,7 +136,7 @@ export class MainComponent implements OnInit {
   getLastFileData(fileType: string): string {
     const parser = this.pms.getParser(this.child_home.cur_doc.data_type);
     parser.load(this.child_home.cur_doc.file_data);
-    parser.update(this.getLastTransData());
+    parser.update(this.child_home.cur_doc.sentences);
     return parser.getLastData(fileType);
   }
 
@@ -207,7 +207,7 @@ export class MainComponent implements OnInit {
         states.push(refer.target.trans_state);
       }
       for (const slice of refer.slices) {
-        states.push(slice.trans_state);
+        states.push(slice.tgt.trans_state);
       }
     }
 
@@ -240,7 +240,7 @@ export class MainComponent implements OnInit {
 
   getWholeSrcText(sentence: SentenceModel): string {
     if (sentence.slices.length === 1) {
-      return sentence.slices[0];
+      return sentence.slices[0].orgText;
     }
 
     let res = '';
@@ -1249,10 +1249,9 @@ export class MainComponent implements OnInit {
       parser.load(data);
       parser.parse().subscribe(
         res => {
-          const sentence = new SentenceModel({ source: res.source, txtags: res.txtags, elhtml: res.elhtml });
           if (docId in self.child_home.cache_docs) {
             const doc = self.child_home.cache_docs[docId];
-            doc.sentences.push(sentence);
+            doc.sentences.push(res);
           }
         },
         error => {
