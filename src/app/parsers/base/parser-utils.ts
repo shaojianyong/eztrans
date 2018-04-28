@@ -1,3 +1,4 @@
+import { FunctionUtils } from '../../services/utils/function-utils';
 import {SentenceModel, SourceSlice} from '../../services/model/sentence.model';
 const SKIP_ELEMENTS = (<any>window).require('./assets/skip_elements');
 const SKIP_CONTENT_REGEX = (<any>window).require('./assets/skip_contents');
@@ -22,7 +23,9 @@ export class ParserUtils {
         return;
       }
       let nodeText = node.nodeValue;
-      if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) !== -1 || trimmed.match(SKIP_CONTENT_REGEX)) {
+      if (SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) !== -1
+        || trimmed.match(SKIP_CONTENT_REGEX)
+        || FunctionUtils.getContentType(trimmed) < FunctionUtils.ContentType.TEXT) {
         let placeholder = `X${slices.length}`;
         while (wholeText.indexOf(placeholder) !== -1) {
           placeholder += `.${slices.length}`;

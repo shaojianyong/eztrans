@@ -239,49 +239,21 @@ export class MainComponent implements OnInit {
   }
 
   getWholeSrcText(sentence: SentenceModel): string {
-    if (sentence.slices.length === 1) {
-      return sentence.slices[0].orgText;
-    }
-
     let res = '';
-    const wholeSrc = sentence.slices.join(' ');
-    for (let i = 0; i < sentence.slices.length; ++i) {
-      if (SKIP_ELEMENTS.indexOf(sentence.txtags[i]) === -1
-        && FunctionUtils.getContentType(sentence.slices[i]) >= FunctionUtils.ContentType.TEXT) {
-        sentence.ntsphs[i] = '';
-        res += sentence.slices[i];
+    for (const slice of sentence.slices) {
+      if (res && !res.endsWith(' ')) {
+        res += ' ';
+      }
+      if (slice.plcHldr) {
+        res += slice.plcHldr;
       } else {
-        let placeholder = `X${i}`;
-        while (wholeSrc.indexOf(placeholder) !== -1) {
-          placeholder += `.${i}`;
-        }
-        sentence.ntsphs[i] = placeholder;
-        if (!res.endsWith(' ')) {
-          res += ' ';
-        }
-        res += placeholder;
+        res += slice.orgText;
       }
     }
     return res;
   }
 
   translate(index: number, sentence: SentenceModel): void {
-    if (sentence.slices.length === 1
-      && FunctionUtils.getContentType(sentence.slices[0]) < FunctionUtils.ContentType.TEXT) {
-      const refer = new VersionModel({
-        engine: 'Suda',
-        target: new TranslateModel({
-          target_text: sentence.slices[0],
-          trans_state: TranslateState.SUCCESS,
-          trans_grade: 0
-        })
-      });
-      sentence.refers.push(refer);
-      sentence.target = 0;
-      this.rerender();
-      return;
-    }
-
     const docInfo = this.child_home.getCurDocInfo();
     for (const engine of this.ems.engine_list) {
       let refIdx = -1;
@@ -353,19 +325,12 @@ export class MainComponent implements OnInit {
   translateReferSlices(index: number, sentence: SentenceModel, refIdx: number, docInfo: DocInfoModel): void {
     const refer = sentence.refers[refIdx];
     for (let i = 0; i < sentence.slices.length; ++i) {
-      if (refer.slices[i]) {
-        if (refer.slices[i].trans_state === TranslateState.SUCCESS && refer.slices[i].target_text) {
+      if (refer.slices[i] && refer.slices[i].tgt) {
+        if (refer.slices[i].tgt.trans_state === TranslateState.SUCCESS && refer.slices[i].tgt.target_text) {
           continue;  // 不发重复请求
         }
       } else {
-        refer.slices[i] = new TranslateModel({trans_state: TranslateState.REQUESTED});
-        if (SKIP_ELEMENTS.indexOf(sentence.txtags[i]) !== -1
-          || FunctionUtils.getContentType(sentence.slices[i]) < FunctionUtils.ContentType.TEXT) {
-          refer.slices[i].target_text = sentence.ntsphs[i];
-          refer.slices[i].trans_state = TranslateState.SUCCESS;
-          refer.slices[i].trans_grade = 0;
-          continue;  // 不需要翻译
-        }
+        refer.slices[i].tgt = new TranslateModel({trans_state: TranslateState.REQUESTED});
       }
 
       const engine = this.ems.getEngine(refer.engine);
