@@ -17,6 +17,6 @@ export class TranslateModel {
   constructor(obj?: any) {
     this.target_text = obj && obj.target_text || '';
     this.trans_state = obj && obj.trans_state || TranslateState.INITIAL;
-    this.trans_grade = obj && obj.trans_grade || 3;  // 默认3星
+    this.trans_grade = obj && obj.trans_grade || 3;  // 1~5星，默认3星
   }
 }

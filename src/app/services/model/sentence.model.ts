@@ -15,6 +15,13 @@ export class TargetSlice {
   beg: number;
   end: number;
   ord: number;
+
+  constructor(obj?: any) {
+    this.tgt = obj && obj.tgt || null;
+    this.beg = obj && obj.beg || -1;
+    this.end = obj && obj.end || -1;
+    this.ord = obj && obj.ord || -1;
+  }
 }
 
 // 不同引擎的翻译版本

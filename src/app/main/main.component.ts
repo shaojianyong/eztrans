@@ -10,7 +10,7 @@ import { AppUtils } from '../services/model/app-utils';
 import {ExLinksModule} from '../services/utils/ex-links.module';
 import { FunctionUtils } from '../services/utils/function-utils';
 import { DocInfoModel } from '../services/model/doc-info.model';
-import {VersionModel, SentenceModel, SentenceStatus} from '../services/model/sentence.model';
+import {VersionModel, SentenceModel, SentenceStatus, TargetSlice} from '../services/model/sentence.model';
 import {TranslateModel, TranslateState} from '../services/model/translate.model';
 import {ParserManagerService} from '../parsers/manager/parser-manager.service';
 import {EngineManagerService} from '../providers/manager/engine-manager.service';
@@ -121,27 +121,12 @@ export class MainComponent implements OnInit {
     });
   }
 
-  getLastTransData(): Array<string> {
-    let segments = [];
-    for (const sentence of this.child_home.cur_doc.sentences) {
-      if (sentence.target === -2 || sentence.ignore) {
-        segments = segments.concat(sentence.slices);
-      } else {
-        segments = segments.concat(AppUtils.getTargetTexts(sentence));
-      }
-    }
-    return segments;
-  }
-
   getLastFileData(fileType: string): string {
     const parser = this.pms.getParser(this.child_home.cur_doc.data_type);
     parser.load(this.child_home.cur_doc.file_data);
     parser.update(this.child_home.cur_doc.sentences);
     return parser.getLastData(fileType);
   }
-
-  // ipcRenderer与ipcMain同步通信，在JavaScript中，同步代码好丑陋
-  // 同步通信，如果ipcMain没有返回，界面会僵住
 
   onItemClick(index: number): void {
     if (index === this.cur_index) {
@@ -325,16 +310,25 @@ export class MainComponent implements OnInit {
   translateReferSlices(index: number, sentence: SentenceModel, refIdx: number, docInfo: DocInfoModel): void {
     const refer = sentence.refers[refIdx];
     for (let i = 0; i < sentence.slices.length; ++i) {
-      if (refer.slices[i] && refer.slices[i].tgt) {
+      if (refer.slices[i]) {
         if (refer.slices[i].tgt.trans_state === TranslateState.SUCCESS && refer.slices[i].tgt.target_text) {
           continue;  // 不发重复请求
         }
+      } else if (sentence.slices[i].plcHldr) {
+        refer.slices[i] = new TargetSlice({tgt: new TranslateModel({
+          target_text: sentence.slices[i].plcHldr,
+          trans_state: TranslateState.SUCCESS,
+          trans_grade: 5
+        })});
+        continue;
       } else {
-        refer.slices[i].tgt = new TranslateModel({trans_state: TranslateState.REQUESTED});
+        refer.slices[i] = new TargetSlice({tgt: new TranslateModel({
+          trans_state: TranslateState.REQUESTED
+        })});
       }
 
       const engine = this.ems.getEngine(refer.engine);
-      engine.translateX(sentence.slices[i], refer.slices[i], docInfo).subscribe(
+      engine.translateX(sentence.slices[i].orgText, refer.slices[i].tgt, docInfo).subscribe(
         res => {
           if (res.result === 'ok' && refer.slices[i].tgt.target_text) {
             refer.slices[i].tgt.trans_state = TranslateState.SUCCESS;
@@ -351,7 +345,8 @@ export class MainComponent implements OnInit {
                   sentence.target = refIdx;
                 }
               }
-              // this.divideIntegratedTranslation(refer);  // TODO: 暂时屏蔽掉可能导致死循环的代码
+              this.matchSlices(refer);
+              this.sortSlices(refer);
               if (sentence.target === refIdx && res.doc_id === this.child_home.cur_doc.id) {
                 this.updatePreview();
               }
@@ -457,34 +452,34 @@ export class MainComponent implements OnInit {
     }
     return res;
   }
-
+*/
   // 暂时不考虑引擎之间交叉引用，同义词...
-  // 根据分片翻译，切分整体翻译，递归算法
-  // 按分片大小顺序切割，直到切分完成
-  divideIntegratedTranslation(refer: VersionModel): void {
-    if (refer.target.target_text.length < refer.slices.length) {
-      return;
-    }
-
-    let count = 0;
-    let done = true;
-    while (!this.isDivideComplete(refer)) {
-      const index = this.getNextSlice(refer);
-      if (index === -1) {
-        done = false;
-        break;
+  // 根据分片翻译，匹配整体翻译
+  matchSlices(refer: VersionModel): void {
+    const wholeStr = refer.target.target_text;
+    for (let i = 0; i < refer.slices.length; ++i) {
+      let intersection = null;
+      const sliceStr = refer.slices[i].tgt.target_text;
+      if (i <= refer.slices.length / 2) {
+        intersection = FunctionUtils.findLongerOverlap(wholeStr, sliceStr);
       } else {
-        this.oneSliceDivide(refer, index);
-        count++;
+        intersection = FunctionUtils.reverseFindLongerOverlap(wholeStr, sliceStr);
+      }
+
+      if (intersection) {
+        refer.slices[i].beg = intersection[0];
+        refer.slices[i].end = intersection[1];
       }
     }
-
-    if (done) {
-      refer.divides[0] = 0;
-      refer.divides[refer.slices.length] = refer.target.target_text.length;
-    }
   }
-*/
+
+  sortSlices(refer: VersionModel): void {
+
+  }
+
+  composeTemplate(): void {
+
+  }
 
   checkAllSliceStates(vm: VersionModel): boolean {
     let res = true;
@@ -1179,8 +1174,10 @@ export class MainComponent implements OnInit {
   }
 
   updatePreview(): void {
-    const webview = document.getElementsByTagName('webview')[0];
-    (<any>webview).send('update-preview', this.getLastTransData());
+    if (this.child_home.cur_doc.id) {
+      const webview = document.getElementsByTagName('webview')[0];
+      (<any>webview).send('update-preview', this.child_home.cur_doc.sentences);
+    }
   }
 
   syncPreview(): void {

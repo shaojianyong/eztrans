@@ -3,7 +3,7 @@ import {Observable} from 'rxjs/Observable';
 const { JSDOM } = (<any>window).require('jsdom');
 import { ParserUtils } from '../base/parser-utils';
 import { ParserService } from '../base/parser.service';
-import {SentenceModel, SourceSlice} from '../../services/model/sentence.model';
+import { SentenceModel } from '../../services/model/sentence.model';
 
 const SKIP_ELEMENTS = (<any>window).require('./assets/skip_elements');
 
@@ -29,7 +29,7 @@ export class HtmlParserService extends ParserService {
 
   update(sentences: Array<SentenceModel>): void {
     const newData = {
-      sentence: sentences,
+      sentences: sentences,
       index: 0
     };
     this.traverseW(this.dom.window.document, newData);

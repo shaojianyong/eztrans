@@ -4,6 +4,7 @@ const { JSDOM } = (<any>window).require('jsdom');
 const { DOMParser, XMLSerializer } = (<any>window).require('xmldom');
 import { ParserUtils } from '../base/parser-utils';
 import { ParserService } from '../base/parser.service';
+import { SentenceModel } from '../../services/model/sentence.model';
 
 const SKIP_ELEMENTS = (<any>window).require('./assets/skip_elements');
 
@@ -28,9 +29,9 @@ export class XhtmlParserService extends ParserService {
     });
   }
 
-  update(segments: Array<string>): void {
+  update(sentences: Array<SentenceModel>): void {
     const newData = {
-      texts: segments,
+      sentences: sentences,
       index: 0
     };
     this.traverseW(this.xmldoc, newData);
@@ -80,11 +81,10 @@ export class XhtmlParserService extends ParserService {
       && SKIP_ELEMENTS.indexOf(node.nodeName.toLowerCase()) === -1) {
       const testRes = ParserUtils.testMiniTranslateUnit(node);
       if (testRes === 1) {
-        const source = [];
-        const txtags = [];
-        ParserUtils.getHtmlNodeTexts(node, source, txtags);
-        if (source.length) {
-          ParserUtils.setHtmlNodeTexts(node, newData, true);
+        const slices = [];
+        ParserUtils.getHtmlNodeTexts(node, slices, node.textContent);
+        if (ParserUtils.needTranslate(slices)) {
+          (<any>node).outerHTML = newData.sentences[newData.index++].dstmtu;
         }
       } else if (testRes === 2) {
         for (let i = 0; i < node.childNodes.length; ++i) {
