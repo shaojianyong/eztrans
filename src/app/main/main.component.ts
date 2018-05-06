@@ -453,7 +453,7 @@ export class MainComponent implements OnInit {
     return res;
   }
 */
-  // 暂时不考虑引擎之间交叉引用，同义词...
+  // 暂时不考虑引擎之间交叉引用，添加伪(fake)上下文，同义词...
   // 根据分片翻译，匹配整体翻译
   matchSlices(refer: VersionModel): void {
     const wholeStr = refer.target.target_text;
