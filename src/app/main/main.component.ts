@@ -458,14 +458,8 @@ export class MainComponent implements OnInit {
   matchSlices(refer: VersionModel): void {
     const wholeStr = refer.target.target_text;
     for (let i = 0; i < refer.slices.length; ++i) {
-      let intersection = null;
       const sliceStr = refer.slices[i].tgt.target_text;
-      if (i <= refer.slices.length / 2) {
-        intersection = FunctionUtils.findLongerOverlap(wholeStr, sliceStr);
-      } else {
-        intersection = FunctionUtils.reverseFindLongerOverlap(wholeStr, sliceStr);
-      }
-
+      const intersection = FunctionUtils.findIntersection(sliceStr, wholeStr);
       if (intersection) {
         refer.slices[i].beg = intersection[0];
         refer.slices[i].end = intersection[1];

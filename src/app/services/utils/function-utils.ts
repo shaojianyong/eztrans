@@ -2,7 +2,6 @@ const urlRegex = (<any>window).require('url-regex');
 const emailRegex = (<any>window).require('email-regex');
 const pathTest = (<any>window).require('is-valid-path');
 
-
 export class FunctionUtils {
   static ContentType = Object.freeze({
     NONE: 0,
@@ -83,81 +82,40 @@ export class FunctionUtils {
     return duLangCode;
   }
 
-  static pruneSecondStr(str1: string, str2: string): string {
-    let fr = 0;
-    let to = str2.length;
-    while (fr !== str2.length && str1.indexOf(str2[fr]) === -1) {
-      ++fr;
-    }
-    if (fr < str2.length - 1) {
-      while (to !== 0 && str1.indexOf(str2[to - 1]) === -1) {
-        --to;
+  static findIntersection(a: string , b: string): {pos: number, len: number} {
+    let bestResult = null;
+    for (let i = 0; i < a.length - 1; i++) {
+      const result = FunctionUtils.findIntersectionFromStart(a.substring(i), b);
+      if (result) {
+        if (!bestResult) {
+          bestResult = result;
+        } else {
+          if (result.length > bestResult.length) {
+            bestResult = result;
+          }
+        }
+      }
+      if (bestResult && bestResult.length >= a.length - i) {
+        break;
       }
     }
-    return str2.substring(fr, to);
-  }
-
-  static findOverlap1(a: string, b: string): [number, number] {
-    if (b.length === 0) {
-      return null;
-    }
-    const index = a.indexOf(b);
-    if (index >= 0) {
-      return [index, index + b.length];
-    }
-    return this.findOverlap1(a, b.substring(0, b.length - 1));
-  }
-
-  static findOverlap2(a: string, b: string): [number, number] {
-    if (b.length === 0) {
-      return null;
-    }
-    const index = a.indexOf(b);
-    if (index >= 0) {
-      return [index, index + b.length];
-    }
-    return this.findOverlap2(a, b.substring(1));
-  }
-
-  static findOverlap3(a: string, b: string): [number, number] {
-    if (b.length === 0) {
-      return null;
-    }
-    const index = a.lastIndexOf(b);
-    if (index >= 0) {
-      return [index, index + b.length];
-    }
-    return this.findOverlap3(a, b.substring(0, b.length - 1));
-  }
-
-  static findOverlap4(a: string, b: string): [number, number] {
-    if (b.length === 0) {
-      return null;
-    }
-    const index = a.lastIndexOf(b);
-    if (index >= 0) {
-      return [index, index + b.length];
-    }
-    return this.findOverlap4(a, b.substring(1));
-  }
-
-  static findLongerOverlap(a: string, b: string): [number, number] {
-    const pb = this.pruneSecondStr(a, b);
-    const sub1 = this.findOverlap1(a, pb);
-    const sub2 = this.findOverlap2(a, pb);
-    return (sub1[1] - sub1[0] >= sub2[1] - sub2[0]) ? sub1 : sub2;
-  }
-
-  static reverseFindLongerOverlap(a: string, b: string): [number, number] {
-    const pb = this.pruneSecondStr(a, b);
-    const sub1 = this.findOverlap3(a, pb);
-    const sub2 = this.findOverlap4(a, pb);
-    return (sub1[1] - sub1[0] >= sub2[1] - sub2[0]) ? sub1 : sub2;
+    return bestResult;
   }
 
   // stackoverflow.com/questions/951021/what-is-the-javascript-version-of-sleep
   static sleep(msec: number) {
     return new Promise(resolve => setTimeout(resolve, msec));
+  }
+
+  private static findIntersectionFromStart(a: string , b: string) {
+    for (let i = a.length; i > 0; i--) {
+      const d = a.substring(0, i);
+      const j = b.indexOf(d);
+      if (j >= 0) {
+        return ({position: j, length: i});
+      }
+    }
+    return null;
   }
 
 }
