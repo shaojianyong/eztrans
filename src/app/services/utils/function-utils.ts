@@ -90,7 +90,7 @@ export class FunctionUtils {
         if (!bestResult) {
           bestResult = result;
         } else {
-          if (result.length > bestResult.length) {
+          if (result.len > bestResult.len) {
             bestResult = result;
           }
         }
@@ -107,12 +107,12 @@ export class FunctionUtils {
     return new Promise(resolve => setTimeout(resolve, msec));
   }
 
-  private static findIntersectionFromStart(a: string , b: string) {
+  private static findIntersectionFromStart(a: string , b: string): {pos: number, len: number} {
     for (let i = a.length; i > 0; i--) {
       const d = a.substring(0, i);
       const j = b.indexOf(d);
       if (j >= 0) {
-        return ({position: j, length: i});
+        return ({pos: j, len: i});
       }
     }
     return null;

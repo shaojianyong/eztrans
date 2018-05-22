@@ -461,14 +461,23 @@ export class MainComponent implements OnInit {
       const sliceStr = refer.slices[i].tgt.target_text;
       const intersection = FunctionUtils.findIntersection(sliceStr, wholeStr);
       if (intersection) {
-        refer.slices[i].beg = intersection[0];
-        refer.slices[i].end = intersection[1];
+        refer.slices[i].beg = intersection.pos;
+        refer.slices[i].end = intersection.pos + intersection.len;
+        refer.slices[i].ord = i;
       }
     }
   }
 
   sortSlices(refer: VersionModel): void {
-
+    refer.slices.sort((a, b) => {
+      let res = 0;
+      if (a.beg < b.beg) {
+        res = 1;
+      } else if (a.beg > b.beg) {
+        res = -1;
+      }
+      return res;
+    });
   }
 
   composeTemplate(): void {
