@@ -371,90 +371,7 @@ export class MainComponent implements OnInit {
     }
   }
 
-/*
-    oneSliceDivide(refer: VersionModel, index: number): void {
-    const wholeStr = refer.target.target_text;
-    const sliceStr = refer.slices[index].target_text;
-    const oldBegPos = refer.divides[index];
-    const oldEndPos = refer.divides[index + 1];
-
-    let intersection = null;
-    if (index <= refer.slices.length / 2) {
-      intersection = FunctionUtils.findLongerOverlap(wholeStr, sliceStr);
-    } else {
-      intersection = FunctionUtils.reverseFindLongerOverlap(wholeStr, sliceStr);
-    }
-    if (intersection) {
-      let newBegPos = intersection[0];
-      let newEndPos = intersection[1];
-
-      let prevPos = null;
-      if (index > 0) {
-        prevPos = refer.divides[index - 1];
-      }
-      let nextPos = null;
-      if (index + 2 < refer.divides.length) {
-        nextPos = refer.divides[index + 2];
-      }
-
-      // 避免交叉重叠
-      if (index === 0) {
-        newBegPos = 0;
-      } else if (oldBegPos && oldBegPos !== -1) {
-        newBegPos = oldBegPos;
-      } else if (prevPos && newBegPos < prevPos) {
-        newBegPos = prevPos + 1;
-      }
-
-      if (oldEndPos && oldEndPos !== -1) {
-        newEndPos = oldEndPos;
-      } else if (nextPos && newEndPos > nextPos) {
-        newEndPos = nextPos - 1;
-      }
-
-      refer.divides[index] = newBegPos;
-      if (index + 1 !== refer.slices.length) {
-        refer.divides[index + 1] = newEndPos;  // 确认标记：分片完成后才添加
-      }
-    } else {
-      if (!oldBegPos) {
-        refer.divides[index] = -1;
-      }
-    }
-  }
-
-  isDivideComplete(refer: VersionModel): boolean {
-    let res = true;
-    for (let i = 1; i < refer.slices.length; ++i) {
-      if (!refer.divides[i] || refer.divides[i] === -1) {
-        res = false;
-        break;
-      }
-    }
-    return res;
-  }
-
-  getNextSlice(refer: VersionModel): number {
-    let res = -1;
-    for (let i = 0; i < refer.slices.length; ++i) {
-      // 在这个位置切分失败了
-      if (refer.divides[i] === -1) {
-        continue;
-      }
-      // 已经切分过了，并且切分成功了
-      if (refer.divides[i] && (i + 1 >= refer.slices.length || (refer.divides[i + 1] && refer.divides[i + 1] !== -1))) {
-        continue;
-      }
-      // 优先按短片切分
-      if (res === -1 || refer.slices[i].target_text.length < refer.slices[res].target_text.length) {
-        res = i;
-      }
-    }
-    return res;
-  }
-*/
-  // 暂时不考虑引擎之间交叉引用，添加伪(fake)上下文，同义词...
-  // 根据分片翻译，匹配整体翻译
+  // 暂时不考虑引擎之间交叉引用，添加伪(fake)上下文，同义词...根据分片翻译，匹配整体翻译
   matchSlices(refer: VersionModel): void {
     const wholeStr = refer.target.target_text;
     for (let i = 0; i < refer.slices.length; ++i) {
@@ -462,13 +379,21 @@ export class MainComponent implements OnInit {
       const intersection = FunctionUtils.findIntersection(sliceStr, wholeStr);
       if (intersection) {
         refer.slices[i].beg = intersection.pos;
-        refer.slices[i].end = intersection.pos + intersection.len;
+        refer.slices[i].end = refer.slices[i].beg + intersection.len;
+        refer.slices[i].ord = i;
+      } else {
+        refer.slices[i].beg = (i ? refer.slices[i - 1].end : 0);
+        refer.slices[i].end = refer.slices[i].beg + sliceStr.length;
+        if (refer.slices[i].end > wholeStr.length) {
+          refer.slices[i].end = wholeStr.length;
+        }
         refer.slices[i].ord = i;
       }
     }
   }
 
   sortSlices(refer: VersionModel): void {
+    const wholeStr = refer.target.target_text;
     refer.slices.sort((a, b) => {
       let res = 0;
       if (a.beg < b.beg) {
@@ -478,6 +403,14 @@ export class MainComponent implements OnInit {
       }
       return res;
     });
+
+    refer.slices[0].beg = 0;
+    for (let i = 0; i < refer.slices.length - 1; ++i) {
+      // if (refer.slices[i].beg === refer.slices[i + 1].beg) {
+      // }  TODO: ??
+      refer.slices[i].end = refer.slices[i + 1].beg;
+    }
+    refer.slices[refer.slices.length - 1].end = wholeStr.length;
   }
 
   composeTemplate(): void {
