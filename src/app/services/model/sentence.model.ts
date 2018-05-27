@@ -29,11 +29,13 @@ export class VersionModel {
   engine: string;  // 翻译引擎
   target: TranslateModel;  // 译本，整体翻译结果
   slices: Array<TargetSlice>;  // 分片翻译结果，译本切分依据
+  result: string;  // 目的最小翻译单元，输出文本和HTML模板
 
   constructor(obj?: any) {
     this.engine = obj && obj.engine || 'Google';
     this.target = obj && obj.target || null;
     this.slices = obj && obj.slices || [];
+    this.result = obj && obj.result || '';
   }
 }
 
@@ -63,7 +65,7 @@ export class SentenceModel {
   marked: boolean;  // 翻译完成标记
   custom: Array<string>;  // 自定义翻译
   refers: Array<VersionModel>;
-  srcmtu: string;  // 源始最小翻译单元，输入文本和HTML模板
+  source: string;  // 源始最小翻译单元，输入文本和HTML模板
   dstmtu: string;  // 目的最小翻译单元，输出文本和HTML模板
 
   constructor(obj?: any) {
@@ -73,7 +75,7 @@ export class SentenceModel {
     this.marked = obj && obj.marked || false;
     this.custom = obj && obj.custom || [];
     this.refers = obj && obj.refers || [];
-    this.srcmtu = obj && obj.srcmtu || '';
+    this.source = obj && obj.source || '';
     this.dstmtu = obj && obj.dstmtu || '';
   }
 }

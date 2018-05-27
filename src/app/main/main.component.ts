@@ -260,9 +260,8 @@ export class MainComponent implements OnInit {
       } else {
         refer = new VersionModel({
           engine: engine.getEngineName(),
-          target: new TranslateModel({
-            trans_state: TranslateState.REQUESTED
-          })
+          target: new TranslateModel({trans_state: TranslateState.REQUESTED}),
+          result: sentence.srcmtu
         });
         refIdx = sentence.refers.length;
         sentence.refers.push(refer);
@@ -406,14 +405,16 @@ export class MainComponent implements OnInit {
 
     refer.slices[0].beg = 0;
     for (let i = 0; i < refer.slices.length - 1; ++i) {
-      // if (refer.slices[i].beg === refer.slices[i + 1].beg) {
-      // }  TODO: ??
+      if (refer.slices[i].beg === refer.slices[i + 1].beg) {
+        refer.slices[i + 1].beg = refer.slices[i].beg + 1;
+        refer.slices[i + 1].end = refer.slices[i].beg + 2;
+      }
       refer.slices[i].end = refer.slices[i + 1].beg;
     }
     refer.slices[refer.slices.length - 1].end = wholeStr.length;
   }
 
-  composeTemplate(): void {
+  composeTemplate(refer: VersionModel): void {
 
   }
 
